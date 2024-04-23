@@ -2,8 +2,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Load the .npy files
+<<<<<<< HEAD
 acc = np.load("ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Gyro_signal.npy", allow_pickle=True).item()
+=======
+<<<<<<< HEAD
+# acc = np.load(r"C:\Users\Mieke\Downloads\ACC_signal.npy", allow_pickle=True).item()
+# rot = np.load(r"C:\Users\Mieke\Downloads\Gyro_signal.npy", allow_pickle=True).item()
+
+acc = np.load(r"C:\Users\Eigenaar\Downloads\ACC_signal.npy", allow_pickle=True).item()
+rot = np.load(r"C:\Users\Eigenaar\Downloads\Gyro_signal.npy", allow_pickle=True).item()
+=======
+acc = np.load(r"C:\Users\ninad\OneDrive\Uni\Jaar3 Q1,2,3,4\BEP\Data\ACC_signal.npy", allow_pickle=True).item()
+rot = np.load(r"C:\Users\ninad\OneDrive\Uni\Jaar3 Q1,2,3,4\BEP\Data\Gyro_signal.npy", allow_pickle=True).item()
+>>>>>>> a01f48dfdc9c3efcad8a3f6d22c8aae701c5bed2
+>>>>>>> a7a4f7015b4e5c128d4956a1f546b43e8caf0465
 
 # Define IMU locations
 imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']
