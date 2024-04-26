@@ -43,7 +43,8 @@ Hz = len(x_acceleration) / 38.1
 # Combine labels for all patients
 labels_per_measurement = []
 for subject in subjects:
-    annotations = np.load(f"Data_tests\time_ranges_{subject.split('_')[1]}.npy", allow_pickle=True)
+    i = 2
+    annotations = np.load(f"Data_tests/Annotated times/time_ranges_subject_" + str(i) + ".npy", allow_pickle=True)
     for row in annotations:
         label = label_mapping[row[2]]
         start_time = float(row[0])
@@ -51,6 +52,7 @@ for subject in subjects:
         duration = end_time - start_time
         num_measurements = round(duration * Hz)
         labels_per_measurement.extend([label] * num_measurements)
+    i += 1
 
 # Split the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X_data, labels_per_measurement, test_size=0.2, random_state=42)
