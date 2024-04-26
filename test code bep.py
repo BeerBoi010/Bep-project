@@ -1,9 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+
+
 # Load the .npy files
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
+
 
 # Define IMU locations
 imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']
