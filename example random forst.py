@@ -1,7 +1,9 @@
+import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
+from sklearn.tree import plot_tree
 
 # Load the Iris dataset
 iris = load_iris()
@@ -27,3 +29,17 @@ print("Accuracy:", accuracy)
 # Display classification report
 print("Classification Report:")
 print(classification_report(y_test, y_pred))
+
+# Scatter plot for visualizing predicted classes
+plt.figure(figsize=(10, 6))
+plt.scatter(X_test[:, 0], X_test[:, 1], c=y_pred, cmap='viridis')
+plt.xlabel('Sepal Length (cm)')
+plt.ylabel('Sepal Width (cm)')
+plt.title('Scatter Plot of Predicted Classes')
+plt.colorbar(label='Predicted Class')
+plt.show()
+
+# Decision tree visualization (for the first tree)
+plt.figure(figsize=(20, 10))
+plot_tree(clf.estimators_[0], feature_names=iris.feature_names, class_names=iris.target_names.tolist(), filled=True)
+plt.show()
