@@ -19,6 +19,7 @@ print(Hz)
 
 annotation2 = np.load("Data_tests/time_ranges_subject_2.npy", allow_pickle=True)
 print(annotation2)
+print(acc)
 
 
 # Define IMU locations
