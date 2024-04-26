@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Load the .npy files
-acc = np.load("ACC_signal.npy", allow_pickle=True).item()
-rot = np.load("Gyro_signal.npy", allow_pickle=True).item()
+acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
+rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 
 # Define IMU locations
 imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']
