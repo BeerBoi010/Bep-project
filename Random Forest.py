@@ -10,14 +10,17 @@ from sklearn.metrics import accuracy_score, classification_report
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 
+annotation2 = np.load("Data_tests/time_ranges_subject_2.npy", allow_pickle=True)
+print(annotation2)
+
 
 # Define IMU locations
 imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']
 
 # Iterate over each subject and IMU location
 subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'drinking_HealthySubject4_Test',
+       
             'drinking_HealthySubject5_Test', 'drinking_HealthySubject6_Test', 'drinking_HealthySubject7_Test']
-
 for subject in subjects:
     # Extract acceleration data for the current subject and IMU location
     acc_data = acc[subject]['hand_IMU']
@@ -59,3 +62,7 @@ for subject in subjects:
 
     plt.tight_layout()
     plt.show()
+
+
+X_subject_2 = []
+y_subject_2 = []
