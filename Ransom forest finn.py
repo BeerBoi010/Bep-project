@@ -21,15 +21,14 @@ Hz = len(x_acceleration)/38.1
 
 ###Panda data editing ###
 
+# Sample annotations
 annotations = np.load("Data_tests/time_ranges_subject_2.npy", allow_pickle=True)
 df = pd.DataFrame(annotations)
 labels = {'N': 0, 'A': 1, 'B' : 2, 'C':3}
-anntest = df.replace(labels)
+ann_replaced  = df.replace(labels)
 
 
-print('replaced dataset is:', anntest)
-df.head()
-
+df_Acc = pd.DataFrame(acc)
 
 # Define IMU locations
 imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']
