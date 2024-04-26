@@ -10,6 +10,13 @@ from sklearn.metrics import accuracy_score, classification_report
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 
+acc_data = acc['drinking_HealthySubject2_Test']['hand_IMU']
+x_acceleration = acc_data[:, 0]
+
+Hz = len(x_acceleration)/38.1
+
+print(Hz)
+
 annotation2 = np.load("Data_tests/time_ranges_subject_2.npy", allow_pickle=True)
 print(annotation2)
 
@@ -19,7 +26,7 @@ imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'st
 
 # Iterate over each subject and IMU location
 subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'drinking_HealthySubject4_Test',
-       
+                 
             'drinking_HealthySubject5_Test', 'drinking_HealthySubject6_Test', 'drinking_HealthySubject7_Test']
 for subject in subjects:
     # Extract acceleration data for the current subject and IMU location
@@ -63,6 +70,36 @@ for subject in subjects:
     plt.tight_layout()
     plt.show()
 
+# X_subject_2 = []
+# y_subject_2 = []
 
-X_subject_2 = []
-y_subject_2 = []
+# for start, end, label in annotation2:
+#     for imu_location in imu_locations:
+#         acc_data = acc[f'drinking_HealthySubject2_Test'][imu_location]
+#         rot_data = rot[f'drinking_HealthySubject2_Test'][imu_location]
+#         combined_data = np.concatenate((acc_data, rot_data), axis=1)
+#         X_subject_2.append(combined_data)
+#         y_subject_2.append(label)
+
+# X_subject_2 = np.concatenate(X_subject_2)
+# y_subject_2 = np.array(y_subject_2)
+
+# # Split data into training and testing sets
+# X_train, X_test, y_train, y_test = train_test_split(X_subject_2, y_subject_2, test_size=0.2, random_state=42)
+
+# # Initialize the Random Forest classifier
+# clf = RandomForestClassifier(n_estimators=100, random_state=42)
+
+# # Train the classifier
+# clf.fit(X_train, y_train)
+
+# # Make predictions on the testing set
+# y_pred = clf.predict(X_test)
+
+# # Evaluate the model
+# accuracy = accuracy_score(y_test, y_pred)
+# print("Accuracy:", accuracy)
+
+# # Display classification report
+# print("Classification Report:")
+# print(classification_report(y_test, y_pred))
