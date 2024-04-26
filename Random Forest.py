@@ -12,6 +12,7 @@ rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 
 annotation2 = np.load("Data_tests/time_ranges_subject_2.npy", allow_pickle=True)
 print(annotation2)
+print(acc)
 
 
 # Define IMU locations
