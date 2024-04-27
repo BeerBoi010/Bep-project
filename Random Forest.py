@@ -20,11 +20,12 @@ rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 #pre = np.load("data_Preprocessed.npy", allow_pickle=True).item()
 
 
-acc_data2 = acc['drinking_HealthySubject3_Test']
-rot_data2 = rot['drinking_HealthySubject3_Test']
+acc_data2 = acc['drinking_HealthySubject5_Test']
+rot_data2 = rot['drinking_HealthySubject5_Test']
 
 
-annotation2 = np.load("Data_tests/Annotated times/time_ranges_subject_3.npy", allow_pickle=True)
+annotation2 = np.load("Data_tests/Annotated times/time_ranges_subject_5.npy", allow_pickle=True)
+print(annotation2)
 
 # Define the label mapping dictionary
 label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
@@ -37,9 +38,9 @@ annotation2_numbers = np.array(mapped_labels)
 
 #print(annotation2_numbers)
 
-x_acceleration = acc['drinking_HealthySubject2_Test']['hand_IMU']
+x_acceleration = acc['drinking_HealthySubject6_Test']['hand_IMU']
 Hz = len(x_acceleration)/38.1
-#print(Hz)
+print(Hz)
 
 # for subject in subjects:
 #     # Extract acceleration data for the current subject and IMU location
@@ -112,7 +113,7 @@ for row in annotation2:
     print("variables",start_time,end_time,label,duration,num_measurements)
     labels_per_measurement.extend([label] * num_measurements)
 
-print(labels_per_measurement)
+#print(labels_per_measurement)
 print(len(labels_per_measurement))
 
 # Load X_data and labels_per_measurement
