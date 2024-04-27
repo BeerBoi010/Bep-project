@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
+from sklearn.tree import plot_tree
+
 
 # Define IMU locations
 imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']
@@ -15,12 +17,14 @@ subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'd
 # Load the .npy files
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
-
-acc_data2 = acc['drinking_HealthySubject2_Test']
-rot_data2 = rot['drinking_HealthySubject2_Test']
+#pre = np.load("data_Preprocessed.npy", allow_pickle=True).item()
 
 
-annotation2 = np.load("Data_tests/time_ranges_subject_2.npy", allow_pickle=True)
+acc_data2 = acc['drinking_HealthySubject3_Test']
+rot_data2 = rot['drinking_HealthySubject3_Test']
+
+
+annotation2 = np.load("Data_tests/Annotated times/time_ranges_subject_3.npy", allow_pickle=True)
 
 # Define the label mapping dictionary
 label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
@@ -108,7 +112,7 @@ for row in annotation2:
     print("variables",start_time,end_time,label,duration,num_measurements)
     labels_per_measurement.extend([label] * num_measurements)
 
-#print(labels_per_measurement)
+print(labels_per_measurement)
 print(len(labels_per_measurement))
 
 # Load X_data and labels_per_measurement
@@ -148,3 +152,21 @@ plt.xticks(range(X_train.shape[1]), indices)
 plt.xlabel("Feature Index")
 plt.ylabel("Feature Importance")
 plt.show()
+
+
+# Visualize one of the decision trees in the Random Forest
+plt.figure(figsize=(70, 10))
+plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
+plt.show()
+
+# # Sample data point (measurement frame) for prediction
+# sample_data_point = X_test[0]  # You can replace this with any other data point
+
+# # Make prediction for the sample data point
+# predicted_label = clf.predict([sample_data_point])[0]
+
+# # Map the predicted label back to the original movement type
+# predicted_movement = {v: k for k, v in label_mapping.items()}[predicted_label]
+
+# # Print the predicted movement type
+# print("Predicted Movement Type:", predicted_movement)
