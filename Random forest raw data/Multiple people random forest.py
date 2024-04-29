@@ -135,28 +135,30 @@ clf.fit(X_train, y_train)
 
 # Make predictions on the testing set
 y_pred = clf.predict(X_test)
+y_pred_int= np.array([int(pred) for pred in y_pred])
+
 
 np.set_printoptions(threshold=sys.maxsize)
-#print("True Test labels", y_test,len(y_test))
-#print("Predictions Test labels",y_pred,len(y_pred))
+print("True Test labels", y_test,len(y_test))
+print("Predictions Test labels",y_pred_int,len(y_pred_int))
 
 # Evaluate the model
-accuracy = accuracy_score(y_test, y_pred)
+accuracy = accuracy_score(y_test, y_pred_int)
 print("Accuracy:", accuracy)
 
 # Create an empty list of size 1905 for the x-axis
-element_numbers = list(range(len(y_pred)))
+element_numbers = list(range(len(y_pred_int)))
 
 # Plot for y_pred
 plt.figure(figsize=(12, 6))
 
 plt.subplot(1, 2, 1)  # 1 row, 2 columns, plot number 1
-plt.plot(element_numbers, y_pred, label='Predictions', color='blue')
+plt.plot(element_numbers, y_pred_int, label='Predictions', color='blue')
 plt.xlabel('Element Numbers')
 plt.ylabel('Predicted Labels')
 plt.title('Predicted Labels')
 plt.legend()
-plt.ylim(0, max(y_pred))
+
 
 # Plot for y_train
 plt.subplot(1, 2, 2)  # 1 row, 2 columns, plot number 2
@@ -173,7 +175,7 @@ plt.show()
 
 # Display classification report
 print("Classification Report:")
-print(classification_report(y_test, y_pred))
+print(classification_report(y_test, y_pred_int))
 
 # Get feature importances
 importances = clf.feature_importances_
@@ -191,7 +193,6 @@ plt.ylabel("Feature Importance")
 plt.show()
 
 
-# # Visualize one of the decision trees in the Random Forest
-# plt.figure(figsize=(150, 10))
-# plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
-# 
+# Visualize one of the decision trees in the Random Forest
+plt.figure(figsize=(150, 10))
+plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
