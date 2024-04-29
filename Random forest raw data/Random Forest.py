@@ -120,6 +120,7 @@ print(len(labels_per_measurement))
 # Assuming X_data and labels_per_measurement are already defined
 
 # Split the data into training and testing sets
+#deze weggehaalt bij multiple random people forest omdat we volledige data van patient willen halen v
 X_train, X_test, y_train, y_test = train_test_split(X_data, labels_per_measurement, test_size=0.2, random_state=42)
 
 # Initialize the Random Forest classifier

@@ -156,6 +156,7 @@ plt.xlabel('Element Numbers')
 plt.ylabel('Predicted Labels')
 plt.title('Predicted Labels')
 plt.legend()
+plt.ylim(0, max(y_pred))
 
 # Plot for y_train
 plt.subplot(1, 2, 2)  # 1 row, 2 columns, plot number 2
