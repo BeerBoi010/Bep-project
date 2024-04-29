@@ -20,11 +20,11 @@ rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 #pre = np.load("data_Preprocessed.npy", allow_pickle=True).item()
 
 
-acc_data2 = acc['drinking_HealthySubject5_Test']
-rot_data2 = rot['drinking_HealthySubject5_Test']
+acc_data2 = acc['drinking_HealthySubject6_Test']
+rot_data2 = rot['drinking_HealthySubject6_Test']
 
 
-annotation2 = np.load("Data_tests/Annotated times/time_ranges_subject_5.npy", allow_pickle=True)
+annotation2 = np.load("Data_tests/Annotated times/time_ranges_subject_6.npy", allow_pickle=True)
 print(annotation2)
 
 # Define the label mapping dictionary
