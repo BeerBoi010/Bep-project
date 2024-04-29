@@ -94,9 +94,16 @@ combined_labels = np.concatenate(labels_patients)
 print(combined_labels)
 print(combined_X_data.shape,combined_labels.shape)
 
+#Scale numerical features to a similar range to prevent some features from dominating others.
+#Common scaling techniques include StandardScaler (mean=0, std=1) and MinMaxScaler (scaling features to a range).
+
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+
 # Split the combined dataset and label array
 #X_train, X_test, y_train, y_test = train_test_split(combined_X_data, combined_labels, test_size=0.2, random_state=42)
-X_train = combined_X_data
+X_train = scaler.fit_transform(combined_X_data)
 y_train = combined_labels
 
 # Initialize an empty list to store combined data for testing
@@ -114,7 +121,7 @@ for imu_location in imu_locations:
     # Append the combined data for the current IMU location to the list
     combined_data_patient_test.extend(combined_data_imu_test.T)
 
-X_test = np.vstack(combined_data_patient_test).T
+X_test = scaler.transform(np.vstack(combined_data_patient_test).T)
 
 labels_per_measurement = []
 
@@ -138,9 +145,9 @@ y_pred = clf.predict(X_test)
 y_pred_int= np.array([int(pred) for pred in y_pred])
 
 
-np.set_printoptions(threshold=sys.maxsize)
-print("True Test labels", y_test,len(y_test))
-print("Predictions Test labels",y_pred_int,len(y_pred_int))
+# np.set_printoptions(threshold=sys.maxsize)
+# print("True Test labels", y_test,len(y_test))
+# print("Predictions Test labels",y_pred_int,len(y_pred_int))
 
 # Evaluate the model
 accuracy = accuracy_score(y_test, y_pred_int)
@@ -193,6 +200,6 @@ plt.ylabel("Feature Importance")
 plt.show()
 
 
-# Visualize one of the decision trees in the Random Forest
-plt.figure(figsize=(150, 10))
-plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
+# # Visualize one of the decision trees in the Random Forest
+# plt.figure(figsize=(150, 10))
+# plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
