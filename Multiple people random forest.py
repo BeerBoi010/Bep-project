@@ -32,7 +32,7 @@ annotation6 = np.load("Data_tests/Annotated times/time_ranges_subject_6.npy", al
 annotation7 = np.load("Data_tests/Annotated times/time_ranges_subject_7.npy", allow_pickle=True)
 
 # Define the label mapping dictionary
-label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3, 0: "N", 1: "A", 2:"B", 3: "C"}
+label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
 
 # Map the letters to numbers in the loaded array
 mapped_labels2 = [[item[0], item[1], label_mapping[item[2]]] for item in annotation2]
@@ -62,7 +62,7 @@ X_data_patients = []
 labels_patients = []
 
 # Iterate over each patient
-for subject in subjects[:5]:
+for subject in subjects[:4]:
     acc_data_patient = acc[subject]
     rot_data_patient = rot[subject]
     labels_patient = [] 
@@ -95,7 +95,39 @@ print(combined_labels)
 print(combined_X_data.shape,combined_labels.shape)
 
 # Split the combined dataset and label array
-X_train, X_test, y_train, y_test = train_test_split(combined_X_data, combined_labels, test_size=0.2, random_state=42)
+#X_train, X_test, y_train, y_test = train_test_split(combined_X_data, combined_labels, test_size=0.2, random_state=42)
+X_train = combined_X_data
+y_train = combined_labels
+
+# Initialize an empty list to store combined data for testing
+combined_data_patient_test = []
+
+# Iterate over each IMU location
+for imu_location in imu_locations:
+    # Extract accelerometer and gyroscope data for the specified IMU location
+    acc_data_imu_test = acc['drinking_HealthySubject7_Test'][imu_location]
+    rot_data_imu_test = rot['drinking_HealthySubject7_Test'][imu_location]
+    
+    # Combine accelerometer and gyroscope data horizontally
+    combined_data_imu_test = np.hstack((acc_data_imu_test, rot_data_imu_test))
+    
+    # Append the combined data for the current IMU location to the list
+    combined_data_patient_test.extend(combined_data_imu_test.T)
+
+X_test = np.vstack(combined_data_patient_test).T
+
+labels_per_measurement = []
+
+for row in annotation2:
+    label = label_mapping[row[2]]
+    start_time = float(row[0])
+    end_time = float(row[1])
+    duration = end_time - start_time
+    num_measurements = round(duration * Hz)
+    #print("variables",start_time,end_time,label,duration,num_measurements)
+    labels_per_measurement.extend([label] * num_measurements)
+
+y_test = labels_per_measurement
 
 # Initialize and train the Random Forest classifier
 clf = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -104,13 +136,43 @@ clf.fit(X_train, y_train)
 # Make predictions on the testing set
 y_pred = clf.predict(X_test)
 
+np.set_printoptions(threshold=sys.maxsize)
+#print("True Test labels", y_test,len(y_test))
+#print("Predictions Test labels",y_pred,len(y_pred))
+
 # Evaluate the model
 accuracy = accuracy_score(y_test, y_pred)
 print("Accuracy:", accuracy)
 
-# Display classification report
-print("Classification Report:")
-print(classification_report(y_test, y_pred))
+# Create an empty list of size 1905 for the x-axis
+element_numbers = list(range(len(y_pred)))
+
+# Plot for y_pred
+plt.figure(figsize=(12, 6))
+
+plt.subplot(1, 2, 1)  # 1 row, 2 columns, plot number 1
+plt.plot(element_numbers, y_pred, label='Predictions', color='blue')
+plt.xlabel('Element Numbers')
+plt.ylabel('Predicted Labels')
+plt.title('Predicted Labels')
+plt.legend()
+
+# Plot for y_train
+plt.subplot(1, 2, 2)  # 1 row, 2 columns, plot number 2
+plt.plot(element_numbers, y_test, label='True Labels', color='green')
+plt.xlabel('Element Numbers')
+plt.ylabel('True Labels')
+plt.title('True Labels')
+plt.legend()
+
+plt.tight_layout()  # Adjust layout to prevent overlap
+plt.show()
+
+
+
+# # Display classification report
+# print("Classification Report:")
+# print(classification_report(y_test, y_pred))
 
 # Get feature importances
 importances = clf.feature_importances_
@@ -132,30 +194,3 @@ plt.show()
 # plt.figure(figsize=(150, 10))
 # plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
 # plt.show()
-
-# Initialize an empty list to store combined data for testing
-combined_data_patient_test = []
-
-# Iterate over each IMU location
-for imu_location in imu_locations:
-    # Extract accelerometer and gyroscope data for the specified IMU location
-    acc_data_imu_test = acc['drinking_HealthySubject7_Test'][imu_location]
-    rot_data_imu_test = rot['drinking_HealthySubject7_Test'][imu_location]
-    
-    # Combine accelerometer and gyroscope data horizontally
-    combined_data_imu_test = np.hstack((acc_data_imu_test, rot_data_imu_test))
-    
-    # Append the combined data for the current IMU location to the list
-    combined_data_patient_test.extend(combined_data_imu_test.T)
-
-X_data = np.vstack(combined_data_patient_test).T
-
-# Make predictions using the trained Random Forest classifier
-predicted_labels = clf.predict(X_data)
-
-
-np.set_printoptions(threshold=sys.maxsize)
-
-# Print the predicted labels
-print(predicted_labels)
-
