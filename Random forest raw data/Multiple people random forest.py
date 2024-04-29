@@ -171,9 +171,9 @@ plt.show()
 
 
 
-# # Display classification report
-# print("Classification Report:")
-# print(classification_report(y_test, y_pred))
+# Display classification report
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
 
 # Get feature importances
 importances = clf.feature_importances_
@@ -194,4 +194,4 @@ plt.show()
 # # Visualize one of the decision trees in the Random Forest
 # plt.figure(figsize=(150, 10))
 # plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
-# plt.show()
+# 
