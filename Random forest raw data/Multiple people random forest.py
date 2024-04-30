@@ -111,7 +111,7 @@ scaler = StandardScaler()
 X_train = scaler.fit_transform(combined_X_data)
 y_train = combined_labels
 
-subjects_test = ['drinking_HealthySubject6_Test','drinking_HealthySubject7_Test']
+subjects_test = subjects[4:]
 
 # Create lists to store data and labels for each patient
 X_data_patients_test = []
