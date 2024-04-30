@@ -58,8 +58,8 @@ x_acceleration = acc['drinking_HealthySubject2_Test']['hand_IMU']
 Hz = len(x_acceleration)/38.1
 
 # Create lists to store data and labels for each patient
-X_data_patients = []
-labels_patients = []
+X_data_patients_train = []
+labels_patients_train = []
 
 # Iterate over each patient
 for subject in subjects[:4]:
@@ -67,14 +67,19 @@ for subject in subjects[:4]:
     rot_data_patient = rot[subject]
     labels_patient = [] 
 
+
     for row in annotation[subject]:
-        label = row[2]
+        label = int(row[2])
         start_time = float(row[0])
         end_time = float(row[1])
         duration = end_time - start_time
         num_measurements = round(duration * Hz)
+        print("variables",start_time,end_time,label,duration,num_measurements)
         labels_patient.extend([label] * num_measurements)
     
+    if subject == 'drinking_HealthySubject6_Test':
+        labels_patient = labels_patient[:-5]  # Delete the last 5 labels
+
     # Combine accelerometer and gyroscope data horizontally
     combined_data_patient = []
     for imu_location in imu_locations:
@@ -84,12 +89,12 @@ for subject in subjects[:4]:
         combined_data_patient.extend(combined_data_imu.T)
     
     # Add data and labels to the lists
-    X_data_patients.append(np.vstack(combined_data_patient).T)
-    labels_patients.append(labels_patient)
+    X_data_patients_train.append(np.vstack(combined_data_patient).T)
+    labels_patients_train.append(labels_patient)
 
 # Combine data and labels from all patients
-combined_X_data = np.concatenate(X_data_patients)
-combined_labels = np.concatenate(labels_patients)
+combined_X_data = np.concatenate(X_data_patients_train)
+combined_labels = np.concatenate(labels_patients_train)
 
 print(combined_labels)
 print(combined_X_data.shape,combined_labels.shape)
@@ -106,83 +111,114 @@ scaler = StandardScaler()
 X_train = scaler.fit_transform(combined_X_data)
 y_train = combined_labels
 
-# Initialize an empty list to store combined data for testing
-combined_data_patient_test = []
+subjects_test = ['drinking_HealthySubject6_Test','drinking_HealthySubject7_Test']
 
-# Iterate over each IMU location
-for imu_location in imu_locations:
-    # Extract accelerometer and gyroscope data for the specified IMU location
-    acc_data_imu_test = acc['drinking_HealthySubject7_Test'][imu_location]
-    rot_data_imu_test = rot['drinking_HealthySubject7_Test'][imu_location]
+# Create lists to store data and labels for each patient
+X_data_patients_test = []
+labels_patients_test = []
+
+# Iterate over each patient
+for subject in subjects_test:
+    acc_data_patient = acc[subject]
+    rot_data_patient = rot[subject]
+    labels_patient = [] 
+
+
+    for row in annotation[subject]:
+        label = int(row[2])
+        start_time = float(row[0])
+        end_time = float(row[1])
+        duration = end_time - start_time
+        num_measurements = round(duration * Hz)
+        print("variables",start_time,end_time,label,duration,num_measurements)
+        labels_patient.extend([label] * num_measurements)
     
+    if subject == 'drinking_HealthySubject6_Test':
+        labels_patient = labels_patient[:-5]  # Delete the last 5 labels
+
     # Combine accelerometer and gyroscope data horizontally
-    combined_data_imu_test = np.hstack((acc_data_imu_test, rot_data_imu_test))
+    combined_data_patient = []
+    for imu_location in imu_locations:
+        acc_data_imu = acc_data_patient[imu_location]
+        rot_data_imu = rot_data_patient[imu_location]
+        combined_data_imu = np.hstack((acc_data_imu, rot_data_imu))
+        combined_data_patient.extend(combined_data_imu.T)
     
-    # Append the combined data for the current IMU location to the list
-    combined_data_patient_test.extend(combined_data_imu_test.T)
+    # Add data and labels to the lists
+    X_data_patients_test.append(np.vstack(combined_data_patient).T)
+    labels_patients_test.append(labels_patient)
 
-X_test = scaler.transform(np.vstack(combined_data_patient_test).T)
+# Combine data and labels from all patients
+combined_X_data = np.concatenate(X_data_patients_test)
+combined_labels = np.concatenate(labels_patients_test)
 
-labels_per_measurement = []
+print(combined_labels)
+print(combined_X_data.shape,combined_labels.shape)
 
-for row in annotation2:
-    label = label_mapping[row[2]]
-    start_time = float(row[0])
-    end_time = float(row[1])
-    duration = end_time - start_time
-    num_measurements = round(duration * Hz)
-    #print("variables",start_time,end_time,label,duration,num_measurements)
-    labels_per_measurement.extend([label] * num_measurements)
+# Split the combined dataset and label array
+X_test = scaler.fit_transform(combined_X_data)
+y_test = combined_labels
 
-y_test = labels_per_measurement
+print(len(y_test))
 
 # Initialize and train the Random Forest classifier
 clf = RandomForestClassifier(n_estimators=100, random_state=42)
 clf.fit(X_train, y_train)
 
-# Make predictions on the testing set
-y_pred = clf.predict(X_test)
-y_pred_int= np.array([int(pred) for pred in y_pred])
-
+# Make predictions 
+y_test_pred = clf.predict(X_test)
+y_train_pred = clf.predict(X_train)
 
 # np.set_printoptions(threshold=sys.maxsize)
 # print("True Test labels", y_test,len(y_test))
 # print("Predictions Test labels",y_pred_int,len(y_pred_int))
 
-# Evaluate the model
-accuracy = accuracy_score(y_test, y_pred_int)
-print("Accuracy:", accuracy)
+# Splitting y_test_pred and y_test into separate arrays for each patient
+# Splitting y_test_pred and y_test into separate arrays for each patient
+split_y_pred = np.split(y_test_pred, [1905*i for i in range(1, len(subjects_test)+1)])
+split_y_test = np.split(y_test, [1905*i for i in range(1, len(subjects_test)+1)])
 
-# Create an empty list of size 1905 for the x-axis
-element_numbers = list(range(len(y_pred_int)))
+print(split_y_test)
+print(len(split_y_test))
 
-# Plot for y_pred
-plt.figure(figsize=(12, 6))
+# Iterate over each patient in the test set
+for i, subject in enumerate(subjects_test):
+    # Extract predictions and true labels for the current patient
+    y_pred_patient = split_y_pred[i]
+    y_test_patient = split_y_test[i]
+    
+    # Create an empty list of size equal to the length of predictions or true labels
+    element_numbers = list(range(len(y_pred_patient)))
 
-plt.subplot(1, 2, 1)  # 1 row, 2 columns, plot number 1
-plt.plot(element_numbers, y_pred_int, label='Predictions', color='blue')
-plt.xlabel('Element Numbers')
-plt.ylabel('Predicted Labels')
-plt.title('Predicted Labels')
-plt.legend()
+    # Plot for y_pred
+    plt.figure(figsize=(12, 6))
 
+    plt.subplot(1, 2, 1)  # 1 row, 2 columns, plot number 1
+    plt.plot(element_numbers, y_pred_patient, label='Predictions', color='blue')
+    plt.xlabel('Element Numbers')
+    plt.ylabel('Predicted Labels')
+    plt.title(f'Predicted Labels - {subject}')
+    plt.legend()
 
-# Plot for y_train
-plt.subplot(1, 2, 2)  # 1 row, 2 columns, plot number 2
-plt.plot(element_numbers, y_test, label='True Labels', color='green')
-plt.xlabel('Element Numbers')
-plt.ylabel('True Labels')
-plt.title('True Labels')
-plt.legend()
+    # Plot for y_test
+    plt.subplot(1, 2, 2)  # 1 row, 2 columns, plot number 2
+    plt.plot(element_numbers, y_test_patient, label='True Labels', color='green')
+    plt.xlabel('Element Numbers')
+    plt.ylabel('True Labels')
+    plt.title(f'True Labels - {subject}')
+    plt.legend()
 
-plt.tight_layout()  # Adjust layout to prevent overlap
-plt.show()
-
-
+    plt.tight_layout()  # Adjust layout to prevent overlap
+    plt.show()
 
 # Display classification report
-print("Classification Report:")
-print(classification_report(y_test, y_pred_int))
+print("Classification Report of train data:")
+print(classification_report(y_train, y_train_pred))
+
+# Display classification report
+print("Classification Report of test data:")
+print(classification_report(y_test, y_test_pred))
+
 
 # Get feature importances
 importances = clf.feature_importances_
