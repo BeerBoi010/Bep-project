@@ -70,6 +70,7 @@ for subject in subjects[:4]:
     rot_data_patient = rot[subject]
     labels_patient = [] 
 
+    measurement_list = [] 
 
     for row in annotation[subject]:
         label = int(row[2])
@@ -77,55 +78,67 @@ for subject in subjects[:4]:
         end_time = float(row[1])
         duration = end_time - start_time
         num_measurements = round(duration * Hz)
-        print("variables",start_time,end_time,label,duration,num_measurements)
-        labels_patient.extend([label] * num_measurements)
-    
-    if subject == 'drinking_HealthySubject6_Test':
-        labels_patient = labels_patient[:-5]  # Delete the last 5 labels
+        measurement_list.append(num_measurements)
+        labels_patient.append(label)
 
-    # Combine accelerometer and gyroscope data horizontally
-    combined_data_patient = []
-    for imu_location in imu_locations:
-        acc_data_imu = acc_data_patient[imu_location]
-        rot_data_imu = rot_data_patient[imu_location]
-        combined_data_imu = np.hstack((acc_data_imu, rot_data_imu))
-        combined_data_patient.extend(combined_data_imu.T)
-    
-    # Add data and labels to the lists
-    X_data_patients_train.append(np.vstack(combined_data_patient).T)
-    labels_patients_train.append(labels_patient)
+    # if subject == 'drinking_HealthySubject6_Test':
+    #     labels_patient = labels_patient[:-5]  # Delete the last 5 labels
+
+    # Initialize a list to store data for each movement
+X_data_movements = []
+
+# Iterate over each annotation and extract the data
+start_idx = 0
+for num_meas in measurement_list:
+    acc_data_movement = {imu_location: [] for imu_location in imu_locations}
+    rot_data_movement = {imu_location: [] for imu_location in imu_locations}
+
+    # Iterate over each measurement within the movement
+    for i in range(start_idx, min(start_idx + num_meas, 1905)):
+        for imu_location in imu_locations:
+            acc_data_imu = acc_data_patient[imu_location]
+            rot_data_imu = rot_data_patient[imu_location]
+            
+            # Extract the data for this measurement
+            acc_measurement = acc_data_imu[i]
+            rot_measurement = rot_data_imu[i]
+
+            acc_data_movement[imu_location].append(acc_measurement)
+            rot_data_movement[imu_location].append(rot_measurement)
+
+    # Calculate mean for each IMU sensor
+    mean_acc_movement = np.concatenate([np.mean(acc_data_movement[imu_loc], axis=0) for imu_loc in imu_locations])
+    mean_rot_movement = np.concatenate([np.mean(rot_data_movement[imu_loc], axis=0) for imu_loc in imu_locations])
+
+    # Flatten and append the data
+    combined_data_movement = np.concatenate([mean_acc_movement, mean_rot_movement])
+    X_data_movements.append(combined_data_movement)
+
+    # Update the start index for the next movement
+    start_idx += num_meas
+
+# Add the data for this patient to the overall list
+X_data_patients_train.append(X_data_movements)
+labels_patients_train.append(labels_patient)
+
 
 # Combine data and labels from all patients
-combined_X_data = np.concatenate(X_data_patients_train)
-combined_labels = np.concatenate(labels_patients_train)
+X_train = np.concatenate(X_data_patients_train)
+y_train = np.concatenate(labels_patients_train)
 
-print(combined_labels)
-print(combined_X_data.shape,combined_labels.shape)
-
-#Scale numerical features to a similar range to prevent some features from dominating others.
-#Common scaling techniques include StandardScaler (mean=0, std=1) and MinMaxScaler (scaling features to a range).
-
-from sklearn.preprocessing import StandardScaler
-
-scaler = StandardScaler()
-
-# Split the combined dataset and label array
-#X_train, X_test, y_train, y_test = train_test_split(combined_X_data, combined_labels, test_size=0.2, random_state=42)
-X_train = scaler.fit_transform(combined_X_data)
-y_train = combined_labels
-
-subjects_test = subjects[4:]
+print(X_train.shape, y_train.shape)
 
 # Create lists to store data and labels for each patient
 X_data_patients_test = []
 labels_patients_test = []
 
 # Iterate over each patient
-for subject in subjects_test:
+for subject in subjects[4:]:
     acc_data_patient = acc[subject]
     rot_data_patient = rot[subject]
     labels_patient = [] 
 
+    measurement_list = [] 
 
     for row in annotation[subject]:
         label = int(row[2])
@@ -133,36 +146,56 @@ for subject in subjects_test:
         end_time = float(row[1])
         duration = end_time - start_time
         num_measurements = round(duration * Hz)
-        print("variables",start_time,end_time,label,duration,num_measurements)
-        labels_patient.extend([label] * num_measurements)
-    
-    if subject == 'drinking_HealthySubject6_Test':
-        labels_patient = labels_patient[:-5]  # Delete the last 5 labels
+        measurement_list.append(num_measurements)
+        labels_patient.append(label)
 
-    # Combine accelerometer and gyroscope data horizontally
-    combined_data_patient = []
-    for imu_location in imu_locations:
-        acc_data_imu = acc_data_patient[imu_location]
-        rot_data_imu = rot_data_patient[imu_location]
-        combined_data_imu = np.hstack((acc_data_imu, rot_data_imu))
-        combined_data_patient.extend(combined_data_imu.T)
-    
-    # Add data and labels to the lists
-    X_data_patients_test.append(np.vstack(combined_data_patient).T)
-    labels_patients_test.append(labels_patient)
+    # if subject == 'drinking_HealthySubject6_Test':
+    #     labels_patient = labels_patient[:-5]  # Delete the last 5 labels
+
+    # Initialize a list to store data for each movement
+X_data_movements = []
+
+# Iterate over each annotation and extract the data
+start_idx = 0
+for num_meas in measurement_list:
+    acc_data_movement = {imu_location: [] for imu_location in imu_locations}
+    rot_data_movement = {imu_location: [] for imu_location in imu_locations}
+
+    # Iterate over each measurement within the movement
+    for i in range(start_idx, min(start_idx + num_meas, 1905)):
+        for imu_location in imu_locations:
+            acc_data_imu = acc_data_patient[imu_location]
+            rot_data_imu = rot_data_patient[imu_location]
+            
+            # Extract the data for this measurement
+            acc_measurement = acc_data_imu[i]
+            rot_measurement = rot_data_imu[i]
+
+            acc_data_movement[imu_location].append(acc_measurement)
+            rot_data_movement[imu_location].append(rot_measurement)
+
+    # Calculate mean for each IMU sensor
+    mean_acc_movement = np.concatenate([np.mean(acc_data_movement[imu_loc], axis=0) for imu_loc in imu_locations])
+    mean_rot_movement = np.concatenate([np.mean(rot_data_movement[imu_loc], axis=0) for imu_loc in imu_locations])
+
+    # Flatten and append the data
+    combined_data_movement = np.concatenate([mean_acc_movement, mean_rot_movement])
+    X_data_movements.append(combined_data_movement)
+
+    # Update the start index for the next movement
+    start_idx += num_meas
+
+# Add the data for this patient to the overall list
+X_data_patients_test.append(X_data_movements)
+labels_patients_test.append(labels_patient)
+
 
 # Combine data and labels from all patients
-combined_X_data = np.concatenate(X_data_patients_test)
-combined_labels = np.concatenate(labels_patients_test)
+X_test = np.concatenate(X_data_patients_test)
+y_test = np.concatenate(labels_patients_test)
 
-print(combined_labels)
-print(combined_X_data.shape,combined_labels.shape)
+print(X_test.shape, y_test.shape)
 
-# Split the combined dataset and label array
-X_test = scaler.fit_transform(combined_X_data)
-y_test = combined_labels
-
-print(len(y_test))
 
 # Initialize and train the Random Forest classifier
 clf = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -172,56 +205,9 @@ clf.fit(X_train, y_train)
 y_test_pred = clf.predict(X_test)
 y_train_pred = clf.predict(X_train)
 
-# np.set_printoptions(threshold=sys.maxsize)
-# print("True Test labels", y_test,len(y_test))
-# print("Predictions Test labels",y_pred_int,len(y_pred_int))
-
-# Splitting y_test_pred and y_test into separate arrays for each patient
-# Splitting y_test_pred and y_test into separate arrays for each patient
-split_y_pred = np.split(y_test_pred, [1905*i for i in range(1, len(subjects_test)+1)])
-split_y_test = np.split(y_test, [1905*i for i in range(1, len(subjects_test)+1)])
-
-print(split_y_test)
-print(len(split_y_test))
-
-# Iterate over each patient in the test set
-for i, subject in enumerate(subjects_test):
-    # Extract predictions and true labels for the current patient
-    y_pred_patient = split_y_pred[i]
-    y_test_patient = split_y_test[i]
-    
-    # Create an empty list of size equal to the length of predictions or true labels
-    element_numbers = list(range(len(y_pred_patient)))
-
-    # Plot for y_pred
-    plt.figure(figsize=(12, 6))
-
-    plt.subplot(1, 2, 1)  # 1 row, 2 columns, plot number 1
-    plt.plot(element_numbers, y_pred_patient, label='Predictions', color='blue')
-    plt.xlabel('Element Numbers')
-    plt.ylabel('Predicted Labels')
-    plt.title(f'Predicted Labels - {subject}')
-    plt.legend()
-
-    # Plot for y_test
-    plt.subplot(1, 2, 2)  # 1 row, 2 columns, plot number 2
-    plt.plot(element_numbers, y_test_patient, label='True Labels', color='green')
-    plt.xlabel('Element Numbers')
-    plt.ylabel('True Labels')
-    plt.title(f'True Labels - {subject}')
-    plt.legend()
-
-    plt.tight_layout()  # Adjust layout to prevent overlap
-    plt.show()
-
-# Display classification report
-print("Classification Report of train data:")
-print(classification_report(y_train, y_train_pred))
-
 # Display classification report
 print("Classification Report of test data:")
 print(classification_report(y_test, y_test_pred))
-
 
 # Get feature importances
 importances = clf.feature_importances_
