@@ -150,7 +150,7 @@ clf.fit(X_train, y_train)
 y_test_pred = clf.predict(X_test)
 y_train_pred = clf.predict(X_train)
 
-subjects_test =  ['drinking_HealthySubject6_Test', 'drinking_HealthySubject7_Test']
+subjects_test =  ['drinking_HealthySubject6_Test','drinking_HealthySubject7_Test']
 
 # Splitting y_test_pred and y_test into separate arrays for each patient
 split_y_pred = np.split(y_test_pred, [31*i for i in range(1, len(subjects_test)+1)])

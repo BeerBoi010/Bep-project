@@ -83,12 +83,31 @@ for subject in subjects[:4]:
     if subject == 'drinking_HealthySubject6_Test':
         labels_patient = labels_patient[:-5]  # Delete the last 5 labels
 
-    # Combine accelerometer and gyroscope data horizontally
     combined_data_patient = []
     for imu_location in imu_locations:
+
         acc_data_imu = acc_data_patient[imu_location]
         rot_data_imu = rot_data_patient[imu_location]
-        combined_data_imu = np.hstack((acc_data_imu, rot_data_imu))
+
+        # Calculate min, max, and mean values for XYZ acceleration and rotation
+        acc_min = np.min(acc_data_imu, axis=0)
+        acc_max = np.max(acc_data_imu, axis=0)
+        acc_mean = np.mean(acc_data_imu, axis=0)
+    
+        rot_min = np.min(rot_data_imu, axis=0)
+        rot_max = np.max(rot_data_imu, axis=0)
+        rot_mean = np.mean(rot_data_imu, axis=0)
+
+        # Expand min, max, and mean values to have the same number of rows as acc_data_imu and rot_data_imu
+        num_rows = acc_data_imu.shape[0]
+        acc_min = np.tile(acc_min, (num_rows, 1))
+        acc_max = np.tile(acc_max, (num_rows, 1))
+        acc_mean = np.tile(acc_mean, (num_rows, 1))
+        rot_min = np.tile(rot_min, (num_rows, 1))
+        rot_max = np.tile(rot_max, (num_rows, 1))
+        rot_mean = np.tile(rot_mean, (num_rows, 1))
+
+        combined_data_imu = np.hstack((acc_data_imu, rot_data_imu,acc_min,acc_max,acc_mean,rot_min,rot_max,rot_mean))
         combined_data_patient.extend(combined_data_imu.T)
     
     # Add data and labels to the lists
@@ -99,19 +118,12 @@ for subject in subjects[:4]:
 combined_X_data = np.concatenate(X_data_patients_train)
 combined_labels = np.concatenate(labels_patients_train)
 
-print(combined_labels)
+#print(combined_labels)
 print(combined_X_data.shape,combined_labels.shape)
-
-#Scale numerical features to a similar range to prevent some features from dominating others.
-#Common scaling techniques include StandardScaler (mean=0, std=1) and MinMaxScaler (scaling features to a range).
-
-from sklearn.preprocessing import StandardScaler
-
-scaler = StandardScaler()
 
 # Split the combined dataset and label array
 #X_train, X_test, y_train, y_test = train_test_split(combined_X_data, combined_labels, test_size=0.2, random_state=42)
-X_train = scaler.fit_transform(combined_X_data)
+X_train = combined_X_data
 y_train = combined_labels
 
 subjects_test = subjects[4:]
@@ -142,9 +154,29 @@ for subject in subjects_test:
     # Combine accelerometer and gyroscope data horizontally
     combined_data_patient = []
     for imu_location in imu_locations:
+
         acc_data_imu = acc_data_patient[imu_location]
         rot_data_imu = rot_data_patient[imu_location]
-        combined_data_imu = np.hstack((acc_data_imu, rot_data_imu))
+
+        # Calculate min, max, and mean values for XYZ acceleration and rotation
+        acc_min = np.min(acc_data_imu, axis=0)
+        acc_max = np.max(acc_data_imu, axis=0)
+        acc_mean = np.mean(acc_data_imu, axis=0)
+    
+        rot_min = np.min(rot_data_imu, axis=0)
+        rot_max = np.max(rot_data_imu, axis=0)
+        rot_mean = np.mean(rot_data_imu, axis=0)
+
+        # Expand min, max, and mean values to have the same number of rows as acc_data_imu and rot_data_imu
+        num_rows = acc_data_imu.shape[0]
+        acc_min = np.tile(acc_min, (num_rows, 1))
+        acc_max = np.tile(acc_max, (num_rows, 1))
+        acc_mean = np.tile(acc_mean, (num_rows, 1))
+        rot_min = np.tile(rot_min, (num_rows, 1))
+        rot_max = np.tile(rot_max, (num_rows, 1))
+        rot_mean = np.tile(rot_mean, (num_rows, 1))
+
+        combined_data_imu = np.hstack((acc_data_imu, rot_data_imu,acc_min,acc_max,acc_mean,rot_min,rot_max,rot_mean))
         combined_data_patient.extend(combined_data_imu.T)
     
     # Add data and labels to the lists
@@ -158,11 +190,8 @@ combined_labels = np.concatenate(labels_patients_test)
 #print(combined_labels)
 print(combined_X_data.shape,combined_labels.shape)
 
-# Split the combined dataset and label array
 X_test = combined_X_data
 y_test = combined_labels
-
-print(len(y_test))
 
 # Initialize and train the Random Forest classifier
 clf = RandomForestClassifier(n_estimators=100, random_state=42)
