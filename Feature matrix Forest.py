@@ -60,19 +60,25 @@ annotation = {'drinking_HealthySubject2_Test':annotation2_numbers,'drinking_Heal
 x_acceleration = acc['drinking_HealthySubject2_Test']['hand_IMU']
 Hz = len(x_acceleration)/38.1
 
-# Create lists to store data and labels for each patient
-X_data_patients_train = []
-labels_patients_train = []
+# Create lists to store data and labels for training and testing
+X_train_list = []
+y_train_list = []
+X_test_list = []
+y_test_list = []
 
-# Iterate over each patient
-for subject in subjects[:4]:
+# Iterate over each subject
+for subject in subjects:
     acc_data_patient = acc[subject]
     rot_data_patient = rot[subject]
     labels_patient = [] 
 
     measurement_list = [] 
 
-    for row in annotation[subject]:
+    # Extract annotations for the current subject
+    annotations = annotation[subject]
+
+    # Iterate over each annotation and extract the data
+    for row in annotations:
         label = int(row[2])
         start_time = float(row[0])
         end_time = float(row[1])
@@ -81,121 +87,60 @@ for subject in subjects[:4]:
         measurement_list.append(num_measurements)
         labels_patient.append(label)
 
-    # if subject == 'drinking_HealthySubject6_Test':
-    #     labels_patient = labels_patient[:-5]  # Delete the last 5 labels
-
     # Initialize a list to store data for each movement
-X_data_movements = []
+    X_data_movements = []
 
-# Iterate over each annotation and extract the data
-start_idx = 0
-for num_meas in measurement_list:
-    acc_data_movement = {imu_location: [] for imu_location in imu_locations}
-    rot_data_movement = {imu_location: [] for imu_location in imu_locations}
+    # Initialize start index
+    start_idx = 0
 
-    # Iterate over each measurement within the movement
-    for i in range(start_idx, min(start_idx + num_meas, 1905)):
-        for imu_location in imu_locations:
-            acc_data_imu = acc_data_patient[imu_location]
-            rot_data_imu = rot_data_patient[imu_location]
-            
-            # Extract the data for this measurement
-            acc_measurement = acc_data_imu[i]
-            rot_measurement = rot_data_imu[i]
+    # Iterate over each annotation and extract the data
+    for num_meas in measurement_list:
+        acc_data_movement = {imu_location: [] for imu_location in imu_locations}
+        rot_data_movement = {imu_location: [] for imu_location in imu_locations}
 
-            acc_data_movement[imu_location].append(acc_measurement)
-            rot_data_movement[imu_location].append(rot_measurement)
+        # Iterate over each measurement within the movement
+        for i in range(start_idx, min(start_idx + num_meas, 1905)):
+            for imu_location in imu_locations:
+                acc_data_imu = acc_data_patient[imu_location]
+                rot_data_imu = rot_data_patient[imu_location]
 
-    # Calculate mean for each IMU sensor
-    mean_acc_movement = np.concatenate([np.mean(acc_data_movement[imu_loc], axis=0) for imu_loc in imu_locations])
-    mean_rot_movement = np.concatenate([np.mean(rot_data_movement[imu_loc], axis=0) for imu_loc in imu_locations])
+                # Extract the data for this measurement
+                acc_measurement = acc_data_imu[i]
+                rot_measurement = rot_data_imu[i]
 
-    # Flatten and append the data
-    combined_data_movement = np.concatenate([mean_acc_movement, mean_rot_movement])
-    X_data_movements.append(combined_data_movement)
+                acc_data_movement[imu_location].append(acc_measurement)
+                rot_data_movement[imu_location].append(rot_measurement)
 
-    # Update the start index for the next movement
-    start_idx += num_meas
+        # Calculate mean for each IMU sensor
+        mean_acc_movement = np.concatenate([np.mean(acc_data_movement[imu_loc], axis=0) for imu_loc in imu_locations])
+        mean_rot_movement = np.concatenate([np.mean(rot_data_movement[imu_loc], axis=0) for imu_loc in imu_locations])
+        min_acc_movement = np.concatenate([np.min(acc_data_movement[imu_loc], axis=0) for imu_loc in imu_locations])
+        max_acc_movement = np.concatenate([np.max(acc_data_movement[imu_loc], axis=0) for imu_loc in imu_locations])
+        min_rot_movement = np.concatenate([np.min(rot_data_movement[imu_loc], axis=0) for imu_loc in imu_locations])
+        max_rot_movement = np.concatenate([np.max(rot_data_movement[imu_loc], axis=0) for imu_loc in imu_locations])
 
-# Add the data for this patient to the overall list
-X_data_patients_train.append(X_data_movements)
-labels_patients_train.append(labels_patient)
+        # Flatten and append the data
+        combined_data_movement = np.concatenate([mean_acc_movement, mean_rot_movement, min_acc_movement, max_acc_movement, min_rot_movement, max_rot_movement])
+        X_data_movements.append(combined_data_movement)
 
+        # Update the start index for the next movement
+        start_idx += num_meas
 
-# Combine data and labels from all patients
-X_train = np.concatenate(X_data_patients_train)
-y_train = np.concatenate(labels_patients_train)
+    # Append the data and labels for the current subject to the appropriate lists
+    if subject in subjects[:4]:
+        X_train_list.extend(X_data_movements)
+        y_train_list.extend(labels_patient)
+    else:
+        X_test_list.extend(X_data_movements)
+        y_test_list.extend(labels_patient)
 
-print(X_train.shape, y_train.shape)
-
-# Create lists to store data and labels for each patient
-X_data_patients_test = []
-labels_patients_test = []
-
-# Iterate over each patient
-for subject in subjects[4:]:
-    acc_data_patient = acc[subject]
-    rot_data_patient = rot[subject]
-    labels_patient = [] 
-
-    measurement_list = [] 
-
-    for row in annotation[subject]:
-        label = int(row[2])
-        start_time = float(row[0])
-        end_time = float(row[1])
-        duration = end_time - start_time
-        num_measurements = round(duration * Hz)
-        measurement_list.append(num_measurements)
-        labels_patient.append(label)
-
-    # if subject == 'drinking_HealthySubject6_Test':
-    #     labels_patient = labels_patient[:-5]  # Delete the last 5 labels
-
-    # Initialize a list to store data for each movement
-X_data_movements = []
-
-# Iterate over each annotation and extract the data
-start_idx = 0
-for num_meas in measurement_list:
-    acc_data_movement = {imu_location: [] for imu_location in imu_locations}
-    rot_data_movement = {imu_location: [] for imu_location in imu_locations}
-
-    # Iterate over each measurement within the movement
-    for i in range(start_idx, min(start_idx + num_meas, 1905)):
-        for imu_location in imu_locations:
-            acc_data_imu = acc_data_patient[imu_location]
-            rot_data_imu = rot_data_patient[imu_location]
-            
-            # Extract the data for this measurement
-            acc_measurement = acc_data_imu[i]
-            rot_measurement = rot_data_imu[i]
-
-            acc_data_movement[imu_location].append(acc_measurement)
-            rot_data_movement[imu_location].append(rot_measurement)
-
-    # Calculate mean for each IMU sensor
-    mean_acc_movement = np.concatenate([np.mean(acc_data_movement[imu_loc], axis=0) for imu_loc in imu_locations])
-    mean_rot_movement = np.concatenate([np.mean(rot_data_movement[imu_loc], axis=0) for imu_loc in imu_locations])
-
-    # Flatten and append the data
-    combined_data_movement = np.concatenate([mean_acc_movement, mean_rot_movement])
-    X_data_movements.append(combined_data_movement)
-
-    # Update the start index for the next movement
-    start_idx += num_meas
-
-# Add the data for this patient to the overall list
-X_data_patients_test.append(X_data_movements)
-labels_patients_test.append(labels_patient)
-
-
-# Combine data and labels from all patients
-X_test = np.concatenate(X_data_patients_test)
-y_test = np.concatenate(labels_patients_test)
-
-print(X_test.shape, y_test.shape)
-
+# Convert lists to numpy arrays
+X_train = np.array(X_train_list)
+y_train = np.array(y_train_list)
+print("train",X_train.shape,y_train.shape)
+X_test = np.array(X_test_list)
+y_test = np.array(y_test_list)
+print("test",X_test.shape,y_test.shape)
 
 # Initialize and train the Random Forest classifier
 clf = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -204,6 +149,46 @@ clf.fit(X_train, y_train)
 # Make predictions 
 y_test_pred = clf.predict(X_test)
 y_train_pred = clf.predict(X_train)
+
+subjects_test =  ['drinking_HealthySubject6_Test', 'drinking_HealthySubject7_Test']
+
+# Splitting y_test_pred and y_test into separate arrays for each patient
+split_y_pred = np.split(y_test_pred, [31*i for i in range(1, len(subjects_test)+1)])
+split_y_test = np.split(y_test, [31*i for i in range(1, len(subjects_test)+1)])
+
+print(split_y_test)
+print(len(split_y_test))
+
+# Iterate over each patient in the test set
+for i, subject in enumerate(subjects_test):
+    # Extract predictions and true labels for the current patient
+    y_pred_patient = split_y_pred[i]
+    y_test_patient = split_y_test[i]
+    
+    # Create an empty list of size equal to the length of predictions or true labels
+    element_numbers = list(range(len(y_pred_patient)))
+
+    # Plot for y_pred
+    plt.figure(figsize=(12, 6))
+
+    plt.subplot(1, 2, 1)  # 1 row, 2 columns, plot number 1
+    plt.stem(element_numbers, y_pred_patient, label='Predictions')
+    plt.xlabel('Element Numbers')
+    plt.ylabel('Predicted Labels')
+    plt.title(f'Predicted Labels - {subject}')
+    plt.legend()
+
+    # Plot for y_test
+    plt.subplot(1, 2, 2)  # 1 row, 2 columns, plot number 2
+    plt.stem(element_numbers, y_test_patient, label='True Labels')
+    plt.xlabel('Element Numbers')
+    plt.ylabel('True Labels')
+    plt.title(f'True Labels - {subject}')
+    plt.legend()
+
+    plt.tight_layout()  # Adjust layout to prevent overlap
+    plt.show()
+
 
 # Display classification report
 print("Classification Report of test data:")
@@ -224,7 +209,7 @@ plt.xlabel("Feature Index")
 plt.ylabel("Feature Importance")
 plt.show()
 
-
-# # Visualize one of the decision trees in the Random Forest
-# plt.figure(figsize=(150, 10))
-# plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
+# Visualize one of the decision trees in the Random Forest
+plt.figure(figsize=(30, 10))
+plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
+plt.show()
