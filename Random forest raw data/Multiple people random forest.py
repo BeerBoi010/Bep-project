@@ -64,6 +64,7 @@ Hz = len(x_acceleration)/38.1
 X_data_patients_train = []
 labels_patients_train = []
 
+print(len(acc['drinking_HealthySubject6_Test']['hand_IMU']))
 # Iterate over each patient
 for subject in subjects[:4]:
     acc_data_patient = acc[subject]
