@@ -59,7 +59,7 @@ annotation = {'drinking_HealthySubject2_Test':annotation2_numbers,'drinking_Heal
 
 x_acceleration = acc['drinking_HealthySubject2_Test']['hand_IMU']
 Hz = len(x_acceleration)/38.1
-
+print(len(acc['drinking_HealthySubject6_Test']['hand_IMU']))
 # Create lists to store data and labels for each patient
 X_data_patients_train = []
 labels_patients_train = []
