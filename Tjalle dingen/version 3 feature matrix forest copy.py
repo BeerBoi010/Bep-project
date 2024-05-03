@@ -50,41 +50,12 @@ annotation = {'drinking_HealthySubject2_Test':annotation2_numbers,'drinking_Heal
               'drinking_HealthySubject4_Test':annotation4_numbers,'drinking_HealthySubject5_Test':annotation5_numbers,
               'drinking_HealthySubject6_Test':annotation6_numbers,'drinking_HealthySubject7_Test':annotation7_numbers
               }
+print(len(acc['drinking_HealthySubject6_Test']['hand_IMU']))
 
-# Convert data to float
-annotation2_numbers = annotation2_numbers.astype(float)
 
-# Time array
-times = np.arange(annotation2_numbers[0, 0], annotation2_numbers[-1, 1], 1/50)
+#print(annotation2_numbers)
 
-# Interpolation
-labels = []
-for t in times:
-    # Find the index of the segment containing t
-    idx = np.searchsorted(annotation2_numbers[:, 0], t)
-    
-    if idx == 0:
-        start_time, end_time, start_label = annotation2_numbers[0, :]
-    elif idx == len(annotation2_numbers):
-        start_time, end_time, start_label = annotation2_numbers[-1, :]
-    else:
-        start_time, end_time, start_label = annotation2_numbers[idx-1, :]
-        
-    end_label = annotation2_numbers[idx, 2]
-    
-    # Interpolate label
-    alpha = (t - start_time) / (end_time - start_time)
-    interpolated_label = (1 - alpha) * start_label + alpha * end_label
-    
-    labels.append(interpolated_label)
-
-# Stack time and labels to form the final dataset
-interpolated_data = np.column_stack((times, labels))
-print(interpolated_data)
-
-print(annotation2_numbers)
-
-# Plot annotated time ranges for subject 3
+#Plot annotated time ranges for subject 3
 plt.figure(figsize=(10, 4))
 plt.title("Annotated Time Ranges for Subject 3")
 plt.xlabel("Time")
