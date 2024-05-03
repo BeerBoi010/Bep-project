@@ -7,7 +7,7 @@ from sklearn.metrics import accuracy_score, classification_report
 import sys
 
 #important variables:
-window_size = 3
+sampling_window = 3
 
 
 
@@ -22,40 +22,26 @@ subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'd
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 
-annotation2 = np.load("Data_tests/Annotated times/time_ranges_subject_2.npy", allow_pickle=True)
-annotation3 = np.load("Data_tests/Annotated times/time_ranges_subject_3.npy", allow_pickle=True)
-annotation4 = np.load("Data_tests/Annotated times/time_ranges_subject_4.npy", allow_pickle=True)
-annotation5 = np.load("Data_tests/Annotated times/time_ranges_subject_5.npy", allow_pickle=True)
-annotation6 = np.load("Data_tests/Annotated times/time_ranges_subject_6.npy", allow_pickle=True)
-annotation7 = np.load("Data_tests/Annotated times/time_ranges_subject_7.npy", allow_pickle=True)
-
-data = [[1, 2, 3, 4, 5],
-        [6, 7, 8, 9, 10],
-        [11, 12, 13, 14, 15]]
-# Convert the array to a DataFrame
-df = pd.DataFrame(data)
-#acc2 = df['drinking_HealthySubject2_Test']
-print(df.head)
-
-# acc_dat = pd.DataFrame(acc)
-# acc_2 = acc_dat['drinking_HealthySubject2_Test']
-
-# print(acc_2)
 
 
-# Calculate rolling mean for each row with window size 3
-#rolling_means = df.rolling(window=2,   min_periods=1).mean()
+#setting up the first testing data
+x_acceleration2 = acc['drinking_HealthySubject2_Test']['hand_IMU']
+x_accT = x_acceleration2.T
 
-#print(rolling_means)
-x_acceleration = acc['drinking_HealthySubject2_Test']['hand_IMU']
-x_accT = x_acceleration.T
+#Setting up the mean
+dataset_sub2= pd.DataFrame(x_acceleration)
 
-dataset = pd.DataFrame(x_accT)
-roller = dataset.rolling(window=3,   min_periods=1).mean()
+#The rolling mean calculates the rolling mean for the entire row
+roller= dataset_sub2.rolling(sampling_window, min_periods=3).mean()
 
-print(roller[0])
-print(x_accT[0])
+#changing the meaned rows to numpy ant transposing them for the plot
+x = roller.to_numpy()
+mean_acc= x.T
+
+# print(x[0])
+# print(x_accT[0])
 
 # plt.figure()
 # plt.plot(x_accT[0])
+# plt.plot(x_plot[0])
 # plt.show()
