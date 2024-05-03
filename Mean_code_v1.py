@@ -44,7 +44,7 @@ print(df.head)
 
 
 # Calculate rolling mean for each row with window size 3
-rolling_means = df.rolling(window=2,   min_periods=1).mean()
+#rolling_means = df.rolling(window=2,   min_periods=1).mean()
 
 #print(rolling_means)
 x_acceleration = acc['drinking_HealthySubject2_Test']['hand_IMU']
