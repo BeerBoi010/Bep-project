@@ -35,11 +35,15 @@ def RMS(data):
     rms = np.hstack((data, np.expand_dims(values, axis=1)))
 
     return values, rms
+
 print('original data: ', x_acceleration2)
-print('new dataset: ', RMS(x_acceleration2)[1])
+print('new dataset: ', RMS(x_acceleration2)[0])
+
+Trans = x_acceleration2[0].T
+
+
 
 
 plt.figure()
-plt.plot(x_acceleration2[0])
-plt.plot(RMS(x_acceleration2)[0])
+plt.plot(RMS(x_acceleration2)[1])
 plt.show()
