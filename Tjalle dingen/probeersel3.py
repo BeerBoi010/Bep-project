@@ -1,6 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Load the .npy files
+acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
+rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
+
+
+x_acceleration = acc['drinking_HealthySubject2_Test']
+# print(x_acceleration)
+
 annotation2 = np.load("Data_tests/Annotated times/time_ranges_subject_2.npy", allow_pickle=True)
 annotation3 = np.load("Data_tests/Annotated times/time_ranges_subject_3.npy", allow_pickle=True)
 annotation4 = np.load("Data_tests/Annotated times/time_ranges_subject_4.npy", allow_pickle=True)
@@ -44,18 +52,44 @@ for annotation_matrix in annotation_matrices:
     # Append the expanded matrix for the current participant to the list
     expanded_matrices.append(expanded_matrix)
 
-print(expanded_matrices[0])
-# Plot the data for each participant
-for participant_index, expanded_matrix in enumerate(expanded_matrices):
-    plt.figure(figsize=(10, 5))
-    # Extract x-values (time) and y-values (labels) from expanded_matrix
-    x_values = [row[0] for row in expanded_matrix]
-    y_values = [row[1] for row in expanded_matrix]
-    # Plot the data with smaller marker size
-    plt.plot(x_values, y_values, marker='o', linestyle='-', markersize=2, label=f'Participant {participant_index + 1}')
-    plt.xlabel('Time')
-    plt.ylabel('Label')
-    plt.title('Interpolated Data')
-    plt.grid(True)
-    plt.legend()
+# # Plot the data for each participant
+# for participant_index, expanded_matrix in enumerate(expanded_matrices):
+#     plt.figure(figsize=(10, 5))
+#     # Extract x-values (time) and y-values (labels) from expanded_matrix
+#     x_values = [row[0] for row in expanded_matrix]
+#     y_values = [row[1] for row in expanded_matrix]
+#     # Plot the data with smaller marker size
+#     plt.plot(x_values, y_values, marker='o', linestyle='-', markersize=2, label=f'Participant {participant_index + 1}')
+#     plt.xlabel('Time')
+#     plt.ylabel('Label')
+#     plt.title('Interpolated Data')
+#     plt.grid(True)
+#     plt.legend()
+#     plt.show()
+
+# labels2 = expanded_matrices[0]
+# # print(labels2)
+# for row in labels2:
+#     x_values = [row[0] for row in expanded_matrix]
+#     y_values = [row[1] for row in expanded_matrix]
+
+# plt.plot(x_values, y_values, marker='o', linestyle='-', markersize=2, label=f'Participant 1')
+# plt.xlabel('Time')
+# plt.ylabel('Label')
+# plt.title('Interpolated Data')
+# plt.grid(True)
+# plt.legend()
+# plt.show()
+
+# Plotting
+for sensor, data in x_acceleration.items():
+    fig, ax = plt.subplots(figsize=(10, 8))
+    ax.plot(data[:, 0], label='X Acceleration', color='r')
+    ax.plot(data[:, 1], label='Y Acceleration', color='g')
+    ax.plot(data[:, 2], label='Z Acceleration', color='b')
+    ax.set_title(f'Acceleration Data for {sensor}')
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Acceleration')
+    ax.legend()
+    ax.grid(True)  # Adding grid
     plt.show()
