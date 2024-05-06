@@ -4,6 +4,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 import sys
 import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.tree import plot_tree
 
 #### Importing of necessary functions for algorithm  ###############################################
 import RMS_V2
@@ -20,7 +22,7 @@ test_amount = train_amount
 ### Setting up the test and training sets and labels ############################################################
 
 X_train_RMS = RMS_V2.RMS_train(train_amount, sampling_window, min_periods)
-X_test_RMS = RMS_V2.RMS_train(test_amount, sampling_window, min_periods)
+X_test_RMS = RMS_V2.RMS_test(test_amount, sampling_window, min_periods)
 
 X_train_Mean = Mean_V2.Mean_train(train_amount, sampling_window, min_periods)
 X_test_Mean = Mean_V2.Mean_test(test_amount, sampling_window, min_periods)
@@ -28,13 +30,30 @@ X_test_Mean = Mean_V2.Mean_test(test_amount, sampling_window, min_periods)
 Y_train_labels = labels_interpolation.expanded_matrices[:train_amount]
 Y_test_labels = labels_interpolation.expanded_matrices[test_amount:]
 
-print(Y_train_labels)
-print(Y_test_labels)
 
+labels_train = []
+
+for item in Y_train_labels:
+    for i in item:
+        labels_train.append(i[1])
+
+labels_test = []
+
+for item in Y_test_labels:
+    for i in item:
+        labels_test.append(i[1])
+
+# Dictionary to map labels to numerical values
+label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
+
+# Convert labels to numerical values
+y_train = [label_mapping[label] for label in labels_train]
+y_test = [label_mapping[label] for label in labels_test]
+
+print("y_test",len(y_test))
 
 # Create lists to store data and labels for each patient
 X_data_patients_train = []
-labels_patients_train = []
 
 # Iterate over each patient
 for subject in X_train_RMS:
@@ -58,17 +77,16 @@ for subject in X_train_RMS:
 
 # Combine data from all patients
 combined_X_data_train = np.concatenate(X_data_patients_train)
-
+X_train = combined_X_data_train
 print(combined_X_data_train.shape)
 
 
 # Create lists to store data and labels for each patient
 X_data_patients_test = []
-labels_patients_test = []
 
 # Iterate over each patient
 for subject in X_test_RMS:
-
+    print("test subject", subject)
     # Initialize combined_data_patient for each patient
     combined_data_patient = []
 
@@ -88,6 +106,48 @@ for subject in X_test_RMS:
 
 # Combine data from all patients
 combined_X_data_test = np.concatenate(X_data_patients_test)
+X_test = combined_X_data_test
 
 print(combined_X_data_test.shape)
+
+# Initialize and train the Random Forest classifier
+clf = RandomForestClassifier(n_estimators=100, random_state=42)
+clf.fit(X_train, y_train)
+
+# Make predictions 
+y_test_pred = clf.predict(X_test)
+print("y_test_pred",len(y_test_pred))
+y_train_pred = clf.predict(X_train)
+
+
+
+# Display classification report
+print("Classification Report of train data:")
+print(classification_report(y_train, y_train_pred))
+
+# Display classification report
+print("Classification Report of test data:")
+print(classification_report(y_test, y_test_pred))
+
+
+# Get feature importances
+importances = clf.feature_importances_
+
+# Sort feature importances in descending order
+indices = np.argsort(importances)[::-1]
+
+# Plot the feature importances
+plt.figure(figsize=(10, 6))
+plt.title("Feature Importances")
+plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+plt.xticks(range(X_train.shape[1]), indices)
+plt.xlabel("Feature Index")
+plt.ylabel("Feature Importance")
+plt.show()
+
+
+# Visualize one of the decision trees in the Random Forest
+plt.figure(figsize=(150, 10))
+plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
+plt.show()
 

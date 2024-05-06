@@ -73,7 +73,7 @@ def Mean_test(test_amount,sampling_window,min_periods):
     mean_data_all_patients = {}
 
     # Iterate over each patient
-    for subject in subjects[:test_amount]:
+    for subject in subjects[test_amount:]:
 
         #calcluation of values for every imu sensor
         mean_data_patient = {}
