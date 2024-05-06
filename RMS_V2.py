@@ -117,7 +117,7 @@ def RMS_test(test_amount, sampling_window, min_periods):
     # Return the dictionary containing RMS data for all patients
     return rms_data_all_patients
 
-#print(RMS_train(5,3,1))
+print(RMS_train(5,3,1))
 #print(RMS_train())
 
 
