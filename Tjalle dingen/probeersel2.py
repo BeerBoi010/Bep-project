@@ -44,7 +44,17 @@ for annotation_matrix in annotation_matrices:
     # Append the expanded matrix for the current participant to the list
     expanded_matrices.append(expanded_matrix)
 
-print(expanded_matrices[0])
+exp_annotations2 = expanded_matrices[0]
+exp_annotations3 = expanded_matrices[1]
+exp_annotations4 = expanded_matrices[2]
+exp_annotations5 = expanded_matrices[3]
+exp_annotations6 = expanded_matrices[4]
+exp_annotations7 = expanded_matrices[5]
+
+print(exp_annotations5)
+
+
+
 # Plot the data for each participant
 for participant_index, expanded_matrix in enumerate(expanded_matrices):
     plt.figure(figsize=(10, 5))
