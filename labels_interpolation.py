@@ -45,6 +45,7 @@ annotation_matrices = [annotation2, annotation3, annotation4, annotation5, annot
 # Define the sampling frequency
 sampling_frequency = 50  # Hz
 # Function to perform interpolation for a single row
+
 def interpolate_row(row, cumulative_count):
     # Convert start and end time to floats
     start_time = float(row[0])
@@ -53,8 +54,8 @@ def interpolate_row(row, cumulative_count):
     label = row[2]
     # Calculate the number of samples
     num_samples = round((end_time - start_time) * sampling_frequency)
-    # Create expanded rows with data points and label
-    expanded_rows = [[cumulative_count + i + 1, label] for i in range(num_samples)]
+    # Create expanded rows with data points and label starting from index 0
+    expanded_rows = [[cumulative_count + i, label] for i in range(num_samples)]
     # Update cumulative count
     cumulative_count += num_samples
     return expanded_rows, cumulative_count
@@ -81,3 +82,5 @@ exp_annotations4 = expanded_matrices[2]
 exp_annotations5 = expanded_matrices[3]
 exp_annotations6 = expanded_matrices[4]
 exp_annotations7 = expanded_matrices[5]
+
+print(exp_annotations2)
