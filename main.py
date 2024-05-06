@@ -32,7 +32,7 @@ Y_test_labels = labels_interpolation.expanded_matrices[test_amount:]
 
 # Assuming 'rms' and 'mean' are dictionaries containing RMS and mean values respectively
 # for each patient and IMU sensor
-
+    
 # Number of patients
 num_patients = 6
 
