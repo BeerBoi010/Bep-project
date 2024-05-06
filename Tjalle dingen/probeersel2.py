@@ -51,9 +51,9 @@ exp_annotations5 = expanded_matrices[3]
 exp_annotations6 = expanded_matrices[4]
 exp_annotations7 = expanded_matrices[5]
 
-print(exp_annotations5)
+#print(exp_annotations5)
 
-
+print(exp_annotations2)
 
 # Plot the data for each participant
 for participant_index, expanded_matrix in enumerate(expanded_matrices):
