@@ -44,6 +44,7 @@ for annotation_matrix in annotation_matrices:
     # Append the expanded matrix for the current participant to the list
     expanded_matrices.append(expanded_matrix)
 
+
 exp_annotations2 = expanded_matrices[0]
 exp_annotations3 = expanded_matrices[1]
 exp_annotations4 = expanded_matrices[2]
@@ -51,7 +52,17 @@ exp_annotations5 = expanded_matrices[3]
 exp_annotations6 = expanded_matrices[4]
 exp_annotations7 = expanded_matrices[5]
 
+<<<<<<< Updated upstream
 #print(exp_annotations5)
+=======
+
+#print(expanded_matrices[:5])
+# print(len(expanded_matrices[:5]))
+# print(expanded_matrices[:5].shape)
+
+#print(exp_annotations5)
+
+>>>>>>> Stashed changes
 
 print(exp_annotations2)
 

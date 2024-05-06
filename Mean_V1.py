@@ -7,7 +7,7 @@ from sklearn.metrics import accuracy_score, classification_report
 import sys
 
 
-###Description: Code for calculating the mean over a certain window size. generates a matriix the same size as the input.
+###Description: Code for calculating the mean over a certain window size. generates a matrix the same size as the input.
 
 
 #important variables:
