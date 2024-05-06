@@ -10,6 +10,9 @@ import subprocess
 subprocess.run(['python', 'Mean_code_v1.py'])
 
 
+### Beschrijving: RMS-model that calculates the RMS-value for every row working down. 
+
+
 # Define IMU locations
 imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']
 
