@@ -6,10 +6,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 import sys
 
+
+###Description: Code for calculating the mean over a certain window size. generates a matriix the same size as the input.
+
+
 #important variables:
 sampling_window = 3
-
-
 
 # Define IMU locations
 imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']
