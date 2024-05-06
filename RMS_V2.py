@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 ###Description: Calculates RMS-value for given data over a sampling window, working down and giving values for everor of the dataset.
 
 
-#variables
-sampling_window = 3
-min_periods = 1
+# #variables
+# sampling_window = 3
+# min_periods = 1
 
 
 # Define IMU locations
@@ -27,12 +27,12 @@ rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 
 ####train##################
 
-def RMS_train():
+def RMS_train(train_amount,sampling_window, min_periods):
     ###function: calculate RMS-values for all patients, with acc and gyr data.
     rms_data_all_patients = {}
 
     # Iterate over each patient
-    for subject in subjects[:5]:
+    for subject in subjects[:train_amount]:
 
         #calcluation of values for every imu sensor
         rms_data_patient = {}
@@ -42,7 +42,6 @@ def RMS_train():
 
         # Combine accelerometer and gyroscope data horizontally
         
-        combined_data_patient = []
         for imu_location in imu_locations:
             acc_data_imu = acc_data_patient[imu_location]
             rot_data_imu = rot_data_patient[imu_location]
@@ -54,9 +53,6 @@ def RMS_train():
             #open up a pandas to add a rolling mean for calculations
             dataset_acc = pd.DataFrame(Squared_acc)
             dataset_rot = pd.DataFrame(Squared_rot)
-
-            print("acc dataframe", dataset_acc)
-            print("rot dataframe", dataset_rot)
 
             #The rolling mean calculates the rolling mean for the entire row
             Squaredmean_acc= dataset_acc.rolling(sampling_window, min_periods).mean()
@@ -79,12 +75,12 @@ def RMS_train():
 
 ####test#####
 
-def RMS_test():
+def RMS_test(test_amount, sampling_window, min_periods):
     ###function: calculate RMS-values for all patients, with acc and gyr data.
     rms_data_all_patients = {}
 
     # Iterate over each patient
-    for subject in subjects[5:]:
+    for subject in subjects[test_amount:]:
 
         #calcluation of values for every imu sensor
         rms_data_patient = {}
@@ -93,8 +89,6 @@ def RMS_test():
         
 
         # Combine accelerometer and gyroscope data horizontally
-        
-        combined_data_patient = []
         for imu_location in imu_locations:
             acc_data_imu = acc_data_patient[imu_location]
             rot_data_imu = rot_data_patient[imu_location]
@@ -106,9 +100,6 @@ def RMS_test():
             #open up a pandas to add a rolling mean for calculations
             dataset_acc = pd.DataFrame(Squared_acc)
             dataset_rot = pd.DataFrame(Squared_rot)
-
-            print("acc dataframe", dataset_acc)
-            print("rot dataframe", dataset_rot)
 
             #The rolling mean calculates the rolling mean for the entire row
             Squaredmean_acc= dataset_acc.rolling(sampling_window, min_periods).mean()
@@ -126,55 +117,8 @@ def RMS_test():
     # Return the dictionary containing RMS data for all patients
     return rms_data_all_patients
 
+#print(RMS_train(5,3,1))
+#print(RMS_train())
 
-print(RMS_train())
 
-
-###Tjalles interpolatiecode
-
-# annotation2 = np.load("Data_tests/Annotated times/time_ranges_subject_2.npy", allow_pickle=True)
-# annotation3 = np.load("Data_tests/Annotated times/time_ranges_subject_3.npy", allow_pickle=True)
-# annotation4 = np.load("Data_tests/Annotated times/time_ranges_subject_4.npy", allow_pickle=True)
-# annotation5 = np.load("Data_tests/Annotated times/time_ranges_subject_5.npy", allow_pickle=True)
-# annotation6 = np.load("Data_tests/Annotated times/time_ranges_subject_6.npy", allow_pickle=True)
-# annotation7 = np.load("Data_tests/Annotated times/time_ranges_subject_7.npy", allow_pickle=True)
-# annotation_matrices = [annotation2, annotation3, annotation4, annotation5, annotation6, annotation7]
-
-# # Function to perform interpolation for a single row
-# def interpolate_row(row, cumulative_count):
-#     # Convert start and end time to floats
-#     start_time = float(row[0])
-#     end_time = float(row[1])
-#     # Original label
-#     label = row[2]
-#     # Calculate the number of samples
-#     num_samples = round((end_time - start_time) * sampling_frequency)
-#     # Create expanded rows with data points and label
-#     expanded_rows = [[cumulative_count + i + 1, label] for i in range(num_samples)]
-#     # Update cumulative count
-#     cumulative_count += num_samples
-#     return expanded_rows, cumulative_count
-
-# # Initialize list to store expanded rows for all participants
-# expanded_matrices = []
-
-# # Iterate over each participant's annotation matrix
-# for annotation_matrix in annotation_matrices:
-#     # Initialize variables to keep track of the cumulative count
-#     cumulative_count = 0
-#     # Initialize list to store expanded rows for the current participant
-#     expanded_matrix = []
-#     # Iterate over each row in the annotation matrix and perform interpolation
-#     for row in annotation_matrix:
-#         expanded_rows, cumulative_count = interpolate_row(row, cumulative_count)
-#         expanded_matrix.extend(expanded_rows)
-#     # Append the expanded matrix for the current participant to the list
-#     expanded_matrices.append(expanded_matrix)
-
-# exp_annotations2 = expanded_matrices[0]
-# exp_annotations3 = expanded_matrices[1]
-# exp_annotations4 = expanded_matrices[2]
-# exp_annotations5 = expanded_matrices[3]
-# exp_annotations6 = expanded_matrices[4]
-# exp_annotations7 = expanded_matrices[5]
 
