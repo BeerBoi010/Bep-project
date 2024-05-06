@@ -5,6 +5,12 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 import sys
+import subprocess
+
+subprocess.run(['python', 'Mean_code_v1.py'])
+
+
+### Beschrijving: RMS-model that calculates the RMS-value for every row working down. 
 
 
 # Define IMU locations
@@ -26,6 +32,7 @@ def RMS(data):
 
     #count the number of rows in the dataset
     length = len(data[0])
+    print(length)
     
     #calculate RMS
     values = np.sqrt(np.sum(z, axis = 1)/length)

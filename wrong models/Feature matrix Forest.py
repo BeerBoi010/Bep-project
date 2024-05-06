@@ -7,7 +7,7 @@ from sklearn.metrics import accuracy_score, classification_report
 from sklearn.tree import plot_tree
 import sys
 
-
+###     Beschrijving: Model waartbij de features van de hele data werd gebruikt. Niet nuttig voor onze modellen 
 # Define IMU locations
 #imu_locations = ['hand_IMU']
 #imu_locations = ['hand_IMU', 'lowerarm_IMU']

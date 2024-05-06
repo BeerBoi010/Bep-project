@@ -29,7 +29,7 @@ x_acceleration2 = acc['drinking_HealthySubject2_Test']['hand_IMU']
 x_accT = x_acceleration2.T
 
 #Setting up the mean
-dataset_sub2= pd.DataFrame(x_acceleration)
+dataset_sub2= pd.DataFrame(x_acceleration2)
 
 #The rolling mean calculates the rolling mean for the entire row
 roller= dataset_sub2.rolling(sampling_window, min_periods=3).mean()
@@ -38,10 +38,10 @@ roller= dataset_sub2.rolling(sampling_window, min_periods=3).mean()
 x = roller.to_numpy()
 mean_acc= x.T
 
-# print(x[0])
+# print(x)
 # print(x_accT[0])
 
-# plt.figure()
-# plt.plot(x_accT[0])
+plt.figure()
+plt.plot(x_accT[0])
 # plt.plot(x_plot[0])
-# plt.show()
+plt.show()
