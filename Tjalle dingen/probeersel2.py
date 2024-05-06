@@ -76,6 +76,7 @@ for annotation_matrix in annotation_matrices:
     # Append the expanded matrix for the current participant to the list
     expanded_matrices.append(expanded_matrix)
 
+
 exp_annotations2 = expanded_matrices[0]
 exp_annotations3 = expanded_matrices[1]
 exp_annotations4 = expanded_matrices[2]
