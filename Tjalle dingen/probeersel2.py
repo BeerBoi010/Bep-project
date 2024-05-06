@@ -62,7 +62,7 @@ for participant_index, expanded_matrix in enumerate(expanded_matrices):
     x_values = [row[0] for row in expanded_matrix]
     y_values = [row[1] for row in expanded_matrix]
     # Plot the data with smaller marker size
-    plt.plot(x_values, y_values, marker='o', linestyle='-', markersize=2, label=f'Participant {participant_index + 1}')
+    plt.plot(x_values, y_values, marker='o', linestyle='-', markersize=2, label=f'Participant {participant_index + 2}')
     plt.xlabel('Time')
     plt.ylabel('Label')
     plt.title('Interpolated Data')
