@@ -6,9 +6,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 import sys
 
-#important variables:
-sampling_window = 3
 
+#variables
+sampling_window = 3
+min_periods = 1
 
 
 # Define IMU locations
@@ -22,26 +23,23 @@ subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'd
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 
-
-
-#setting up the first testing data
 x_acceleration2 = acc['drinking_HealthySubject2_Test']['hand_IMU']
-x_accT = x_acceleration2.T
 
-#Setting up the mean
-dataset_sub2= pd.DataFrame(x_acceleration2)
 
-#The rolling mean calculates the rolling mean for the entire row
-roller= dataset_sub2.rolling(sampling_window, min_periods=3).mean()
 
-#changing the meaned rows to numpy ant transposing them for the plot
-x = roller.to_numpy()
-mean_acc= x.T
+def RMS(data):
+    Squared = np.square(data)
 
-# print(x)
-# print(x_accT[0])
+    #open up a pandas to add a rolling mean for calculations
+    dataset_sub2= pd.DataFrame(Squared)
 
-plt.figure()
-plt.plot(x_accT[0])
-# plt.plot(x_plot[0])
-plt.show()
+    #The rolling mean calculates the rolling mean for the entire row
+    roller= dataset_sub2.rolling(sampling_window, min_periods).mean()
+    test2 = dataset_sub2.rolling(sampling_window, min_periods, step = 2).mean()
+
+    test = np.sqrt(test2)
+    RMS= np.sqrt(roller)
+    return RMS, test
+
+
+print(RMS(x_acceleration2)[1])
