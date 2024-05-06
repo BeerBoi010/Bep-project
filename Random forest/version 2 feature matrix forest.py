@@ -4,10 +4,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 import sys
 
+#### description: first try implementing Arkady's ideas for cross-over zones and implementing them. 
+###Rest is still similar to V1.
+
+
+
 #important variables:
 sample_size = 3
-
-
 
 # Define IMU locations
 imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']

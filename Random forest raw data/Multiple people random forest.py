@@ -66,7 +66,7 @@ labels_patients_train = []
 
 print(len(acc['drinking_HealthySubject6_Test']['hand_IMU']))
 # Iterate over each patient
-for subject in subjects[:4]:
+for subject in subjects[:5]:
     acc_data_patient = acc[subject]
     rot_data_patient = rot[subject]
     labels_patient = [] 

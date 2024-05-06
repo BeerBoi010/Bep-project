@@ -8,6 +8,9 @@ from sklearn.tree import plot_tree
 import sys
 
 
+###Description: Start of exploring acc, rot, mean. Found out taking those values of entire measurement series does not impact 
+###accuracy of the model. 
+
 # Define IMU locations
 #imu_locations = ['hand_IMU']
 #imu_locations = ['hand_IMU', 'lowerarm_IMU']
