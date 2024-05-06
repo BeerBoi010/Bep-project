@@ -84,21 +84,3 @@ exp_annotations6 = expanded_matrices[4]
 exp_annotations7 = expanded_matrices[5]
 
 
-#print(exp_annotations5)
-
-print(len(exp_annotations6))
-
-# Plot the data for each participant
-for participant_index, expanded_matrix in enumerate(expanded_matrices):
-    plt.figure(figsize=(10, 5))
-    # Extract x-values (time) and y-values (labels) from expanded_matrix
-    x_values = [row[0] for row in expanded_matrix]
-    y_values = [row[1] for row in expanded_matrix]
-    # Plot the data with smaller marker size
-    plt.plot(x_values, y_values, marker='o', linestyle='-', markersize=2, label=f'Participant {participant_index + 2}')
-    plt.xlabel('Time')
-    plt.ylabel('Label')
-    plt.title('Interpolated Data')
-    plt.grid(True)
-    plt.legend()
-    plt.show()
