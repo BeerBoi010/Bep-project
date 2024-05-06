@@ -28,6 +28,9 @@ X_test_Mean = Mean_V2.Mean_test(test_amount, sampling_window, min_periods)
 Y_train_labels = labels_interpolation.expanded_matrices[:train_amount]
 Y_test_labels = labels_interpolation.expanded_matrices[test_amount:]
 
+print(Y_train_labels)
+print(Y_test_labels)
+
 
 # Create lists to store data and labels for each patient
 X_data_patients_train = []
@@ -87,3 +90,4 @@ for subject in X_test_RMS:
 combined_X_data_test = np.concatenate(X_data_patients_test)
 
 print(combined_X_data_test.shape)
+
