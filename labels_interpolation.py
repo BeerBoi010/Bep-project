@@ -83,4 +83,3 @@ exp_annotations5 = expanded_matrices[3]
 exp_annotations6 = expanded_matrices[4]
 exp_annotations7 = expanded_matrices[5]
 
-print(exp_annotations2)
