@@ -129,6 +129,29 @@ print(classification_report(y_train, y_train_pred))
 print("Classification Report of test data:")
 print(classification_report(y_test, y_test_pred))
 
+ # Create an empty list of size equal to the length of predictions or true labels
+element_numbers = list(range(len(y_test_pred)))
+
+# Plot for y_pred
+plt.figure(figsize=(12, 6))
+
+plt.subplot(1, 2, 1)  # 1 row, 2 columns, plot number 1
+plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
+plt.xlabel('Element Numbers')
+plt.ylabel('Predicted Labels')
+plt.title(f'Predicted Labels - {subject}')
+plt.legend()
+
+# Plot for y_test
+plt.subplot(1, 2, 2)  # 1 row, 2 columns, plot number 2
+plt.plot(element_numbers, y_test, label='True Labels', color='green')
+plt.xlabel('Element Numbers')
+plt.ylabel('True Labels')
+plt.title(f'True Labels - {subject}')
+plt.legend()
+
+plt.tight_layout()  # Adjust layout to prevent overlap
+plt.show()
 
 # Get feature importances
 importances = clf.feature_importances_
