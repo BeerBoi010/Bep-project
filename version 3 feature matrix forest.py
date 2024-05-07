@@ -1,3 +1,4 @@
+### Importing of necessary libraries ###############################################################################################
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
@@ -7,48 +8,80 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.tree import plot_tree
 
-#### Importing of necessary functions for algorithm  ###############################################
+#### Importing of necessary functions for algorithm  #############################################################################
 from Feature_Extraction import RMS_V2
-from  Feature_Extraction import Mean_V2
-import labels_interpolation
+from Feature_Extraction import Mean_V2
 from Feature_Extraction import  Slope_V2
 from Feature_Extraction import Max_V2
-from  Feature_Extraction import Min_V2
-from  Feature_Extraction import Standard_Deviation
+from Feature_Extraction import Min_V2
+from Feature_Extraction import Standard_Deviation
+from Random_forest import labels_interpolation
 
-acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
-rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 
-##### VARIABLES ##########################################################################################
+##### VARIABLES ######################################################################################################
 '''later toevoegen dat random wordt gekozen wie train en test is'''
 
 train_amount = 5
 sampling_window = 3
 min_periods = 1
 test_amount = train_amount
+'''' sampling windows with respective values'''
+sampling_window_RMS = 3
+sampling_window_min_max = 3
+sampling_window_mean = 3
+sampling_window_STD = 3
+sampling_window_slope = 3
+test_person = 2
+#test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
+
+#######################################################################################################################
+### Importing and naming of the datasets ##############################################################################
+
+''' Full datasets'''
+acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
+rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
+all_labels = labels_interpolation.expanded_matrices
+
+
+subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'drinking_HealthySubject4_Test',   
+        'drinking_HealthySubject5_Test', 'drinking_HealthySubject6_Test', 'drinking_HealthySubject7_Test']
+
+
+subjects.remove(f'drinking_HealthySubject{test_person}_Test')
+subjects_train = subjects
+subjects_test = [f'drinking_HealthySubject{test_person}_Test']
+print(subjects_test)
+
+test_labels = all_labels[test_person - 2]
+#print("test labels:",test_labels)
+
+all_labels.pop(test_person - 2)
+train_labels = all_labels
+#print("train labels:",train_labels)
+
 #################################################################################################################
-### Setting up the test and training sets and labels ############################################################
+### Setting up the test and training sets with labels ###########################################################
 
-X_train_RMS = RMS_V2.RMS_train(train_amount, sampling_window, min_periods)
-X_test_RMS = RMS_V2.RMS_test(test_amount, sampling_window, min_periods)
+X_train_RMS = RMS_V2.RMS_train(subjects_train, sampling_window_RMS, min_periods)
+X_test_RMS = RMS_V2.RMS_test(subjects_test, sampling_window_RMS, min_periods)
 
-X_train_Mean = Mean_V2.Mean_train(train_amount, sampling_window, min_periods)
-X_test_Mean = Mean_V2.Mean_test(test_amount, sampling_window, min_periods)
+X_train_Mean = Mean_V2.Mean_train(subjects_train, sampling_window_mean, min_periods)
+X_test_Mean = Mean_V2.Mean_test(subjects_test, sampling_window_mean, min_periods)
 
-X_train_Slope = Slope_V2.Slope_train(train_amount, sampling_window, min_periods)
-X_test_Slope = Slope_V2.Slope_test(test_amount, sampling_window, min_periods)
+X_train_Slope = Slope_V2.Slope_train(subjects_train, sampling_window_slope, min_periods)
+X_test_Slope = Slope_V2.Slope_test(subjects_test, sampling_window_slope, min_periods)
 
-X_train_Max = Max_V2.Max_train(train_amount, sampling_window, min_periods)
-X_test_Max = Max_V2.Max_test(test_amount, sampling_window, min_periods)
+X_train_Max = Max_V2.Max_train(subjects_train, sampling_window_min_max, min_periods)
+X_test_Max = Max_V2.Max_test(subjects_test, sampling_window_min_max, min_periods)
 
-X_train_Min = Min_V2.Min_train(train_amount, sampling_window, min_periods)
-X_test_Min = Min_V2.Min_test(test_amount, sampling_window, min_periods)
+X_train_Min = Min_V2.Min_train(subjects_train, sampling_window_min_max, min_periods)
+X_test_Min = Min_V2.Min_test(subjects_test, sampling_window_min_max, min_periods)
 
-X_train_STD = Standard_Deviation.STD_train(train_amount, sampling_window, min_periods)
-X_test_STD = Standard_Deviation.STD_test(test_amount, sampling_window, min_periods)
+X_train_STD = Standard_Deviation.STD_train(subjects_train, sampling_window_STD, min_periods)
+X_test_STD = Standard_Deviation.STD_test(subjects_test, sampling_window_STD, min_periods)
 
-Y_train_labels = labels_interpolation.expanded_matrices[:train_amount]
-Y_test_labels = labels_interpolation.expanded_matrices[test_amount:]
+Y_train_labels = train_labels
+Y_test_labels = test_labels
 
 
 labels_train = []
@@ -60,9 +93,7 @@ for item in Y_train_labels:
 labels_test = []
 
 for item in Y_test_labels:
-    for i in item:
-        labels_test.append(i[1])
-
+    labels_test.append(item[1])
 
 
 # Dictionary to map labels to numerical values
@@ -204,39 +235,34 @@ plt.title(f'True Labels - {subject}')
 plt.legend()
 
 plt.subplot(2, 4, 3)  # 1 row, 2 columns, plot number 3
-plt.plot(acc['drinking_HealthySubject7_Test']['hand_IMU'])
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
 plt.title(f'acceleration data hand_IMU - {subject}')
-plt.legend()
 
 plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
-plt.plot(acc['drinking_HealthySubject7_Test']['lowerarm_IMU'])
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
 plt.title(f'acceleration data lowerarm_IMU - {subject}')
-plt.legend()
 
 plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
-plt.plot(acc['drinking_HealthySubject7_Test']['upperarm_IMU'])
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
 plt.title(f'acceleration data upperarm_IMU - {subject}')
-plt.legend()
 
 plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
-plt.plot(acc['drinking_HealthySubject7_Test']['shoulder_IMU'])
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
 plt.title(f'acceleration data shoulder_IMU - {subject}')
-plt.legend()
 
 plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
-plt.plot(acc['drinking_HealthySubject7_Test']['sternum_IMU'])
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
 plt.title(f'acceleration data sternum_IMU - {subject}')
-plt.legend()
 
 plt.tight_layout()  # Adjust layout to prevent overlap
 plt.show()

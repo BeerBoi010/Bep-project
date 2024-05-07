@@ -22,7 +22,7 @@ def compute_slope(data, sampling_window, min_periods):
 def Slope_train(train_amount, sampling_window, min_periods):
     slope_data_all_patients = {}
 
-    for subject in subjects[:train_amount]:
+    for subject in train_amount:
         slope_data_patient = {}
         acc_data_patient = acc[subject]
         rot_data_patient = rot[subject]
@@ -46,7 +46,7 @@ def Slope_train(train_amount, sampling_window, min_periods):
 def Slope_test(test_amount, sampling_window, min_periods):
     slope_data_all_patients = {}
 
-    for subject in subjects[test_amount:]:
+    for subject in test_amount:
         slope_data_patient = {}
         acc_data_patient = acc[subject]
         rot_data_patient = rot[subject]

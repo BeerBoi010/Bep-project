@@ -8,7 +8,7 @@ import pandas as pd
 ####    Importing of necessary functions for algorithm  ###############################################
 import RMS_V2
 import Mean_V2
-import labels_interpolation
+import Random_forest.labels_interpolation as labels_interpolation
 
 ##### VARIABLES ##########################################################################################
 #later toevoegen dat random wordt gekozen wie train en test is 

@@ -29,7 +29,7 @@ def compute_STD(data, sampling_window,min_periods):
 def STD_train(train_amount, sampling_window, min_periods):
     STD_data_all_patients = {}
 
-    for subject in subjects[:train_amount]:
+    for subject in train_amount:
         STD_data_patient = {}
         acc_data_patient = acc[subject]
         rot_data_patient = rot[subject]
@@ -55,7 +55,7 @@ def STD_train(train_amount, sampling_window, min_periods):
 def STD_test(test_amount, sampling_window, min_periods):
     STD_data_all_patients = {}
 
-    for subject in subjects[test_amount:]:
+    for subject in test_amount:
         STD_data_patient = {}
         acc_data_patient = acc[subject]
         rot_data_patient = rot[subject]
@@ -101,4 +101,4 @@ def plot_STD_data(STD_data):
             plt.tight_layout()
             plt.show()
 
-print(STD_test(5,3,1))
+#print(STD_test(5,3,1))

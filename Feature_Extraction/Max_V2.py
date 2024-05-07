@@ -30,7 +30,7 @@ def Max_train(train_amount,sampling_window,min_periods):
     max_data_all_patients = {}
 
     # Iterate over each patient
-    for subject in subjects[:train_amount]:
+    for subject in train_amount:
 
         #calcluation of values for every imu sensor
         max_data_patient = {}
@@ -72,7 +72,7 @@ def Max_test(test_amount,sampling_window,min_periods):
     max_data_all_patients = {}
 
     # Iterate over each patient
-    for subject in subjects[test_amount:]:
+    for subject in test_amount:
 
         #calcluation of values for every imu sensor
         max_data_patient = {}
@@ -104,6 +104,6 @@ def Max_test(test_amount,sampling_window,min_periods):
     # Return the dictionary containing mean data for all patients
     return max_data_all_patients
 
-print(Max_train(5,3,1))
+#print(Max_train(5,3,1))
 
 
