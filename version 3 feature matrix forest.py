@@ -10,7 +10,7 @@ from sklearn.tree import plot_tree
 #### Importing of necessary functions for algorithm  ###############################################
 from Feature_Extraction import RMS_V2
 from  Feature_Extraction import Mean_V2
-import labels_interpolation
+from Random_forest import labels_interpolation
 from Feature_Extraction import  Slope_V2
 from Feature_Extraction import Max_V2
 from  Feature_Extraction import Min_V2
@@ -208,35 +208,35 @@ plt.plot(acc['drinking_HealthySubject7_Test']['hand_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
 plt.title(f'acceleration data hand_IMU - {subject}')
-plt.legend()
+
 
 plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
 plt.plot(acc['drinking_HealthySubject7_Test']['lowerarm_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
 plt.title(f'acceleration data lowerarm_IMU - {subject}')
-plt.legend()
+
 
 plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
 plt.plot(acc['drinking_HealthySubject7_Test']['upperarm_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
 plt.title(f'acceleration data upperarm_IMU - {subject}')
-plt.legend()
+
 
 plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
 plt.plot(acc['drinking_HealthySubject7_Test']['shoulder_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
 plt.title(f'acceleration data shoulder_IMU - {subject}')
-plt.legend()
+
 
 plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
 plt.plot(acc['drinking_HealthySubject7_Test']['sternum_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
 plt.title(f'acceleration data sternum_IMU - {subject}')
-plt.legend()
+
 
 plt.tight_layout()  # Adjust layout to prevent overlap
 plt.show()
