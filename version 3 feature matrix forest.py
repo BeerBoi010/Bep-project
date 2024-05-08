@@ -267,6 +267,15 @@ plt.title(f'sternum_IMU - {subject}')
 plt.tight_layout()  # Adjust layout to prevent overlap
 plt.show()
 
+plt.figure(figsize=(12, 6))
+
+plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+plt.xlabel('Element Numbers')
+plt.ylabel('Predicted Labels')
+plt.title(f'Predicted Labels vs acceleration data - {subject}')
+plt.legend()
+plt.show()
 # Get feature importances
 importances = clf.feature_importances_
 
