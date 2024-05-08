@@ -1,3 +1,7 @@
+#######changes######
+
+#introducing tanh to the model. 
+
 ### Importing of necessary libraries ###############################################################################################
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
@@ -31,7 +35,7 @@ sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
-test_person = 2
+test_person = 7
 #test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
 
 #######################################################################################################################
@@ -270,6 +274,7 @@ plt.show()
 # Get feature importances
 importances = clf.feature_importances_
 
+
 # Sort feature importances in descending order
 indices = np.argsort(importances)[::-1]
 
@@ -282,10 +287,10 @@ plt.xlabel("Feature Index")
 plt.ylabel("Feature Importance")
 plt.show()
 
-# Visualize one of the decision trees in the Random Forest
-plt.figure(figsize=(150, 10))
-plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
-plt.show()
+# # Visualize one of the decision trees in the Random Forest
+# plt.figure(figsize=(150, 10))
+# plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
+# plt.show()
 
 
 
