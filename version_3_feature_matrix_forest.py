@@ -238,35 +238,44 @@ plt.subplot(2, 4, 3)  # 1 row, 2 columns, plot number 3
 plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
-plt.title(f'acceleration data hand_IMU - {subject}')
+plt.title(f'hand_IMU - {subject}')
 
 plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
 plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
-plt.title(f'acceleration data lowerarm_IMU - {subject}')
+plt.title(f'lowerarm_IMU - {subject}')
 
 plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
 plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
-plt.title(f'acceleration data upperarm_IMU - {subject}')
+plt.title(f'upperarm_IMU - {subject}')
 
 plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
 plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
-plt.title(f'acceleration data shoulder_IMU - {subject}')
+plt.title(f'shoulder_IMU - {subject}')
 
 plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
 plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
-plt.title(f'acceleration data sternum_IMU - {subject}')
+plt.title(f'sternum_IMU - {subject}')
 
 plt.tight_layout()  # Adjust layout to prevent overlap
 plt.show()
 
+plt.figure(figsize=(12, 6))
+
+plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+plt.xlabel('Element Numbers')
+plt.ylabel('Predicted Labels')
+plt.title(f'Predicted Labels vs acceleration data - {subject}')
+plt.legend()
+plt.show()
 # Get feature importances
 importances = clf.feature_importances_
 

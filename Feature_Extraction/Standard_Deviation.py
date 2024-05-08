@@ -43,8 +43,8 @@ def STD_train(train_amount, sampling_window, min_periods):
 
             STD_acc = compute_STD(dataset_acc, sampling_window, min_periods)
             STD_rot = compute_STD(dataset_rot, sampling_window, min_periods)
-            STD_acc.fillna(method='bfill', inplace=True) # Fill NaN with the next valid value
-            STD_rot.fillna(method='bfill', inplace=True) # Fill NaN with the next valid value
+            STD_acc.bfill(inplace=True) # Fill NaN with the next valid value
+            STD_rot.bfill(inplace=True) # Fill NaN with the next valid value
 
             STD_data_patient[imu_location] = {'acc_STD': STD_acc, 'rot_STD': STD_rot}
 
@@ -69,8 +69,8 @@ def STD_test(test_amount, sampling_window, min_periods):
 
             STD_acc = compute_STD(dataset_acc, sampling_window, min_periods)
             STD_rot = compute_STD(dataset_rot, sampling_window, min_periods)
-            STD_acc.fillna(method='bfill', inplace=True) # Fill NaN with the next valid value
-            STD_rot.fillna(method='bfill', inplace=True) # Fill NaN with the next valid value
+            STD_acc.bfill(inplace=True) # Fill NaN with the next valid value
+            STD_rot.bfill(inplace=True) # Fill NaN with the next valid value
             
 
             STD_data_patient[imu_location] = {'acc_STD': STD_acc, 'rot_STD': STD_rot}
