@@ -7,6 +7,8 @@ import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.tree import plot_tree
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
 
 #### Importing of necessary functions for algorithm  #############################################################################
 from Feature_Extraction import RMS_V2
@@ -31,7 +33,7 @@ sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
-test_person = 7
+test_person = 6
 #test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
 
 #######################################################################################################################
@@ -283,6 +285,17 @@ importances = clf.feature_importances_
 # Sort feature importances in descending order
 indices = np.argsort(importances)[::-1]
 
+# Compute confusion matrix for test data
+conf_matrix = confusion_matrix(y_test, y_test_pred)
+
+# Plot confusion matrix
+plt.figure(figsize=(8, 6))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=label_mapping.keys(), yticklabels=label_mapping.keys())
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.title('Confusion Matrix for Test Data')
+plt.show()
+
 # Plot the feature importances
 plt.figure(figsize=(10, 6))
 plt.title("Feature Importances")
@@ -292,9 +305,7 @@ plt.xlabel("Feature Index")
 plt.ylabel("Feature Importance")
 plt.show()
 
-<<<<<<< HEAD:version 3 feature matrix forest.py
 # Visualize one of the decision trees in the Random Forest
-=======
 # # Visualize one of the decision trees in the Random Forest
 # plt.figure(figsize=(150, 10))
 # plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
