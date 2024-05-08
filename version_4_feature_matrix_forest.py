@@ -1,7 +1,3 @@
-#######changes######
-
-#introducing tanh to the model. 
-
 ### Importing of necessary libraries ###############################################################################################
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
@@ -13,12 +9,12 @@ import matplotlib.pyplot as plt
 from sklearn.tree import plot_tree
 
 #### Importing of necessary functions for algorithm  #############################################################################
-from Normalized_Feature_Extraction import RMS_V2
-from Normalized_Feature_Extraction import Mean_V2
-from Normalized_Feature_Extraction import  Slope_V2
-from Normalized_Feature_Extraction import Max_V2
-from Normalized_Feature_Extraction import Min_V2
-from Normalized_Feature_Extraction import Standard_Deviation
+from Feature_Extraction import RMS_V2
+from Feature_Extraction import Mean_V2
+from Feature_Extraction import  Slope_V2
+from Feature_Extraction import Max_V2
+from Feature_Extraction import Min_V2
+from Feature_Extraction import Standard_Deviation
 from Random_forest import labels_interpolation
 
 
@@ -35,41 +31,15 @@ sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
-test_person = 6
+test_person = 7
 #test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
 
 #######################################################################################################################
 ### Importing and naming of the datasets ##############################################################################
 
-def scale_imu_data_directly(data):
-    """
-    Scales all IMU data in a nested dictionary structure where each entry contains multiple
-    arrays representing different sensor data, scaling them directly to the range [-1, 1].
-    
-    Parameters:
-    data (dict): The input dictionary with multiple tests and sensor data in NumPy arrays.
-    
-    Returns:
-    dict: A new dictionary with the same structure, but with all arrays scaled to [-1, 1].
-    """
-    # Clone the dictionary structure to avoid modifying the original data
-    scaled_data = {test: {} for test in data}
-    
-    for test, sensors in data.items():
-        for sensor, array in sensors.items():
-            # Compute the minimum and maximum values of the array
-            min_val = np.min(array)
-            max_val = np.max(array)
-            # Apply the scaling transformation
-            scaled_array = -1 + 2 * (array - min_val) / (max_val - min_val)
-            scaled_data[test][sensor] = scaled_array
-    
-    return scaled_data
-
-
 ''' Full datasets'''
-acc = scale_imu_data_directly(np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item())
-rot = scale_imu_data_directly(np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item())
+acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
+rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 all_labels = labels_interpolation.expanded_matrices
 
 
@@ -268,35 +238,44 @@ plt.subplot(2, 4, 3)  # 1 row, 2 columns, plot number 3
 plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
-plt.title(f'acceleration data hand_IMU - {subject}')
+plt.title(f'hand_IMU - {subject}')
 
 plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
 plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
-plt.title(f'acceleration data lowerarm_IMU - {subject}')
+plt.title(f'lowerarm_IMU - {subject}')
 
 plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
 plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
-plt.title(f'acceleration data upperarm_IMU - {subject}')
+plt.title(f'upperarm_IMU - {subject}')
 
 plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
 plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
-plt.title(f'acceleration data shoulder_IMU - {subject}')
+plt.title(f'shoulder_IMU - {subject}')
 
 plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
 plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
-plt.title(f'acceleration data sternum_IMU - {subject}')
+plt.title(f'sternum_IMU - {subject}')
 
 plt.tight_layout()  # Adjust layout to prevent overlap
 plt.show()
 
+plt.figure(figsize=(12, 6))
+
+plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+plt.xlabel('Element Numbers')
+plt.ylabel('Predicted Labels')
+plt.title(f'Predicted Labels vs acceleration data - {subject}')
+plt.legend()
+plt.show()
 # Get feature importances
 importances = clf.feature_importances_
 
