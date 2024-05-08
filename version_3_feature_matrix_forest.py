@@ -296,7 +296,6 @@ plt.show()
 # Visualize one of the decision trees in the Random Forest
 =======
 # # Visualize one of the decision trees in the Random Forest
->>>>>>> 8843eb6e083b7d52645a031973ce85ef0e20a5af:version_3_feature_matrix_forest.py
 # plt.figure(figsize=(150, 10))
 # plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
 # plt.show()
