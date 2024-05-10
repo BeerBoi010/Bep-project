@@ -31,7 +31,7 @@ subjects = [f'drinking_HealthySubject{i+2}_Test' for i in range(6)]
 subjects.remove(f'drinking_HealthySubject{test_person}_Test')
 subjects_train = subjects
 subjects_test = [f'drinking_HealthySubject{test_person}_Test']
-print(subjects_test)
+#print(subjects_test)
 
 test_labels = all_labels[test_person - 2]
 all_labels.pop(test_person - 2)
@@ -43,7 +43,7 @@ label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
 
 y_train = [label_mapping[label] for label in labels_train]
 y_test = [label_mapping[label] for label in labels_test]
-print("y_test",len(y_test))
+#print("y_test",len(y_test))
 
 X_train_RMS = RMS_V2.RMS_train(subjects_train, sampling_window_RMS, min_periods)
 X_test_RMS = RMS_V2.RMS_test(subjects_test, sampling_window_RMS, min_periods)
@@ -84,15 +84,15 @@ def combine_features(subjects, rms, mean, slope, max_val, min_val, std_dev):
 X_train = combine_features(subjects_train, X_train_RMS, X_train_Mean, X_train_Slope, X_train_Max, X_train_Min, X_train_STD)
 X_test = combine_features(subjects_test, X_test_RMS, X_test_Mean, X_test_Slope, X_test_Max, X_test_Min, X_test_STD)
 
-print(X_train.shape)
-print(X_test.shape)
+#print(X_train.shape)
+#print(X_test.shape)
 
 ovr_clf = OneVsRestClassifier(SVC(kernel='linear', random_state=42))
 ovr_clf.fit(X_train, y_train)
 
 
 y_test_pred = ovr_clf.predict(X_test)
-print("y_test_pred",len(y_test_pred))
+#print("y_test_pred",len(y_test_pred))
 y_train_pred = ovr_clf.predict(X_train)
 
 
@@ -132,4 +132,4 @@ for i, location in enumerate(['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoul
     plt.title(f'{location} - Test Person {test_person}')
 
 plt.tight_layout()
-plt.show()
+#plt.show()

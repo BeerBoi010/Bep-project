@@ -20,6 +20,7 @@ sampling_window_slope = 3
 
 test_person = 7
 
+
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 all_labels = labels_interpolation.expanded_matrices
@@ -61,7 +62,7 @@ label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
 y_train = [label_mapping[label] for label in labels_train]
 y_test = [label_mapping[label] for label in labels_test]
 
-print("y_test",len(y_test))
+#print("y_test",len(y_test))
 
 def combine_features(subjects, rms, mean, slope, max_val, min_val, std_dev):
     combined_data_patients = []
@@ -83,8 +84,8 @@ def combine_features(subjects, rms, mean, slope, max_val, min_val, std_dev):
 X_train = combine_features(subjects_train, X_train_RMS, X_train_Mean, X_train_Slope, X_train_Max, X_train_Min, X_train_STD)
 X_test = combine_features(subjects_test, X_test_RMS, X_test_Mean, X_test_Slope, X_test_Max, X_test_Min, X_test_STD)
 
-print(X_train.shape)
-print(X_test.shape)
+#print(X_train.shape)
+#print(X_test.shape)
 
 ######
 
@@ -93,7 +94,7 @@ ovo_clf.fit(X_train, y_train)
 
 
 y_test_pred = ovo_clf.predict(X_test)
-print("y_test_pred",len(y_test_pred))
+#print("y_test_pred",len(y_test_pred))
 y_train_pred = ovo_clf.predict(X_train)
 
 
@@ -132,4 +133,4 @@ for i, location in enumerate(['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoul
     plt.title(f'{location} - Test Person {test_person}')
 
 plt.tight_layout()
-plt.show()
+#plt.show()
