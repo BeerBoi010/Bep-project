@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.svm import SVC
 from sklearn.multiclass import OneVsRestClassifier
-from sklearn.metrics import classification_report
+from sklearn.metrics import accuracy_score, classification_report
 import pandas as pd
 import matplotlib.pyplot as plt
 from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
