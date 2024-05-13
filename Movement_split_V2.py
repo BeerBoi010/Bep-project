@@ -45,11 +45,9 @@ label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
 
 # Convert labels to numerical values
 text2 = [label_mapping[label] for label in labels]
-
-labels_data = {'annotations', 'x', 'y', 'z'}
-
 data = pd.DataFrame(acc_2, text2)
 
+print(data[0])
 # plt.figure()
 # plt.plot(text2)
 # plt.show()
