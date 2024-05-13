@@ -3,13 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-###Description: Calculates mean-value for given data over a sampling window, working down and giving values for everor of the dataset.
-
-
-# #variables
-# sampling_window = 3
-# min_periods = 1
-
 # Define IMU locations
 imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']
 
@@ -21,9 +14,6 @@ subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'd
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 
-#######################################################
-
-############train####################
 
 def Max_train(train_amount,sampling_window,min_periods):
     ###function: calculate mean-values for all patients, with acc and gyr data.
@@ -64,9 +54,7 @@ def Max_train(train_amount,sampling_window,min_periods):
     # Return the dictionary containing RMS data for all patients
     return max_data_all_patients
 
-#############################################################################
 
-##########test############
 def Max_test(test_amount,sampling_window,min_periods):
     ###function: calculate mean-values for all patients, with acc and gyr data.
     max_data_all_patients = {}
@@ -104,6 +92,5 @@ def Max_test(test_amount,sampling_window,min_periods):
     # Return the dictionary containing mean data for all patients
     return max_data_all_patients
 
-#print(Max_train(5,3,1))
 
 
