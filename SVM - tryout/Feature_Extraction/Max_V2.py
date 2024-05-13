@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
 # Define IMU locations
 imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']
 
@@ -16,7 +15,7 @@ rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 
 
 def Max_train(train_amount,sampling_window,min_periods):
-    ###function: calculate mean-values for all patients, with acc and gyr data.
+    #function: calculate mean-values for all patients, with acc and gyr data.
     max_data_all_patients = {}
 
     # Iterate over each patient
@@ -29,7 +28,6 @@ def Max_train(train_amount,sampling_window,min_periods):
         
 
         # Combine accelerometer and gyroscope data horizontally
-        
         combined_data_patient = []
         for imu_location in imu_locations:
             acc_data_imu = acc_data_patient[imu_location]
@@ -40,7 +38,7 @@ def Max_train(train_amount,sampling_window,min_periods):
             dataset_rot = pd.DataFrame(rot_data_imu)
 
 
-            #The rolling mean calculates the rolling mean for the entire row
+            #The rolling mean calculates the rolling max for the entire row
             max_acc= dataset_acc.rolling(sampling_window, min_periods).max()
             max_rot= dataset_rot.rolling(sampling_window, min_periods).max()
 
@@ -91,6 +89,5 @@ def Max_test(test_amount,sampling_window,min_periods):
     
     # Return the dictionary containing mean data for all patients
     return max_data_all_patients
-
 
 
