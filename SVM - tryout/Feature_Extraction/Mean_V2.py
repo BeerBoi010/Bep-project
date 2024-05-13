@@ -5,11 +5,6 @@ import matplotlib.pyplot as plt
 
 ###Description: Calculates mean-value for given data over a sampling window, working down and giving values for everor of the dataset.
 
-
-# #variables
-# sampling_window = 3
-# min_periods = 1
-
 # Define IMU locations
 imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']
 

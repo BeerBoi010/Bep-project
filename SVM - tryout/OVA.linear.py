@@ -25,7 +25,11 @@ test_person = 2
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 all_labels = labels_interpolation.expanded_matrices
-print(all_labels)
+#print(all_labels)
+
+
+
+
 
 
 subjects = [f'drinking_HealthySubject{i+2}_Test' for i in range(6)]
@@ -33,6 +37,7 @@ subjects.remove(f'drinking_HealthySubject{test_person}_Test')
 subjects_train = subjects
 subjects_test = [f'drinking_HealthySubject{test_person}_Test']
 #print(subjects_test)
+#print(subjects_train)
 
 test_labels = all_labels[test_person - 2]
 all_labels.pop(test_person - 2)
@@ -44,7 +49,7 @@ label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
 
 y_train = [label_mapping[label] for label in labels_train]
 y_test = [label_mapping[label] for label in labels_test]
-#print("y_test",len(y_test))
+print("y_test",len(y_test))
 
 X_train_RMS = RMS_V2.RMS_train(subjects_train, sampling_window_RMS, min_periods)
 X_test_RMS = RMS_V2.RMS_test(subjects_test, sampling_window_RMS, min_periods)
@@ -97,11 +102,11 @@ y_test_pred = ovr_clf.predict(X_test)
 y_train_pred = ovr_clf.predict(X_train)
 
 
-print("Classification Report of train data:")
-print(classification_report(y_train, y_train_pred))
+#print("Classification Report of train data:")
+#print(classification_report(y_train, y_train_pred))
 
-print("\nClassification Report of test data:")
-print(classification_report(y_test, y_test_pred))
+#print("\nClassification Report of test data:")
+#print(classification_report(y_test, y_test_pred))
 
 
 element_numbers = list(range(len(y_test_pred)))
