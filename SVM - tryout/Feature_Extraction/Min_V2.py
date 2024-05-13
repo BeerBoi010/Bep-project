@@ -104,6 +104,6 @@ def Min_test(test_amount,sampling_window,min_periods):
     # Return the dictionary containing mean data for all patients
     return min_data_all_patients
 
-#print(Min_train(5,3,1))
+print(Min_train(5,3,1))
 
 
