@@ -1,3 +1,6 @@
+#### description:changing data so you dont input the whole dataset of a patient but their trial indivually
+
+
 ### Importing of necessary libraries ###############################################################################################
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
@@ -7,34 +10,27 @@ import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.tree import plot_tree
-from sklearn.metrics import confusion_matrix
-import seaborn as sns
 
 #### Importing of necessary functions for algorithm  #############################################################################
-from Feature_Extraction import RMS_V2
-from Feature_Extraction import Mean_V2
-from Feature_Extraction import  Slope_V2
-from Feature_Extraction import Max_V2
-from Feature_Extraction import Min_V2
-from Feature_Extraction import Standard_Deviation
+from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
 from Random_forest import labels_interpolation
 
 
 ##### VARIABLES ######################################################################################################
-'''later toevoegen dat random wordt gekozen wie train en test is'''
+# '''later toevoegen dat random wordt gekozen wie train en test is'''
 
-train_amount = 5
-sampling_window = 3
-min_periods = 1
-test_amount = train_amount
-'''' sampling windows with respective values'''
-sampling_window_RMS = 3
-sampling_window_min_max = 3
-sampling_window_mean = 3
-sampling_window_STD = 3
-sampling_window_slope = 3
-test_person = 6
-#test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
+# train_amount = 5
+# sampling_window = 3
+# min_periods = 1
+# test_amount = train_amount
+# '''' sampling windows with respective values'''
+# sampling_window_RMS = 3
+# sampling_window_min_max = 3
+# sampling_window_mean = 3
+# sampling_window_STD = 3
+# sampling_window_slope = 3
+# test_person = 2
+# #test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
 
 #######################################################################################################################
 ### Importing and naming of the datasets ##############################################################################
@@ -42,60 +38,67 @@ test_person = 6
 ''' Full datasets'''
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
+
+print(acc)
 all_labels = labels_interpolation.expanded_matrices
+
 
 
 subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'drinking_HealthySubject4_Test',   
         'drinking_HealthySubject5_Test', 'drinking_HealthySubject6_Test', 'drinking_HealthySubject7_Test']
 
+# ########must be  into movements(not per measurement!)######################
 
-subjects.remove(f'drinking_HealthySubject{test_person}_Test')
-subjects_train = subjects
-subjects_test = [f'drinking_HealthySubject{test_person}_Test']
-print(subjects_test)
+# subjects.remove(f'drinking_HealthySubject{test_person}_Test')
+# subjects_train = subjects
+# subjects_test = [f'drinking_HealthySubject{test_person}_Test']
+# #print(subjects_test)
 
-test_labels = all_labels[test_person - 2]
-#print("test labels:",test_labels)
+# test_labels = all_labels[test_person - 2]
+# #print("test labels:",test_labels)
 
-all_labels.pop(test_person - 2)
-train_labels = all_labels
-#print("train labels:",train_labels)
+# all_labels.pop(test_person - 2)
+# train_labels = all_labels
+# #print("train labels:",train_labels)
 
 #################################################################################################################
 ### Setting up the test and training sets with labels ###########################################################
 
-X_train_RMS = RMS_V2.RMS_train(subjects_train, sampling_window_RMS, min_periods)
-X_test_RMS = RMS_V2.RMS_test(subjects_test, sampling_window_RMS, min_periods)
 
-X_train_Mean = Mean_V2.Mean_train(subjects_train, sampling_window_mean, min_periods)
-X_test_Mean = Mean_V2.Mean_test(subjects_test, sampling_window_mean, min_periods)
+#only use X_rms,X_mean etc. no sampling window 
+# X_train_RMS = RMS_V2.RMS_train(subjects_train, sampling_window_RMS, min_periods)
+# X_test_RMS = RMS_V2.RMS_test(subjects_test, sampling_window_RMS, min_periods)
 
-X_train_Slope = Slope_V2.Slope_train(subjects_train, sampling_window_slope, min_periods)
-X_test_Slope = Slope_V2.Slope_test(subjects_test, sampling_window_slope, min_periods)
+# X_train_Mean = Mean_V2.Mean_train(subjects_train, sampling_window_mean, min_periods)
+# X_test_Mean = Mean_V2.Mean_test(subjects_test, sampling_window_mean, min_periods)
 
-X_train_Max = Max_V2.Max_train(subjects_train, sampling_window_min_max, min_periods)
-X_test_Max = Max_V2.Max_test(subjects_test, sampling_window_min_max, min_periods)
+# X_train_Slope = Slope_V2.Slope_train(subjects_train, sampling_window_slope, min_periods)
+# X_test_Slope = Slope_V2.Slope_test(subjects_test, sampling_window_slope, min_periods)
 
-X_train_Min = Min_V2.Min_train(subjects_train, sampling_window_min_max, min_periods)
-X_test_Min = Min_V2.Min_test(subjects_test, sampling_window_min_max, min_periods)
+# X_train_Max = Max_V2.Max_train(subjects_train, sampling_window_min_max, min_periods)
+# X_test_Max = Max_V2.Max_test(subjects_test, sampling_window_min_max, min_periods)
 
-X_train_STD = Standard_Deviation.STD_train(subjects_train, sampling_window_STD, min_periods)
-X_test_STD = Standard_Deviation.STD_test(subjects_test, sampling_window_STD, min_periods)
+# X_train_Min = Min_V2.Min_train(subjects_train, sampling_window_min_max, min_periods)
+# X_test_Min = Min_V2.Min_test(subjects_test, sampling_window_min_max, min_periods)
 
-Y_train_labels = train_labels
-Y_test_labels = test_labels
+# X_train_STD = Standard_Deviation.STD_train(subjects_train, sampling_window_STD, min_periods)
+# X_test_STD = Standard_Deviation.STD_test(subjects_test, sampling_window_STD, min_periods)
+
+# Y_train_labels = train_labels
+# Y_test_labels = test_labels
 
 
-labels_train = []
-###### for-loops to make annotation list for random forest method ###########################################################################
-for item in Y_train_labels:
-    for i in item:
-        labels_train.append(i[1])
+############################must be labels per movement#########################3
+# labels_train = []
+# ###### for-loops to make annotation list for random forest method ###########################################################################
+# for item in Y_train_labels:
+#     for i in item:
+#         labels_train.append(i[1])
 
-labels_test = []
+# labels_test = []
 
-for item in Y_test_labels:
-    labels_test.append(item[1])
+# for item in Y_test_labels:
+#     labels_test.append(item[1])
 
 
 # Dictionary to map labels to numerical values
@@ -105,7 +108,7 @@ label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
 y_train = [label_mapping[label] for label in labels_train]
 y_test = [label_mapping[label] for label in labels_test]
 
-print("y_test",len(y_test))
+#print("y_test",len(y_test))
 
 #### Create lists to store test and train data and labels for each patient #################################################################
 
@@ -145,7 +148,7 @@ for subject in X_train_RMS:
 '''Arrays for all combined train data'''
 combined_X_data_train = np.concatenate(X_data_patients_train)
 X_train = combined_X_data_train
-print(combined_X_data_train.shape)
+#print(combined_X_data_train.shape)
 #############################################################################################################################
 ###### Arrays for test data ################################################################################################
 
@@ -187,7 +190,7 @@ for subject in X_test_RMS:
 combined_X_data_test = np.concatenate(X_data_patients_test)
 X_test = combined_X_data_test
 
-print(combined_X_data_test.shape) ##test print to see the general shape
+#print(combined_X_data_test.shape) ##test print to see the general shape
 
 ########################################################################################################################
 ################ RANDOM FOREST CLASSIFIER ##############################################################################
@@ -199,7 +202,7 @@ clf.fit(X_train, y_train)
 
 # Make predictions 
 y_test_pred = clf.predict(X_test)
-print("y_test_pred",len(y_test_pred))
+#print("y_test_pred",len(y_test_pred))
 y_train_pred = clf.predict(X_train)
 
 # Display classification report  of training data
@@ -267,7 +270,7 @@ plt.ylabel('acceleration value')
 plt.title(f'sternum_IMU - {subject}')
 
 plt.tight_layout()  # Adjust layout to prevent overlap
-plt.show()
+#plt.show()
 
 plt.figure(figsize=(12, 6))
 
@@ -277,24 +280,13 @@ plt.xlabel('Element Numbers')
 plt.ylabel('Predicted Labels')
 plt.title(f'Predicted Labels vs acceleration data - {subject}')
 plt.legend()
-plt.show()
+#plt.show()
 # Get feature importances
 importances = clf.feature_importances_
 
 
 # Sort feature importances in descending order
 indices = np.argsort(importances)[::-1]
-
-# Compute confusion matrix for test data
-conf_matrix = confusion_matrix(y_test, y_test_pred)
-
-# Plot confusion matrix
-plt.figure(figsize=(8, 6))
-sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=label_mapping.keys(), yticklabels=label_mapping.keys())
-plt.xlabel('Predicted Labels')
-plt.ylabel('True Labels')
-plt.title('Confusion Matrix for Test Data')
-plt.show()
 
 # Plot the feature importances
 plt.figure(figsize=(10, 6))
@@ -303,7 +295,7 @@ plt.bar(range(X_train.shape[1]), importances[indices], align="center")
 plt.xticks(range(X_train.shape[1]), indices)
 plt.xlabel("Feature Index")
 plt.ylabel("Feature Importance")
-plt.show()
+#plt.show()
 
 # # Visualize one of the decision trees in the Random Forest
 # plt.figure(figsize=(150, 10))

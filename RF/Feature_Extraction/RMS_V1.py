@@ -5,11 +5,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 import sys
+import subprocess
 
-###Description: Code for calculating the mean over a certain window size. generates a matrix the same size as the input.
+subprocess.run(['python', 'Mean_code_v1.py'])
 
-#important variables:
-sampling_window = 3
+
+### Beschrijving: RMS-model that calculates the RMS-value for every row working down. 
+
 
 # Define IMU locations
 imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']
@@ -22,26 +24,33 @@ subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'd
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 
-
-
-#setting up the first testing data
 x_acceleration2 = acc['drinking_HealthySubject2_Test']['hand_IMU']
-x_accT = x_acceleration2.T
 
-#Setting up the mean
-dataset_sub2= pd.DataFrame(x_acceleration2)
+def RMS(data):
+    #square all separate values in the dataset
+    z = np.square(data)
 
-#The rolling mean calculates the rolling mean for the entire row
-roller= dataset_sub2.rolling(sampling_window, min_periods=3).mean()
+    #count the number of rows in the dataset
+    length = len(data[0])
+    print(length)
+    
+    #calculate RMS
+    values = np.sqrt(np.sum(z, axis = 1)/length)
+    
 
-#changing the meaned rows to numpy ant transposing them for the plot
-x = roller.to_numpy()
-mean_acc= x.T
+    #add to original dataset
+    rms = np.hstack((data, np.expand_dims(values, axis=1)))
 
-# print(x)
-# print(x_accT[0])
+    return values, rms
+
+print('original data: ', x_acceleration2)
+print('new dataset: ', RMS(x_acceleration2)[0])
+
+Trans = x_acceleration2[0].T
+
+
+
 
 plt.figure()
-plt.plot(x_accT[0])
-# plt.plot(x_plot[0])
+plt.plot(RMS(x_acceleration2)[1])
 plt.show()
