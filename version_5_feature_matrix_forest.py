@@ -34,8 +34,13 @@ sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
+<<<<<<< HEAD
+test_person = 3
+#test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
+=======
 #test_person = 5
 test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
+>>>>>>> c631f848c55c4cd7e9121757e6fe747d7d058585
 
 #######################################################################################################################
 ### Importing and naming of the datasets ##############################################################################
@@ -64,7 +69,7 @@ train_labels = all_labels
 
 important = Feature_importance.importances
 # Number of top important features to select
-n = 30
+n = 40
 # Get indices of top n important features
 top_indices = np.argsort(important)[::-1][:n]
 print(top_indices)
