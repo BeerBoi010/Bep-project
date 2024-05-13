@@ -13,7 +13,7 @@ acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 
 
-def Max_all_subjects(sampling_window,min_periods):
+def Max_all_subjects(sampling_window, min_periods):
     max_data_all_patients = {}
 
     for subject in subjects:
