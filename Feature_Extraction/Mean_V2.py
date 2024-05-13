@@ -39,7 +39,6 @@ def Mean_train(train_amount,sampling_window,min_periods):
         
 
         # Combine accelerometer and gyroscope data horizontally
-        
         combined_data_patient = []
         for imu_location in imu_locations:
             acc_data_imu = acc_data_patient[imu_location]

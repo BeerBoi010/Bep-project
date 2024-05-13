@@ -1,3 +1,6 @@
+#description: implemented features for the model to train on 
+
+
 ### Importing of necessary libraries ###############################################################################################
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier

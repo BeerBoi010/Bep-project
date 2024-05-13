@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 ###Description: Calculates mean-value for given data over a sampling window, working down and giving values for everor of the dataset.
 
+
 # #variables
 # sampling_window = 3
 # min_periods = 1
@@ -24,15 +25,15 @@ rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 
 ############train####################
 
-def Max_train(train_amount,sampling_window,min_periods):
+def Mean_train(train_amount,sampling_window,min_periods):
     ###function: calculate mean-values for all patients, with acc and gyr data.
-    max_data_all_patients = {}
+    mean_data_all_patients = {}
 
     # Iterate over each patient
     for subject in train_amount:
 
         #calcluation of values for every imu sensor
-        max_data_patient = {}
+        mean_data_patient = {}
         acc_data_patient = acc[subject]
         rot_data_patient = rot[subject]
         
@@ -50,31 +51,31 @@ def Max_train(train_amount,sampling_window,min_periods):
 
 
             #The rolling mean calculates the rolling mean for the entire row
-            max_acc= dataset_acc.rolling(sampling_window, min_periods).max()
-            max_rot= dataset_rot.rolling(sampling_window, min_periods).max()
+            mean_acc= dataset_acc.rolling(sampling_window, min_periods).mean()
+            mean_rot= dataset_rot.rolling(sampling_window, min_periods).mean()
 
 
             # Store RMS data for the current sensor location in the dictionary
-            max_data_patient[imu_location] = {'acc_max': max_acc, 'rot_max': max_rot}
+            mean_data_patient[imu_location] = {'acc_mean': mean_acc, 'rot_mean': mean_rot}
         
         # Store RMS data for the current patient in the dictionary
-        max_data_all_patients[subject] = max_data_patient
+        mean_data_all_patients[subject] = mean_data_patient
     
     # Return the dictionary containing RMS data for all patients
-    return max_data_all_patients
+    return mean_data_all_patients
 
 #############################################################################
 
 ##########test############
-def Max_test(test_amount,sampling_window,min_periods):
+def Mean_test(test_amount,sampling_window,min_periods):
     ###function: calculate mean-values for all patients, with acc and gyr data.
-    max_data_all_patients = {}
+    mean_data_all_patients = {}
 
     # Iterate over each patient
     for subject in test_amount:
 
         #calcluation of values for every imu sensor
-        max_data_patient = {}
+        mean_data_patient = {}
         acc_data_patient = acc[subject]
         rot_data_patient = rot[subject]
         
@@ -90,19 +91,19 @@ def Max_test(test_amount,sampling_window,min_periods):
 
 
             #The rolling mean calculates the rolling mean for the entire row
-            max_acc= dataset_acc.rolling(sampling_window, min_periods).max()
-            max_rot= dataset_rot.rolling(sampling_window, min_periods).max()
+            mean_acc= dataset_acc.rolling(sampling_window, min_periods).mean()
+            mean_rot= dataset_rot.rolling(sampling_window, min_periods).mean()
 
 
             # Store mean data for the current sensor location in the dictionary
-            max_data_patient[imu_location] = {'acc_max': max_acc, 'rot_max': max_rot}
+            mean_data_patient[imu_location] = {'acc_mean': mean_acc, 'rot_mean': mean_rot}
         
         # Store mean data for the current patient in the dictionary
-        max_data_all_patients[subject] = max_data_patient
+        mean_data_all_patients[subject] = mean_data_patient
     
     # Return the dictionary containing mean data for all patients
-    return max_data_all_patients
+    return mean_data_all_patients
 
-#print(Max_train(5,3,1))
+#print(Mean_train())
 
 
