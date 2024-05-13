@@ -67,6 +67,7 @@ important = Feature_importance.importances
 n = 30
 # Get indices of top n important features
 top_indices = np.argsort(important)[::-1][:n]
+print(top_indices)
 #################################################################################################################
 ### Setting up the test and training sets with labels ###########################################################
 
@@ -108,16 +109,8 @@ for item in Y_test_labels:
 label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
 
 # Convert labels to numerical values
-y_train1 = [label_mapping[label] for label in labels_train]
-y_test1 = [label_mapping[label] for label in labels_test]
-
-# Convert the selected indices to a list
-selected_indices_list = list(top_indices)
-
-y_train_selected = [y_train1[i] for i in selected_indices_list]
-y_test_selected = [y_test1[i] for i in selected_indices_list]
-y_train = np.array(y_train_selected)
-y_test = np.array(y_test_selected)
+y_train = [label_mapping[label] for label in labels_train]
+y_test = [label_mapping[label] for label in labels_test]
 
 
 #### Create lists to store test and train data and labels for each patient #################################################################
@@ -167,7 +160,7 @@ X_train = combined_X_data_train[:, top_indices]
 X_data_patients_test = []
 
 for subject in X_test_RMS:
-    print("test subject", subject)
+    #print("test subject", subject)
     # Initialize combined_data_patient for each patient
     combined_data_patient = []
 
@@ -199,7 +192,7 @@ for subject in X_test_RMS:
 combined_X_data_test = np.concatenate(X_data_patients_test)
 X_test = combined_X_data_test[:, top_indices]
 
-print(X_test) ##test print to see the general shape
+print('x_test shape is', X_test.shape) ##test print to see the general shape
 
 ########################################################################################################################
 ################ RANDOM FOREST CLASSIFIER ##############################################################################
@@ -291,6 +284,13 @@ plt.title(f'Predicted Labels vs acceleration data - {subject}')
 plt.legend()
 plt.show()
 
+# Get feature importances
+importances = clf.feature_importances_
+
+
+# Sort feature importances in descending order
+indices = np.argsort(importances)[::-1]
+
 # Compute confusion matrix for test data
 conf_matrix = confusion_matrix(y_test, y_test_pred)
 
@@ -300,6 +300,15 @@ sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=label_ma
 plt.xlabel('Predicted Labels')
 plt.ylabel('True Labels')
 plt.title('Confusion Matrix for Test Data')
+plt.show()
+
+# Plot the feature importances
+plt.figure(figsize=(10, 6))
+plt.title("Feature Importances")
+plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+plt.xticks(range(X_train.shape[1]), indices)
+plt.xlabel("Feature Index")
+plt.ylabel("Feature Importance")
 plt.show()
 
 

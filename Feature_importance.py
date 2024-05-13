@@ -183,11 +183,11 @@ top_indices = np.argsort(importances)[::-1][:n]
 # Select only top n important features from the original feature matrix
 X_train_selected = X_train[:, top_indices]
 
-# Optionally, you can print the indices of the selected features
-print("Indices of selected features:", top_indices)
+# # Optionally, you can print the indices of the selected features
+# print("Indices of selected features:", top_indices)
 
-# Shape of the new feature matrix
-print("Shape of new feature matrix:", X_train_selected.shape)
+# # Shape of the new feature matrix
+# print("Shape of new feature matrix:", X_train_selected.shape)
 
 
 
