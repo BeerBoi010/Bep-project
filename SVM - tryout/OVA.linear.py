@@ -9,7 +9,6 @@ from sklearn.metrics import accuracy_score, classification_report
 from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
 from Random_forest import labels_interpolation
 
-
 train_amount = 5
 sampling_window = 3
 min_periods = 1
@@ -23,10 +22,10 @@ sampling_window_slope = 3
 
 test_person = 2
 
-
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 all_labels = labels_interpolation.expanded_matrices
+print(all_labels)
 
 
 subjects = [f'drinking_HealthySubject{i+2}_Test' for i in range(6)]
