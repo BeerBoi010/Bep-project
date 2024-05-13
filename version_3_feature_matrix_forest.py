@@ -305,10 +305,6 @@ plt.xlabel("Feature Index")
 plt.ylabel("Feature Importance")
 plt.show()
 
-<<<<<<< HEAD
-# Visualize one of the decision trees in the Random Forest
-=======
->>>>>>> fb24f0ad4447a86343a526fef888d2f1d908bae8
 # # Visualize one of the decision trees in the Random Forest
 # plt.figure(figsize=(150, 10))
 # plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
