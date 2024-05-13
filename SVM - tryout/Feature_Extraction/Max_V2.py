@@ -1,18 +1,13 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
-# Define IMU locations
 imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']
 
-# Iterate over each subject and IMU location
 subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'drinking_HealthySubject4_Test',   
             'drinking_HealthySubject5_Test', 'drinking_HealthySubject6_Test', 'drinking_HealthySubject7_Test']
 
-# Load the .npy files
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
-
 
 def Max_train(train_amount,sampling_window,min_periods):
     #function: calculate mean-values for all patients, with acc and gyr data.

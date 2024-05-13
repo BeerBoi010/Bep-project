@@ -42,6 +42,9 @@ annotation6 = np.array([
 
 annotation_matrices = [annotation2, annotation3, annotation4, annotation5, annotation6, annotation7]
 
+#print(annotation2)
+
+
 # Define the sampling frequency
 sampling_frequency = 50  # Hz
 # Function to perform interpolation for a single row
@@ -83,4 +86,4 @@ exp_annotations5 = expanded_matrices[3]
 exp_annotations6 = expanded_matrices[4]
 exp_annotations7 = expanded_matrices[5]
 #print(expanded_matrices)
-#print(exp_annotations2)
+#print(exp_annotations5)
