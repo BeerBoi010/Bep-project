@@ -113,15 +113,6 @@ for subject in subjects:
     
 
     # Iterate over the rows for the current subject
-<<<<<<< HEAD
-    for number in range(num_rows):
-        for number in range(5):
-        x = X_train_Min[subject]['hand_IMU']["acc_min"][number]
-        y = X_train_Max[subject]['hand_IMU']["acc_max"][number]
-        correlation, _ = pearsonr(x, y)
-        corr.append(correlation)  # Append the correlation value to the list
-
-=======
     for sensor in imu_locations:
         
         for number in range(num_rows):
@@ -131,7 +122,6 @@ for subject in subjects:
             corr.append(correlation)  # Append the correlation value to the list
             
             # print(f'The correlation for {subject} for the {sensor} in column {number +1} are {correlation}')
->>>>>>> 2b3c4508c01b5c956004fcf4331ec39841873a86
     # Store the correlation list in the dictionary
     correlations[subject] = corr
 
