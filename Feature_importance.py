@@ -179,7 +179,8 @@ n = 180
 
 # Get indices of top n important features
 top_indices = np.argsort(importances)[::-1][:n]
-
+print(importances)
+print(top_indices)
 # Select only top n important features from the original feature matrix
 X_train_selected = X_train[:, top_indices]
 

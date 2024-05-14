@@ -81,7 +81,7 @@ important = [34, 8, 35, 5, 36, 33, 26, 20, 41, 31, 44, 56, 29, 62, 59, 30, 69, 2
 # Number of top important features to select
 n = 30
 # Get indices of top n important features
-top_indices = np.argsort(important)[::-1][:n]
+top_indices = important[:n]
 print(top_indices)
 #################################################################################################################
 ### Setting up the test and training sets with labels ###########################################################

@@ -38,7 +38,7 @@ sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
-test_person = 5
+test_person = 4
 #test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
 
 #######################################################################################################################
@@ -314,6 +314,9 @@ plt.show()
 # plt.figure(figsize=(150, 10))
 # plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
 # plt.show()
+
+
+
 # Calculate the number of unique classes in y_train
 num_classes = len(np.unique(y_train))
 
