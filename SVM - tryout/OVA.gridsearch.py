@@ -87,9 +87,9 @@ X_train = combine_features(subjects_train, X_train_RMS, X_train_Mean, X_train_Sl
 X_test = combine_features(subjects_test, X_test_RMS, X_test_Mean, X_test_Slope, X_test_Max, X_test_Min, X_test_STD)
 
 # Hyperparameter tuning with GridSearchCV
-param_grid = {'estimator__C': [0.1, 1, 10, 100],
-              'estimator__gamma': [1, 0.1, 0.01, 0.001],
-              'estimator__kernel': ['rbf', 'linear', 'poly', 'sigmoid']}
+param_grid = {'estimator__C': [0.1],
+              'estimator__gamma': [1],
+              'estimator__kernel': ['rbf', 'linear']}
 
 ovr_clf = OneVsRestClassifier(SVC(random_state=42))
 grid_search = GridSearchCV(ovr_clf, param_grid, cv=5)
@@ -107,39 +107,39 @@ y_test_pred = best_estimator.predict(X_test)
 y_train_pred = best_estimator.predict(X_train)
 
 # Classification reports
-print("Classification Report of train data:")
-print(classification_report(y_train, y_train_pred))
+# print("Classification Report of train data:")
+# print(classification_report(y_train, y_train_pred))
 
-print("\nClassification Report of test data:")
-print(classification_report(y_test, y_test_pred))
+# print("\nClassification Report of test data:")
+# print(classification_report(y_test, y_test_pred))
 
 # Print best parameters
 print("\nBest Parameters:", best_params)
 
-# Plotting
-element_numbers = list(range(len(y_test_pred)))
-plt.figure(figsize=(12, 6))
+# # Plotting
+# element_numbers = list(range(len(y_test_pred)))
+# plt.figure(figsize=(12, 6))
 
-plt.subplot(2, 4, 1)
-plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
-plt.xlabel('Element Numbers')
-plt.ylabel('Predicted Labels')
-plt.title('Predicted Labels')
-plt.legend()
+# plt.subplot(2, 4, 1)
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title('Predicted Labels')
+# plt.legend()
 
-plt.subplot(2, 4, 2)
-plt.plot(element_numbers, y_test, label='True Labels', color='green')
-plt.xlabel('Element Numbers')
-plt.ylabel('True Labels')
-plt.title('True Labels')
-plt.legend()
+# plt.subplot(2, 4, 2)
+# plt.plot(element_numbers, y_test, label='True Labels', color='green')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('True Labels')
+# plt.title('True Labels')
+# plt.legend()
 
-for i, location in enumerate(['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']):
-    plt.subplot(2, 4, 3 + i)
-    plt.plot(acc[f'drinking_HealthySubject{test_person}_Test'][location])
-    plt.xlabel('Element Number')
-    plt.ylabel('Acceleration Value')
-    plt.title(f'{location} - Test Person {test_person}')
+# for i, location in enumerate(['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']):
+#     plt.subplot(2, 4, 3 + i)
+#     plt.plot(acc[f'drinking_HealthySubject{test_person}_Test'][location])
+#     plt.xlabel('Element Number')
+#     plt.ylabel('Acceleration Value')
+#     plt.title(f'{location} - Test Person {test_person}')
 
-plt.tight_layout()
-plt.show()
+# plt.tight_layout()
+# plt.show()
