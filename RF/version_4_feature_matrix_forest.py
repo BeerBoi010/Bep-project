@@ -9,6 +9,8 @@ import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.tree import plot_tree
+from scipy.stats import pearsonr
+
 
 #### Importing of necessary functions for algorithm  #############################################################################
 from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
@@ -38,7 +40,6 @@ test_person = 2
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 
-print(acc)
 all_labels = labels_interpolation.expanded_matrices
 
 
@@ -83,6 +84,12 @@ X_test_STD = Standard_Deviation.STD_test(subjects_test, sampling_window_STD, min
 
 Y_train_labels = train_labels
 Y_test_labels = test_labels
+
+
+print(X_test_Slope["drinking_HealthySubject2_Test"]['hand_IMU']["acc_slope"][0])
+corr,_ = pearsonr(X_test_Slope["drinking_HealthySubject2_Test"]['hand_IMU']["acc_slope"][0],X_test_Max["drinking_HealthySubject2_Test"]['hand_IMU']["acc_max"][0])
+
+print("correlation between slope and max is:",corr)
 
 
 ############################must be labels per movement#########################3

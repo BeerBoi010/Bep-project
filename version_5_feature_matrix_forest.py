@@ -1,3 +1,6 @@
+#implemented which features are redunant and correlation
+
+
 ### Importing of necessary libraries ###############################################################################################
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
@@ -9,6 +12,7 @@ import matplotlib.pyplot as plt
 from sklearn.tree import plot_tree
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
+from scipy.stats import pearsonr
 
 #### Importing of necessary functions for algorithm  #############################################################################
 from Feature_Extraction import RMS_V2
@@ -34,8 +38,13 @@ sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
+<<<<<<< Updated upstream
 test_person = 3
 #test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
+=======
+#test_person = 5
+test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
+>>>>>>> Stashed changes
 
 #######################################################################################################################
 ### Importing and naming of the datasets ##############################################################################
@@ -91,6 +100,11 @@ X_test_STD = Standard_Deviation.STD_test(subjects_test, sampling_window_STD, min
 
 Y_train_labels = train_labels
 Y_test_labels = test_labels
+
+corr,_ = pearsonr(X_train_Slope,X_train_Max)
+
+print("correlation between slope and max is:",corr)
+
 
 
 labels_train = []
