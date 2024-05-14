@@ -114,7 +114,7 @@ for subject in subjects:
 
     # Iterate over the rows for the current subject
     for number in range(num_rows):
-        for number in range(num_imu sensor):
+        for number in range(5):
         x = X_train_Min[subject]['hand_IMU']["acc_min"][number]
         y = X_train_Max[subject]['hand_IMU']["acc_max"][number]
         correlation, _ = pearsonr(x, y)
