@@ -10,6 +10,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.tree import plot_tree
 from scipy.stats import pearsonr
+from sklearn.decomposition import PCA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 
 #### Importing of necessary functions for algorithm  #############################################################################
@@ -302,6 +304,46 @@ plt.xlabel("Feature Index")
 plt.ylabel("Feature Importance")
 plt.show()
 
+# Step 1: Apply LDA and PCA to the training data
+lda = LinearDiscriminantAnalysis(n_components=2)
+X_train_lda = lda.fit_transform(X_train, y_train)
+
+pca = PCA(n_components=2)
+X_train_pca = pca.fit_transform(X_train)
+
+# Step 2: Map Feature Importance to the Reduced Feature Space (if applicable)
+
+# Step 3: Calculate Feature Importance in the Reduced Feature Space (if applicable)
+# You can calculate feature importance scores based on the transformed features obtained from LDA or PCA.
+
+# Step 4: Visualize Feature Importance
+# You can plot the feature importance scores obtained from Random Forest, LDA, and PCA for comparison.
+
+# Plotting feature importance obtained from Random Forest
+plt.figure(figsize=(10, 6))
+plt.bar(range(X_train.shape[1]), importances[indices], align="center", label='Random Forest')
+plt.xticks(range(X_train.shape[1]), indices)
+plt.xlabel("Feature Index")
+plt.ylabel("Feature Importance")
+plt.legend()
+
+# Plotting feature importance obtained from LDA
+lda_feature_importance = [...]  # Calculate LDA feature importance scores
+plt.figure(figsize=(10, 6))
+plt.bar(range(X_train_lda.shape[1]), lda_feature_importance, align="center", color='orange', label='LDA')
+plt.xlabel("LDA Component Index")
+plt.ylabel("Feature Importance (LDA)")
+plt.legend()
+
+# Plotting feature importance obtained from PCA
+pca_feature_importance = [...]  # Calculate PCA feature importance scores
+plt.figure(figsize=(10, 6))
+plt.bar(range(X_train_pca.shape[1]), pca_feature_importance, align="center", color='green', label='PCA')
+plt.xlabel("PCA Component Index")
+plt.ylabel("Feature Importance (PCA)")
+plt.legend()
+
+plt.show()
 # # Visualize one of the decision trees in the Random Forest
 # plt.figure(figsize=(150, 10))
 # plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
