@@ -1,4 +1,4 @@
-#implemented which features are redunant and correlation
+#implemented which features are redunant and correlation, it runs only with the 30 best features
 
 
 ### Importing of necessary libraries ###############################################################################################
@@ -22,7 +22,7 @@ from Feature_Extraction import Max_V2
 from Feature_Extraction import Min_V2
 from Feature_Extraction import Standard_Deviation
 from Random_forest import labels_interpolation
-import Feature_importance
+#import Feature_importance
 
 
 ##### VARIABLES ######################################################################################################
@@ -66,7 +66,18 @@ all_labels.pop(test_person - 2)
 train_labels = all_labels
 #print("train labels:",train_labels)
 
-important = Feature_importance.importances
+important = [34, 8, 35, 5, 36, 33, 26, 20, 41, 31, 44, 56, 29, 62, 59, 30, 69, 23,
+        32, 37, 65, 0, 47, 11, 4, 134, 3, 39, 6, 116, 67, 24, 71, 54, 18, 60,
+        19, 42, 43, 25, 128, 113, 90, 70, 115, 7, 133, 68, 109, 77, 28, 127, 
+        83, 27, 61, 22, 92, 95, 101, 78, 72, 96, 55, 10, 80, 147, 91, 98, 38,
+        2, 21, 132, 66, 114, 126, 63, 97, 1, 152, 131, 170, 58, 40, 137, 130,
+        57, 45, 9, 46, 79, 73, 107, 76, 164, 111, 117, 118, 100, 166, 173, 
+        149, 172, 64, 154, 16, 74, 75, 119, 136, 165, 53, 148, 94, 135, 153, 
+        167, 82, 143, 129, 171, 155, 151, 146, 169, 110, 112, 14, 99, 108, 
+        17, 163, 93, 15, 125, 138, 162, 145, 168, 81, 103, 52, 89, 12, 177, 
+        150, 142, 144, 50, 179, 13, 140, 105, 104, 102, 48, 51, 175, 174, 141, 
+        106, 139, 123, 159, 176, 178, 161, 124, 85, 88, 49, 120, 84, 160, 86, 
+        122, 121, 157, 156, 87, 158]
 # Number of top important features to select
 n = 30
 # Get indices of top n important features
@@ -95,12 +106,6 @@ X_test_STD = Standard_Deviation.STD_test(subjects_test, sampling_window_STD, min
 
 Y_train_labels = train_labels
 Y_test_labels = test_labels
-
-corr,_ = pearsonr(X_train_Slope,X_train_Max)
-
-print("correlation between slope and max is:",corr)
-
-
 
 labels_train = []
 ###### for-loops to make annotation list for random forest method ###########################################################################

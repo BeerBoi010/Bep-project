@@ -175,7 +175,7 @@ clf.fit(X_train, y_train)
 # Get feature importances
 importances = clf.feature_importances_
 # Number of top important features to select
-n = 30
+n = 180
 
 # Get indices of top n important features
 top_indices = np.argsort(importances)[::-1][:n]
@@ -184,31 +184,23 @@ top_indices = np.argsort(importances)[::-1][:n]
 X_train_selected = X_train[:, top_indices]
 
 # # Optionally, you can print the indices of the selected features
-# print("Indices of selected features:", top_indices)
+print("Indices of selected features:", top_indices)
 
-# # Shape of the new feature matrix
-# print("Shape of new feature matrix:", X_train_selected.shape)
-
-
-
-# Original feature numbers (0 - 179) are preserved.
-
-# # Sort feature importances in descending order
-# indices = np.argsort(importances)[::-1]
-
-# # Plot the feature importances
-# plt.figure(figsize=(10, 6))
-# plt.title("Feature Importances")
-# plt.bar(range(X_train.shape[1]), importances[indices], align="center")
-# plt.xticks(range(X_train.shape[1]), indices)
-# plt.xlabel("Feature Index")
-# plt.ylabel("Feature Importance")
-# plt.show()
-
-# # Visualize one of the decision trees in the Random Forest
-# plt.figure(figsize=(150, 10))
-# plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
-# plt.show()
+# Shape of the new feature matrix
+print("Shape of new feature matrix:", X_train_selected.shape)
 
 
 
+#Original feature numbers (0 - 179) are preserved.
+
+# Sort feature importances in descending order
+indices = np.argsort(importances)[::-1]
+
+# Plot the feature importances
+plt.figure(figsize=(10, 6))
+plt.title("Feature Importances")
+plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+plt.xticks(range(X_train.shape[1]), indices)
+plt.xlabel("Feature Index")
+plt.ylabel("Feature Importance")
+plt.show()
