@@ -1,5 +1,4 @@
-#### description:changing data so you dont input the whole dataset of a patient but their trial indivually
-
+#### description:changing data so you dont input the whole dataset of a patient but their trial indivually/ testing for different window sizes
 
 ### Importing of necessary libraries ###############################################################################################
 import numpy as np
@@ -19,18 +18,18 @@ from Random_forest import labels_interpolation
 ##### VARIABLES ######################################################################################################
 # '''later toevoegen dat random wordt gekozen wie train en test is'''
 
-# train_amount = 5
-# sampling_window = 3
-# min_periods = 1
-# test_amount = train_amount
-# '''' sampling windows with respective values'''
-# sampling_window_RMS = 3
-# sampling_window_min_max = 3
-# sampling_window_mean = 3
-# sampling_window_STD = 3
-# sampling_window_slope = 3
-# test_person = 2
-# #test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
+train_amount = 5
+sampling_window = 3
+min_periods = 1
+test_amount = train_amount
+'''' sampling windows with respective values'''
+sampling_window_RMS = 3
+sampling_window_min_max = 3
+sampling_window_mean = 3
+sampling_window_STD = 3
+sampling_window_slope = 3
+test_person = 2
+#test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
 
 #######################################################################################################################
 ### Importing and naming of the datasets ##############################################################################
@@ -49,56 +48,54 @@ subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'd
 
 # ########must be  into movements(not per measurement!)######################
 
-# subjects.remove(f'drinking_HealthySubject{test_person}_Test')
-# subjects_train = subjects
-# subjects_test = [f'drinking_HealthySubject{test_person}_Test']
-# #print(subjects_test)
+subjects.remove(f'drinking_HealthySubject{test_person}_Test')
+subjects_train = subjects
+subjects_test = [f'drinking_HealthySubject{test_person}_Test']
+#print(subjects_test)
 
-# test_labels = all_labels[test_person - 2]
-# #print("test labels:",test_labels)
+test_labels = all_labels[test_person - 2]
+#print("test labels:",test_labels)
 
-# all_labels.pop(test_person - 2)
-# train_labels = all_labels
-# #print("train labels:",train_labels)
+all_labels.pop(test_person - 2)
+train_labels = all_labels
+#print("train labels:",train_labels)
 
 #################################################################################################################
 ### Setting up the test and training sets with labels ###########################################################
 
+X_train_RMS = RMS_V2.RMS_train(subjects_train, sampling_window_RMS, min_periods)
+X_test_RMS = RMS_V2.RMS_test(subjects_test, sampling_window_RMS, min_periods)
 
-#only use X_rms,X_mean etc. no sampling window 
-# X_train_RMS = RMS_V2.RMS_train(subjects_train, sampling_window_RMS, min_periods)
-# X_test_RMS = RMS_V2.RMS_test(subjects_test, sampling_window_RMS, min_periods)
+X_train_Mean = Mean_V2.Mean_train(subjects_train, sampling_window_mean, min_periods)
+X_test_Mean = Mean_V2.Mean_test(subjects_test, sampling_window_mean, min_periods)
 
-# X_train_Mean = Mean_V2.Mean_train(subjects_train, sampling_window_mean, min_periods)
-# X_test_Mean = Mean_V2.Mean_test(subjects_test, sampling_window_mean, min_periods)
+X_train_Slope = Slope_V2.Slope_train(subjects_train, sampling_window_slope, min_periods)
+X_test_Slope = Slope_V2.Slope_test(subjects_test, sampling_window_slope, min_periods)
 
-# X_train_Slope = Slope_V2.Slope_train(subjects_train, sampling_window_slope, min_periods)
-# X_test_Slope = Slope_V2.Slope_test(subjects_test, sampling_window_slope, min_periods)
+X_train_Max = Max_V2.Max_train(subjects_train, sampling_window_min_max, min_periods)
+X_test_Max = Max_V2.Max_test(subjects_test, sampling_window_min_max, min_periods)
 
-# X_train_Max = Max_V2.Max_train(subjects_train, sampling_window_min_max, min_periods)
-# X_test_Max = Max_V2.Max_test(subjects_test, sampling_window_min_max, min_periods)
+X_train_Min = Min_V2.Min_train(subjects_train, sampling_window_min_max, min_periods)
+X_test_Min = Min_V2.Min_test(subjects_test, sampling_window_min_max, min_periods)
 
-# X_train_Min = Min_V2.Min_train(subjects_train, sampling_window_min_max, min_periods)
-# X_test_Min = Min_V2.Min_test(subjects_test, sampling_window_min_max, min_periods)
+X_train_STD = Standard_Deviation.STD_train(subjects_train, sampling_window_STD, min_periods)
+X_test_STD = Standard_Deviation.STD_test(subjects_test, sampling_window_STD, min_periods)
 
-# X_train_STD = Standard_Deviation.STD_train(subjects_train, sampling_window_STD, min_periods)
-# X_test_STD = Standard_Deviation.STD_test(subjects_test, sampling_window_STD, min_periods)
-
-# Y_train_labels = train_labels
-# Y_test_labels = test_labels
+Y_train_labels = train_labels
+Y_test_labels = test_labels
 
 
 ############################must be labels per movement#########################3
-# labels_train = []
-# ###### for-loops to make annotation list for random forest method ###########################################################################
-# for item in Y_train_labels:
-#     for i in item:
-#         labels_train.append(i[1])
+labels_train = []
+###### for-loops to make annotation list for random forest method ###########################################################################
+for item in Y_train_labels:
+    for i in item:
+        labels_train.append(i[1])
 
-# labels_test = []
+labels_test = []
 
-# for item in Y_test_labels:
-#     labels_test.append(item[1])
+for item in Y_test_labels:
+    labels_test.append(item[1])
 
 
 # Dictionary to map labels to numerical values
