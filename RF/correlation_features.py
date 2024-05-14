@@ -116,8 +116,8 @@ for subject in subjects:
     for sensor in imu_locations:
         
         for number in range(num_rows):
-            x = X_train_Mean[subject][sensor]["acc_mean"][number]
-            y = X_train_RMS[subject][sensor]["acc_rms"][number]
+            x = X_train_Min[subject][sensor]["acc_min"][number]
+            y = X_train_Max[subject][sensor]["acc_max"][number]
             correlation, _ = pearsonr(x, y)
             corr.append(correlation)  # Append the correlation value to the list
             
