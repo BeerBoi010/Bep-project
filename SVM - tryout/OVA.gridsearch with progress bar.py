@@ -6,7 +6,7 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import GridSearchCV
 from tqdm import tqdm
-from sklearn.model_selection import train_test_split
+import time
 
 from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
 from Random_forest import labels_interpolation
@@ -95,11 +95,19 @@ param_grid = {'estimator__C': [0.1, 1, 10, 100],
 ovr_clf = OneVsRestClassifier(SVC(random_state=42))
 grid_search = GridSearchCV(ovr_clf, param_grid, cv=5)
 
-# Wrap the fit method with tqdm to show progress bar
-with tqdm(total=len(param_grid['estimator__C']) * len(param_grid['estimator__gamma']) * len(param_grid['estimator__kernel']) * 5) as pbar:
-    for params in tqdm(grid_search.param_grid, total=len(param_grid['estimator__C']) * len(param_grid['estimator__gamma']) * len(param_grid['estimator__kernel']) * 5):
+# Wrapping the GridSearchCV fitting process with tqdm
+total_iterations = len(param_grid['estimator__C']) * len(param_grid['estimator__gamma']) * len(param_grid['estimator__kernel']) * 5
+
+start_time = time.time()
+
+with tqdm(total=total_iterations, desc="Grid Search Progress") as pbar:
+    for params in tqdm(grid_search.param_grid, total=total_iterations, desc="Grid Search Progress", leave=False):
         grid_search.fit(X_train, y_train)
-        pbar.update()
+        pbar.update(1)
+        
+end_time = time.time()
+elapsed_time = end_time - start_time
+print(f"\nTotal Time Taken: {elapsed_time:.2f} seconds")
 
 best_params = grid_search.best_params_
 best_estimator = grid_search.best_estimator_
