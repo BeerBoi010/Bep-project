@@ -88,8 +88,8 @@ X_train = combine_features(subjects_train, X_train_RMS, X_train_Mean, X_train_Sl
 X_test = combine_features(subjects_test, X_test_RMS, X_test_Mean, X_test_Slope, X_test_Max, X_test_Min, X_test_STD)
 
 # Hyperparameter tuning with GridSearchCV
-param_grid = {'estimator__C': [0.1, 1, 10, 100],
-              'estimator__gamma': [1, 0.1, 0.01, 0.001],
+param_grid = {'estimator__C': [0.1],
+              'estimator__gamma': [0.01],
               'estimator__kernel': ['rbf', 'linear']}
 
 ovr_clf = OneVsRestClassifier(SVC(random_state=42))

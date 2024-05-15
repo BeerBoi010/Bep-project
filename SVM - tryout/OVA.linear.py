@@ -99,11 +99,11 @@ y_test_pred = ovr_clf.predict(X_test)
 y_train_pred = ovr_clf.predict(X_train)
 
 
-#print("Classification Report of train data:")
-#print(classification_report(y_train, y_train_pred))
+print("Classification Report of train data:")
+print(classification_report(y_train, y_train_pred))
 
-#print("\nClassification Report of test data:")
-#print(classification_report(y_test, y_test_pred))
+print("\nClassification Report of test data:")
+print(classification_report(y_test, y_test_pred))
 
 
 element_numbers = list(range(len(y_test_pred)))
