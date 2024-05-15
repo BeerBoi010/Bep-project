@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 from sklearn.tree import plot_tree
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.decomposition import PCA
 
 #### Importing of necessary functions for algorithm  #############################################################################
 from Feature_Extraction import RMS_V2
@@ -36,7 +38,7 @@ sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
-test_person = 3
+test_person = 4
 #test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
 
 #######################################################################################################################
@@ -315,3 +317,61 @@ plt.show()
 
 
 
+# Calculate the number of unique classes in y_train
+num_classes = len(np.unique(y_train))
+
+# Set n_components for LDA
+n_components_lda = min(num_classes - 1, X_train.shape[1])  # Ensure n_components is <= min(num_classes - 1, num_features)
+
+# Fit LDA
+lda = LinearDiscriminantAnalysis(n_components=n_components_lda)
+X_train_lda = lda.fit_transform(X_train, y_train)
+X_test_lda = lda.transform(X_test)
+
+# Fit PCA
+pca = PCA(n_components=None)  # Set n_components=None to keep all components
+X_train_pca = pca.fit_transform(X_train)
+X_test_pca = pca.transform(X_test)
+
+# Train Random Forest classifier on LDA-transformed data
+clf_lda = RandomForestClassifier(n_estimators=100, random_state=42)
+clf_lda.fit(X_train_lda, y_train)
+y_test_pred_lda = clf_lda.predict(X_test_lda)
+
+# Train Random Forest classifier on PCA-transformed data
+clf_pca = RandomForestClassifier(n_estimators=100, random_state=42)
+clf_pca.fit(X_train_pca, y_train)
+y_test_pred_pca = clf_pca.predict(X_test_pca)
+
+# Display classification report of test data for LDA
+print("Classification Report of test data for LDA:")
+print(classification_report(y_test, y_test_pred_lda))
+
+# Display classification report of test data for PCA with zero_division parameter set
+print("Classification Report of test data for PCA:")
+print(classification_report(y_test, y_test_pred_pca, zero_division=1))
+
+
+# Get feature importances from LDA and PCA
+lda_feature_importance = np.abs(lda.coef_[0])  # Importance of features in LDA space
+pca_feature_importance = np.abs(pca.components_[0])  # Importance of features in PCA space
+
+# Get the number of input features
+n_features_lda = lda.n_features_in_
+
+# Plot the feature importances obtained from LDA
+plt.figure(figsize=(10, 6))
+plt.bar(range(n_features_lda), lda_feature_importance, align="center", color='orange', label='LDA')
+plt.xlabel("Feature Index")
+plt.ylabel("Feature Importance (LDA)")
+plt.legend()
+plt.show()
+
+
+# Plot the feature importances obtained from PCA
+plt.figure(figsize=(10, 6))
+plt.bar(range(X_train_pca.shape[1]), pca_feature_importance, align="center", color='green', label='PCA')
+plt.xlabel("PCA Component Index")
+plt.ylabel("Feature Importance (PCA)")
+plt.legend()
+plt.show()
