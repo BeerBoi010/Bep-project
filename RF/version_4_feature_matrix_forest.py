@@ -1,4 +1,4 @@
-#### description: implemented lda
+#### description: implemented lda and correlation
 
 ### Importing of necessary libraries ###############################################################################################
 import numpy as np

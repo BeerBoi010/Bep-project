@@ -1,4 +1,4 @@
-#description: implemented features for the model to train on 
+#description: implemented features for the model to train on and confusion matrix
 
 
 ### Importing of necessary libraries ###############################################################################################
