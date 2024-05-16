@@ -1,5 +1,7 @@
-#implemented which features are redunant and correlation, it runs only with the 30 best features
+#######
 
+######### I5mplemented which features are redunant and correlation, it runs only with the 30 best features
+######### Added visualisation plots for Colloquium 2
 
 ### Importing of necessary libraries ###############################################################################################
 import numpy as np
@@ -238,67 +240,66 @@ element_numbers = list(range(len(y_test_pred)))
 '''Below plots are made to visualize what the Random classifier has done and how it has performed'''
 
 # Plot for y_pred
-plt.figure(figsize=(12, 6))
+# plt.figure(figsize=(12, 6))
 
-plt.subplot(2, 4, 1)  # 1 row, 2 columns, plot number 1
-plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
-plt.xlabel('Element Numbers')
-plt.ylabel('Predicted Labels')
-plt.title(f'Predicted Labels - {subject}')
-plt.legend()
+# plt.subplot(2, 4, 1)  # 1 row, 2 columns, plot number 1
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title(f'Predicted Labels - {subject}')
+# plt.legend()
 
 
-plt.subplot(2, 4, 2)  # 1 row, 2 columns, plot number 2
-plt.plot(element_numbers, y_test, label='True Labels', color='green')
-plt.xlabel('Element Numbers')
-plt.ylabel('True Labels')
-plt.title(f'True Labels - {subject}')
-plt.legend()
+# plt.subplot(2, 4, 2)  # 1 row, 2 columns, plot number 2
+# plt.plot(element_numbers, y_test, label='True Labels', color='green')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('True Labels')
+# plt.title(f'True Labels - {subject}')
+# plt.legend()
 
-plt.subplot(2, 4, 3)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'hand_IMU - {subject}')
+# plt.subplot(2, 4, 3)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'hand_IMU - {subject}')
 
-plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'lowerarm_IMU - {subject}')
+# plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'lowerarm_IMU - {subject}')
 
-plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'upperarm_IMU - {subject}')
+# plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'upperarm_IMU - {subject}')
 
-plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'shoulder_IMU - {subject}')
+# plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'shoulder_IMU - {subject}')
 
-plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'sternum_IMU - {subject}')
+# plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'sternum_IMU - {subject}')
 
-plt.tight_layout()  # Adjust layout to prevent overlap
-plt.show()
+# plt.tight_layout()  # Adjust layout to prevent overlap
+# plt.show()
 
-plt.figure(figsize=(12, 6))
+# plt.figure(figsize=(12, 6))
 
-plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
-plt.xlabel('Element Numbers')
-plt.ylabel('Predicted Labels')
-plt.title(f'Predicted Labels vs acceleration data - {subject}')
-plt.legend()
-plt.show()
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title(f'Predicted Labels vs acceleration data - {subject}')
+# plt.legend()
+# plt.show()
 
-# Get feature importances
 importances = clf.feature_importances_
 
 
@@ -315,15 +316,42 @@ plt.xlabel('Predicted Labels')
 plt.ylabel('True Labels')
 plt.title('Confusion Matrix for Test Data')
 plt.show()
+############################## NEW: ADDED PLOT FOR PRESENTATION ###################################### 
+yticks = [0,1,2,3]
+yticklabels = ['N','A', 'B', 'C']
+plt.figure(figsize=(12, 8))
 
-# Plot the feature importances
-plt.figure(figsize=(10, 6))
-plt.title("Feature Importances")
-plt.bar(range(X_train.shape[1]), importances[indices], align="center")
-plt.xticks(range(X_train.shape[1]), indices)
-plt.xlabel("Feature Index")
-plt.ylabel("Feature Importance")
+plt.subplot(1, 2, 1)  # 1 row, 2 columns, plot number 1
+plt.title(f'Plot of True and Predicted labels')
+plt.plot(element_numbers, y_test_pred, label='Predictions')
+plt.plot(element_numbers, y_test, label='True Labels')
+plt.yticks(yticks, yticklabels)
+plt.xlabel('Element number')
+plt.ylabel('Movement steps')
+plt.legend()
+plt.plot(y_test_pred)
+
+
+plt.subplot(1, 2, 2)  # 1 row, 2 columns, plot number 2, acceleration of hand imu
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+plt.xlabel('Element number')
+plt.ylabel('acceleration value')
+plt.title(f'hand_IMU - {subject}')
+
 plt.show()
+
+
+
+######################################################################################################
+# Get feature importances
+# # Plot the feature importances
+# plt.figure(figsize=(10, 6))
+# plt.title("Feature Importances")
+# plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+# plt.xticks(range(X_train.shape[1]), indices)
+# plt.xlabel("Feature Index")
+# plt.ylabel("Feature Importance")
+# plt.show()
 
 
 # # Visualize one of the decision trees in the Random Forest
