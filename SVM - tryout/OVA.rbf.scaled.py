@@ -136,4 +136,4 @@ for i, location in enumerate(['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoul
     plt.title(f'{location} - Test Person {test_person}')
 
 plt.tight_layout()
-#plt.show()
+plt.show()
