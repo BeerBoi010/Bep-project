@@ -309,14 +309,24 @@ indices = np.argsort(importances)[::-1]
 # Compute confusion matrix for test data
 conf_matrix = confusion_matrix(y_test, y_test_pred)
 
+############################## NEW: ADDED PLOT FOR PRESENTATION ###################################### 
+# label maps for confusion matrix
+label_mapping = {0: 'N', 1: 'A', 2: 'B', 3: 'C'}
+
+
 # Plot confusion matrix
+print("Confusion Matrix:\n", conf_matrix)
 plt.figure(figsize=(8, 6))
-sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=label_mapping.keys(), yticklabels=label_mapping.keys())
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
+            xticklabels=[label_mapping[key] for key in label_mapping.keys()],
+            yticklabels=[label_mapping[key] for key in label_mapping.keys()])
 plt.xlabel('Predicted Labels')
 plt.ylabel('True Labels')
-plt.title('Confusion Matrix for Test Data')
+plt.title(f'Confusion Matrix for {subject}')
 plt.show()
-############################## NEW: ADDED PLOT FOR PRESENTATION ###################################### 
+
+
+
 
 # little code setup to edit the ylabels for predicted true plots
 yticks = [0,1,2,3]
