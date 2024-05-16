@@ -317,41 +317,47 @@ plt.ylabel('True Labels')
 plt.title('Confusion Matrix for Test Data')
 plt.show()
 ############################## NEW: ADDED PLOT FOR PRESENTATION ###################################### 
+
+# little code setup to edit the ylabels for predicted true plots
 yticks = [0,1,2,3]
 yticklabels = ['N','A', 'B', 'C']
+
 plt.figure(figsize=(12, 8))
 
-plt.subplot(1, 2, 1)  # 1 row, 2 columns, plot number 1
-plt.title(f'Plot of True and Predicted labels')
+plt.subplot(2, 2, 1)  # 1 row, 2 columns, plot number 1
+plt.title(f'Plot of Predicted labels for person {subject}')
 plt.plot(element_numbers, y_test_pred, label='Predictions')
-plt.plot(element_numbers, y_test, label='True Labels')
 plt.yticks(yticks, yticklabels)
 plt.xlabel('Element number')
 plt.ylabel('Movement steps')
 plt.legend()
-plt.plot(y_test_pred)
 
+plt.subplot(2, 2, 2)  # 1 row, 2 columns, plot number 1
+plt.title(f'Plot of True labels for person {subject}')
+plt.plot(element_numbers, y_test, color = 'orange',  label='True Labels')
+plt.yticks(yticks, yticklabels)
+plt.xlabel('Element number')
+plt.ylabel('Movement steps')
+plt.legend()
 
-plt.subplot(1, 2, 2)  # 1 row, 2 columns, plot number 2, acceleration of hand imu
+plt.subplot(2, 2, 3)  # 1 row, 2 columns, plot number 2, acceleration of hand imu
 plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
 plt.xlabel('Element number')
 plt.ylabel('acceleration value')
 plt.title(f'hand_IMU - {subject}')
 
+plt.subplot(2, 2, 4)  # 1 row, 2 columns, plot number 2, acceleration of hand imu
+plt.title(f"Feature Importances for person {subject}")
+plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+plt.xticks(range(X_train.shape[1]), indices)
+plt.xlabel("Feature Index")
+plt.ylabel("Feature Importance")
 plt.show()
 
 
 
+
 ######################################################################################################
-# Get feature importances
-# # Plot the feature importances
-# plt.figure(figsize=(10, 6))
-# plt.title("Feature Importances")
-# plt.bar(range(X_train.shape[1]), importances[indices], align="center")
-# plt.xticks(range(X_train.shape[1]), indices)
-# plt.xlabel("Feature Index")
-# plt.ylabel("Feature Importance")
-# plt.show()
 
 
 # # Visualize one of the decision trees in the Random Forest
