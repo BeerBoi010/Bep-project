@@ -1,4 +1,4 @@
-#### description:changing data so you dont input the whole dataset of a patient but their trial indivually/ testing for different window sizes
+#### description: implemented lda and correlation
 
 ### Importing of necessary libraries ###############################################################################################
 import numpy as np
