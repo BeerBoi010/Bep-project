@@ -1,4 +1,4 @@
-#### description: implemented lda and correlation/covariance of 1 person 'hand_IMU']["acc_slope" see correlation of features file for more
+#### description:changing data so you dont input the whole dataset of a patient but their trial indivually/ testing for different window sizes
 
 ### Importing of necessary libraries ###############################################################################################
 import numpy as np
@@ -341,10 +341,37 @@ print(classification_report(y_test, y_test_pred_pca, zero_division=1))
 
 # Get feature importances from LDA and PCA
 lda_feature_importance = np.abs(lda.coef_[0])  # Importance of features in LDA space
-pca_feature_importance = np.abs(pca.components_[0])  # Importance of features in PCA space
 
 # Get the number of input features
 n_features_lda = lda.n_features_in_
+
+# Get feature importances from LDA
+lda_feature_importance = np.abs(lda.coef_[0])  # Importance of features in LDA space
+
+# Optionally, you can normalize the feature importances
+lda_feature_importance /= np.sum(lda_feature_importance)  # Normalize to sum up to 1 if needed
+
+# Display the feature importances
+print("Feature Importances from LDA:")
+print(lda_feature_importance)
+
+# Get explained variance ratios from PCA
+pca_explained_variance_ratio = pca.explained_variance_ratio_
+
+# Display the explained variance ratios
+print("Explained Variance Ratios from PCA:")
+print(pca_explained_variance_ratio)
+
+# Compute feature importances from explained variance ratios
+pca_feature_importance = np.cumsum(pca_explained_variance_ratio)
+
+# Optionally, you can normalize the feature importances
+pca_feature_importance /= np.sum(pca_feature_importance)  # Normalize to sum up to 1 if needed
+
+# Display the feature importances
+print("Feature Importances from PCA:")
+print(pca_feature_importance)
+
 
 # Plot the feature importances obtained from LDA
 plt.figure(figsize=(10, 6))
@@ -352,8 +379,6 @@ plt.bar(range(n_features_lda), lda_feature_importance, align="center", color='or
 plt.xlabel("Feature Index")
 plt.ylabel("Feature Importance (LDA)")
 plt.legend()
-plt.show()
-
 
 # Plot the feature importances obtained from PCA
 plt.figure(figsize=(10, 6))
