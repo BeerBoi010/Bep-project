@@ -1,4 +1,4 @@
-#### description: implemented lda and correlation
+#### description: implemented lda and correlation/covariance of 1 person 'hand_IMU']["acc_slope" see correlation of features file for more
 
 ### Importing of necessary libraries ###############################################################################################
 import numpy as np

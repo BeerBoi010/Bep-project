@@ -1,7 +1,8 @@
 #######
 
-######### I5mplemented which features are redunant and correlation, it runs only with the 30 best features
+######### I5mplemented which features are redunant and correlation(removed this because pla and lca use correlation), it runs only with the 30 best features
 ######### Added visualisation plots for Colloquium 2
+#############are most important features different between pla/lca/chatgpt importance model?!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ### Importing of necessary libraries ###############################################################################################
 import numpy as np
@@ -300,6 +301,7 @@ element_numbers = list(range(len(y_test_pred)))
 # plt.legend()
 # plt.show()
 
+# Get feature importances
 importances = clf.feature_importances_
 
 
