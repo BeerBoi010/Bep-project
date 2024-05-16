@@ -304,45 +304,63 @@ plt.xlabel("Feature Index")
 plt.ylabel("Feature Importance")
 plt.show()
 
-# Step 1: Apply LDA and PCA to the training data
-lda = LinearDiscriminantAnalysis(n_components=2)
+# Calculate the number of unique classes in y_train
+num_classes = len(np.unique(y_train))
+
+# Set n_components for LDA
+n_components_lda = min(num_classes - 1, X_train.shape[1])  # Ensure n_components is <= min(num_classes - 1, num_features)
+
+# Fit LDA
+lda = LinearDiscriminantAnalysis(n_components=n_components_lda)
 X_train_lda = lda.fit_transform(X_train, y_train)
+X_test_lda = lda.transform(X_test)
 
-pca = PCA(n_components=2)
+# Fit PCA
+pca = PCA(n_components=None)  # Set n_components=None to keep all components
 X_train_pca = pca.fit_transform(X_train)
+X_test_pca = pca.transform(X_test)
 
-# Step 2: Map Feature Importance to the Reduced Feature Space (if applicable)
+# Train Random Forest classifier on LDA-transformed data
+clf_lda = RandomForestClassifier(n_estimators=100, random_state=42)
+clf_lda.fit(X_train_lda, y_train)
+y_test_pred_lda = clf_lda.predict(X_test_lda)
 
-# Step 3: Calculate Feature Importance in the Reduced Feature Space (if applicable)
-# You can calculate feature importance scores based on the transformed features obtained from LDA or PCA.
+# Train Random Forest classifier on PCA-transformed data
+clf_pca = RandomForestClassifier(n_estimators=100, random_state=42)
+clf_pca.fit(X_train_pca, y_train)
+y_test_pred_pca = clf_pca.predict(X_test_pca)
 
-# Step 4: Visualize Feature Importance
-# You can plot the feature importance scores obtained from Random Forest, LDA, and PCA for comparison.
+# Display classification report of test data for LDA
+print("Classification Report of test data for LDA:")
+print(classification_report(y_test, y_test_pred_lda))
 
-# Plotting feature importance obtained from Random Forest
+# Display classification report of test data for PCA with zero_division parameter set
+print("Classification Report of test data for PCA:")
+print(classification_report(y_test, y_test_pred_pca, zero_division=1))
+
+
+# Get feature importances from LDA and PCA
+lda_feature_importance = np.abs(lda.coef_[0])  # Importance of features in LDA space
+pca_feature_importance = np.abs(pca.components_[0])  # Importance of features in PCA space
+
+# Get the number of input features
+n_features_lda = lda.n_features_in_
+
+# Plot the feature importances obtained from LDA
 plt.figure(figsize=(10, 6))
-plt.bar(range(X_train.shape[1]), importances[indices], align="center", label='Random Forest')
-plt.xticks(range(X_train.shape[1]), indices)
+plt.bar(range(n_features_lda), lda_feature_importance, align="center", color='orange', label='LDA')
 plt.xlabel("Feature Index")
-plt.ylabel("Feature Importance")
-plt.legend()
-
-# Plotting feature importance obtained from LDA
-lda_feature_importance = [...]  # Calculate LDA feature importance scores
-plt.figure(figsize=(10, 6))
-plt.bar(range(X_train_lda.shape[1]), lda_feature_importance, align="center", color='orange', label='LDA')
-plt.xlabel("LDA Component Index")
 plt.ylabel("Feature Importance (LDA)")
 plt.legend()
+plt.show()
 
-# Plotting feature importance obtained from PCA
-pca_feature_importance = [...]  # Calculate PCA feature importance scores
+
+# Plot the feature importances obtained from PCA
 plt.figure(figsize=(10, 6))
 plt.bar(range(X_train_pca.shape[1]), pca_feature_importance, align="center", color='green', label='PCA')
 plt.xlabel("PCA Component Index")
 plt.ylabel("Feature Importance (PCA)")
 plt.legend()
-
 plt.show()
 # # Visualize one of the decision trees in the Random Forest
 # plt.figure(figsize=(150, 10))
