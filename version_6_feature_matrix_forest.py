@@ -16,6 +16,10 @@ from sklearn.tree import plot_tree
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 from scipy.stats import pearsonr
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.datasets import make_classification
+from sklearn.metrics import classification_report
+
 
 #### Importing of necessary functions for algorithm  #############################################################################
 from Feature_Extraction import RMS_V2
@@ -219,21 +223,37 @@ print('x_test shape is', X_test.shape) ##test print to see the general shape
 clf = RandomForestClassifier(n_estimators=100, random_state=42)
 clf.fit(X_train, y_train)
 
+
 # Make predictions 
 y_test_pred = clf.predict(X_test)
 print("y_test_pred",len(y_test_pred))
 y_train_pred = clf.predict(X_train)
 
-# Display classification report  of training data
-print("Classification Report of train data:")
-print(classification_report(y_train, y_train_pred))
 
-# Display classification report of test data
-print("Classification Report of test data:")
-print(classification_report(y_test, y_test_pred))
+# Grid search code##############
+ovr_classifier = OneVsRestClassifier(clf)
 
- # Create an empty list of size equal to the length of predictions or true labels
-element_numbers = list(range(len(y_test_pred)))
+# Step 1: Train the OneVsRestClassifier
+ovr_classifier.fit(X_train, y_train)
+
+# Step 2: Make predictions
+y_predicted = ovr_classifier.predict(X_test)
+
+# Step 3: Print classification report
+print(classification_report(y_test_pred, y_predicted))
+
+
+
+# # Display classification report  of training data
+# print("Classification Report of train data:")
+# print(classification_report(y_train, y_train_pred))
+
+# # Display classification report of test data
+# print("Classification Report of test data:")
+# print(classification_report(y_test, y_test_pred))
+
+#  # Create an empty list of size equal to the length of predictions or true labels
+# element_numbers = list(range(len(y_test_pred)))
 
 ##########################################################################################################################
 #### Plots for visualization #############################################################################################
@@ -329,42 +349,6 @@ plt.show()
 
 
 
-
-# little code setup to edit the ylabels for predicted true plots
-yticks = [0,1,2,3]
-yticklabels = ['N','A', 'B', 'C']
-
-plt.figure(figsize=(12, 8))
-
-plt.subplot(2, 2, 1)  # 1 row, 2 columns, plot number 1
-plt.title(f'Plot of Predicted labels for person {subject}')
-plt.plot(element_numbers, y_test_pred, label='Predictions')
-plt.yticks(yticks, yticklabels)
-plt.xlabel('Element number')
-plt.ylabel('Movement steps')
-plt.legend()
-
-plt.subplot(2, 2, 2)  # 1 row, 2 columns, plot number 1
-plt.title(f'Plot of True labels for person {subject}')
-plt.plot(element_numbers, y_test, color = 'orange',  label='True Labels')
-plt.yticks(yticks, yticklabels)
-plt.xlabel('Element number')
-plt.ylabel('Movement steps')
-plt.legend()
-
-plt.subplot(2, 2, 3)  # 1 row, 2 columns, plot number 2, acceleration of hand imu
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'hand_IMU - {subject}')
-
-plt.subplot(2, 2, 4)  # 1 row, 2 columns, plot number 2, acceleration of hand imu
-plt.title(f"Feature Importances for person {subject}")
-plt.bar(range(X_train.shape[1]), importances[indices], align="center")
-plt.xticks(range(X_train.shape[1]), indices)
-plt.xlabel("Feature Index")
-plt.ylabel("Feature Importance")
-plt.show()
 
 
 
