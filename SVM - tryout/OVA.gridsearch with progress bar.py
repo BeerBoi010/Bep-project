@@ -11,6 +11,11 @@ import time
 from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
 from Random_forest import labels_interpolation
 
+#########################
+
+#   Try at a progress bar to visualize progress in time with chatGPT code
+
+##############################
 # Define parameters
 train_amount = 5
 sampling_window = 3
