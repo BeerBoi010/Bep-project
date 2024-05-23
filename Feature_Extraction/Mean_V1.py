@@ -6,7 +6,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 import sys
 
+
 ###Description: Code for calculating the mean over a certain window size. generates a matrix the same size as the input.
+
 
 #important variables:
 sampling_window = 3

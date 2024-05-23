@@ -1,6 +1,6 @@
 #######
 
-######### I5mplemented which features are redunant and correlation(removed this because pla and lca use correlation), it runs only with the 30 best features
+######### I5mplemented which features are redunant(so 30 features left) and correlation(removed this because pla and lca use correlation), it runs only with the 30 best features
 ######### Added visualisation plots for Colloquium 2
 #############are most important features different between pla/lca/chatgpt importance model?!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
