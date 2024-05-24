@@ -41,6 +41,7 @@ test_labels = all_labels[test_person - 2]
 all_labels.pop(test_person - 2)
 train_labels = all_labels
 
+
 labels_train = [i[1] for item in train_labels for i in item]
 labels_test = [item[1] for item in test_labels]
 label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}

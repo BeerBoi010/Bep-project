@@ -76,7 +76,7 @@ for subject, annotation in annotation_mapping.items():
 X_data_patients_train = []
 labels_patients_train = []
 
-for subject in subjects[:4]:
+for subject in subjects[:5]:
     acc_data_patient = acc[subject]
     rot_data_patient = rot[subject]
     labels_patient = mapped_labels[subject][:, 2].astype(int)

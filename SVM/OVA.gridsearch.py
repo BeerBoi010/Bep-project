@@ -6,14 +6,12 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import GridSearchCV
 from tqdm import tqdm  # Import tqdm library for progress bars
-from sklearn.decomposition import PCA
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
-from Random_forest import labels_interpolation
+import labels_interpolation
 
 # Define parameters
-train_amount = 6
+train_amount = 5
 sampling_window = 3
 min_periods = 1
 test_amount = train_amount
@@ -40,7 +38,6 @@ subjects_test = [f'drinking_HealthySubject{test_person}_Test']
 test_labels = all_labels[test_person - 2]
 all_labels.pop(test_person - 2)
 train_labels = all_labels
-
 
 labels_train = [i[1] for item in train_labels for i in item]
 labels_test = [item[1] for item in test_labels]
@@ -93,15 +90,57 @@ print(X_train.shape)
 # Hyperparameter tuning with GridSearchCV
 param_grid = {'estimator__C': [0.1, 1, 10, 100],
               'estimator__gamma': [1, 0.1, 0.01, 0.001],
-              'estimator__kernel': ['rbf']}
+              'estimator__kernel': ['rbf', 'linear', 'poly', 'sigmoid']}
 
 ovr_clf = OneVsRestClassifier(SVC(random_state=42))
 grid_search = GridSearchCV(ovr_clf, param_grid, cv=5)
 
 # Fit GridSearchCV on training data with progress bar
-with tqdm(total=len(param_grid['estimator__kernel'])*len(param_grid['estimator__gamma'])*len(param_grid['estimator__kernel'])) as pbar:
+with tqdm(total=len(param_grid['estimator__C']) * len(param_grid['estimator__gamma']) * len(param_grid['estimator__kernel'])) as pbar:
     grid_search.fit(X_train, y_train)
     pbar.update()
 
 best_params = grid_search.best_params_
 best_estimator = grid_search.best_estimator_
+
+# Predictions
+y_test_pred = best_estimator.predict(X_test)
+y_train_pred = best_estimator.predict(X_train)
+
+# Classification reports
+print("Classification Report of train data:")
+print(classification_report(y_train, y_train_pred))
+
+print("\nClassification Report of test data:")
+print(classification_report(y_test, y_test_pred))
+
+# Print best parameters
+print("\nBest Parameters:", best_params)
+
+# Plotting
+element_numbers = list(range(len(y_test_pred)))
+plt.figure(figsize=(12, 6))
+
+plt.subplot(2, 4, 1)
+plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
+plt.xlabel('Element Numbers')
+plt.ylabel('Predicted Labels')
+plt.title('Predicted Labels')
+plt.legend()
+
+plt.subplot(2, 4, 2)
+plt.plot(element_numbers, y_test, label='True Labels', color='green')
+plt.xlabel('Element Numbers')
+plt.ylabel('True Labels')
+plt.title('True Labels')
+plt.legend()
+
+for i, location in enumerate(['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']):
+    plt.subplot(2, 4, 3 + i)
+    plt.plot(acc[f'drinking_HealthySubject{test_person}_Test'][location])
+    plt.xlabel('Element Number')
+    plt.ylabel('Acceleration Value')
+    plt.title(f'{location} - Test Person {test_person}')
+
+plt.tight_layout()
+plt.show()

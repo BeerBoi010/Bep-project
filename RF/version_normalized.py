@@ -19,7 +19,7 @@ from Normalized_Feature_Extraction import Slope_V2
 from Normalized_Feature_Extraction import Max_V2
 from Normalized_Feature_Extraction import Min_V2
 from Normalized_Feature_Extraction import Standard_Deviation
-from Random_forest import labels_interpolation
+import labels_interpolation
 
 
 ##### VARIABLES ######################################################################################################
