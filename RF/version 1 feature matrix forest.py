@@ -68,7 +68,7 @@ X_data_patients_train = []
 labels_patients_train = []
 
 # Iterate over each patient
-for subject in subjects[:4]:
+for subject in subjects[:5]:
     acc_data_patient = acc[subject]
     rot_data_patient = rot[subject]
     labels_patient = [] 
@@ -129,7 +129,7 @@ print(combined_X_data.shape,combined_labels.shape)
 X_train = combined_X_data
 y_train = combined_labels
 
-subjects_test = subjects[4:]
+subjects_test = subjects[5:]
 
 # Create lists to store data and labels for each patient
 X_data_patients_test = []
@@ -261,17 +261,17 @@ importances = clf.feature_importances_
 # Sort feature importances in descending order
 indices = np.argsort(importances)[::-1]
 
-# Plot the feature importances
-plt.figure(figsize=(10, 6))
-plt.title("Feature Importances")
-plt.bar(range(X_train.shape[1]), importances[indices], align="center")
-plt.xticks(range(X_train.shape[1]), indices)
-plt.xlabel("Feature Index")
-plt.ylabel("Feature Importance")
-plt.show()
+# # Plot the feature importances
+# plt.figure(figsize=(10, 6))
+# plt.title("Feature Importances")
+# plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+# plt.xticks(range(X_train.shape[1]), indices)
+# plt.xlabel("Feature Index")
+# plt.ylabel("Feature Importance")
+# plt.show()
 
 
-# Visualize one of the decision trees in the Random Forest
-plt.figure(figsize=(150, 10))
-plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
-plt.show()
+# # Visualize one of the decision trees in the Random Forest
+# plt.figure(figsize=(150, 10))
+# plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
+# plt.show()
