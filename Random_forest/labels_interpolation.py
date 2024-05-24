@@ -43,7 +43,7 @@ annotation6 = np.array([
 annotation_matrices = [annotation2, annotation3, annotation4, annotation5, annotation6, annotation7]
 
 # Define the sampling frequency
-sampling_frequency = 50  # Hz
+sampling_frequency = 50  #Hz
 # Function to perform interpolation for a single row
 
 def interpolate_row(row, cumulative_count):

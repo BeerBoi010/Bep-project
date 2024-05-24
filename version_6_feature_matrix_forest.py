@@ -1,4 +1,8 @@
-#### description:testing for different window sizes, added pca and lda
+#######
+
+######### Copiied V5, exploring a grid search for Random Forest 
+
+
 
 ### Importing of necessary libraries ###############################################################################################
 import numpy as np
@@ -9,18 +13,27 @@ import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.tree import plot_tree
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
 from scipy.stats import pearsonr
-from sklearn.decomposition import PCA
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.datasets import make_classification
+from sklearn.metrics import classification_report
 
 
 #### Importing of necessary functions for algorithm  #############################################################################
-from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
+from Feature_Extraction import RMS_V2
+from Feature_Extraction import Mean_V2
+from Feature_Extraction import  Slope_V2
+from Feature_Extraction import Max_V2
+from Feature_Extraction import Min_V2
+from Feature_Extraction import Standard_Deviation
 from Random_forest import labels_interpolation
+#import Feature_importance
 
 
 ##### VARIABLES ######################################################################################################
-# '''later toevoegen dat random wordt gekozen wie train en test is'''
+'''later toevoegen dat random wordt gekozen wie train en test is'''
 
 train_amount = 5
 sampling_window = 3
@@ -32,8 +45,8 @@ sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
-test_person = 2
-#test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
+#test_person = 5
+test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
 
 #######################################################################################################################
 ### Importing and naming of the datasets ##############################################################################
@@ -41,20 +54,17 @@ test_person = 2
 ''' Full datasets'''
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
-
 all_labels = labels_interpolation.expanded_matrices
-
 
 
 subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'drinking_HealthySubject4_Test',   
         'drinking_HealthySubject5_Test', 'drinking_HealthySubject6_Test', 'drinking_HealthySubject7_Test']
 
-# ########must be  into movements(not per measurement!)######################
 
 subjects.remove(f'drinking_HealthySubject{test_person}_Test')
 subjects_train = subjects
 subjects_test = [f'drinking_HealthySubject{test_person}_Test']
-#print(subjects_test)
+print(subjects_test)
 
 test_labels = all_labels[test_person - 2]
 #print("test labels:",test_labels)
@@ -63,6 +73,23 @@ all_labels.pop(test_person - 2)
 train_labels = all_labels
 #print("train labels:",train_labels)
 
+important = [34, 8, 35, 5, 36, 33, 26, 20, 41, 31, 44, 56, 29, 62, 59, 30, 69, 23,
+        32, 37, 65, 0, 47, 11, 4, 134, 3, 39, 6, 116, 67, 24, 71, 54, 18, 60,
+        19, 42, 43, 25, 128, 113, 90, 70, 115, 7, 133, 68, 109, 77, 28, 127, 
+        83, 27, 61, 22, 92, 95, 101, 78, 72, 96, 55, 10, 80, 147, 91, 98, 38,
+        2, 21, 132, 66, 114, 126, 63, 97, 1, 152, 131, 170, 58, 40, 137, 130,
+        57, 45, 9, 46, 79, 73, 107, 76, 164, 111, 117, 118, 100, 166, 173, 
+        149, 172, 64, 154, 16, 74, 75, 119, 136, 165, 53, 148, 94, 135, 153, 
+        167, 82, 143, 129, 171, 155, 151, 146, 169, 110, 112, 14, 99, 108, 
+        17, 163, 93, 15, 125, 138, 162, 145, 168, 81, 103, 52, 89, 12, 177, 
+        150, 142, 144, 50, 179, 13, 140, 105, 104, 102, 48, 51, 175, 174, 141, 
+        106, 139, 123, 159, 176, 178, 161, 124, 85, 88, 49, 120, 84, 160, 86, 
+        122, 121, 157, 156, 87, 158]
+# Number of top important features to select
+n = 30
+# Get indices of top n important features
+top_indices = important[:n]
+print(top_indices)
 #################################################################################################################
 ### Setting up the test and training sets with labels ###########################################################
 
@@ -87,14 +114,6 @@ X_test_STD = Standard_Deviation.STD_test(subjects_test, sampling_window_STD, min
 Y_train_labels = train_labels
 Y_test_labels = test_labels
 
-
-print(X_test_Slope["drinking_HealthySubject2_Test"]['hand_IMU']["acc_slope"][0])
-corr,_ = pearsonr(X_test_Slope["drinking_HealthySubject2_Test"]['hand_IMU']["acc_slope"][0],X_test_Max["drinking_HealthySubject2_Test"]['hand_IMU']["acc_max"][0])
-
-print("correlation between slope and max is:",corr)
-
-
-############################must be labels per movement#########################3
 labels_train = []
 ###### for-loops to make annotation list for random forest method ###########################################################################
 for item in Y_train_labels:
@@ -114,7 +133,6 @@ label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
 y_train = [label_mapping[label] for label in labels_train]
 y_test = [label_mapping[label] for label in labels_test]
 
-#print("y_test",len(y_test))
 
 #### Create lists to store test and train data and labels for each patient #################################################################
 
@@ -153,8 +171,7 @@ for subject in X_train_RMS:
 
 '''Arrays for all combined train data'''
 combined_X_data_train = np.concatenate(X_data_patients_train)
-X_train = combined_X_data_train
-#print(combined_X_data_train.shape)
+X_train = combined_X_data_train[:, top_indices]
 #############################################################################################################################
 ###### Arrays for test data ################################################################################################
 
@@ -164,7 +181,7 @@ X_train = combined_X_data_train
 X_data_patients_test = []
 
 for subject in X_test_RMS:
-    print("test subject", subject)
+    #print("test subject", subject)
     # Initialize combined_data_patient for each patient
     combined_data_patient = []
 
@@ -194,9 +211,9 @@ for subject in X_test_RMS:
 
 '''Combine data from all patients'''
 combined_X_data_test = np.concatenate(X_data_patients_test)
-X_test = combined_X_data_test
+X_test = combined_X_data_test[:, top_indices]
 
-#print(combined_X_data_test.shape) ##test print to see the general shape
+print('x_test shape is', X_test.shape) ##test print to see the general shape
 
 ########################################################################################################################
 ################ RANDOM FOREST CLASSIFIER ##############################################################################
@@ -206,21 +223,37 @@ X_test = combined_X_data_test
 clf = RandomForestClassifier(n_estimators=100, random_state=42)
 clf.fit(X_train, y_train)
 
+
 # Make predictions 
 y_test_pred = clf.predict(X_test)
-#print("y_test_pred",len(y_test_pred))
+print("y_test_pred",len(y_test_pred))
 y_train_pred = clf.predict(X_train)
 
-# Display classification report  of training data
-print("Classification Report of train data:")
-print(classification_report(y_train, y_train_pred))
 
-# Display classification report of test data
-print("Classification Report of test data:")
-print(classification_report(y_test, y_test_pred))
+# Grid search code##############
+ovr_classifier = OneVsRestClassifier(clf)
 
- # Create an empty list of size equal to the length of predictions or true labels
-element_numbers = list(range(len(y_test_pred)))
+# Step 1: Train the OneVsRestClassifier
+ovr_classifier.fit(X_train, y_train)
+
+# Step 2: Make predictions
+y_predicted = ovr_classifier.predict(X_test)
+
+# Step 3: Print classification report
+print(classification_report(y_test_pred, y_predicted))
+
+
+
+# # Display classification report  of training data
+# print("Classification Report of train data:")
+# print(classification_report(y_train, y_train_pred))
+
+# # Display classification report of test data
+# print("Classification Report of test data:")
+# print(classification_report(y_test, y_test_pred))
+
+#  # Create an empty list of size equal to the length of predictions or true labels
+# element_numbers = list(range(len(y_test_pred)))
 
 ##########################################################################################################################
 #### Plots for visualization #############################################################################################
@@ -228,165 +261,101 @@ element_numbers = list(range(len(y_test_pred)))
 '''Below plots are made to visualize what the Random classifier has done and how it has performed'''
 
 # Plot for y_pred
-plt.figure(figsize=(12, 6))
+# plt.figure(figsize=(12, 6))
 
-plt.subplot(2, 4, 1)  # 1 row, 2 columns, plot number 1
-plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
-plt.xlabel('Element Numbers')
-plt.ylabel('Predicted Labels')
-plt.title(f'Predicted Labels - {subject}')
-plt.legend()
+# plt.subplot(2, 4, 1)  # 1 row, 2 columns, plot number 1
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title(f'Predicted Labels - {subject}')
+# plt.legend()
 
 
-plt.subplot(2, 4, 2)  # 1 row, 2 columns, plot number 2
-plt.plot(element_numbers, y_test, label='True Labels', color='green')
-plt.xlabel('Element Numbers')
-plt.ylabel('True Labels')
-plt.title(f'True Labels - {subject}')
-plt.legend()
+# plt.subplot(2, 4, 2)  # 1 row, 2 columns, plot number 2
+# plt.plot(element_numbers, y_test, label='True Labels', color='green')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('True Labels')
+# plt.title(f'True Labels - {subject}')
+# plt.legend()
 
-plt.subplot(2, 4, 3)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'hand_IMU - {subject}')
+# plt.subplot(2, 4, 3)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'hand_IMU - {subject}')
 
-plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'lowerarm_IMU - {subject}')
+# plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'lowerarm_IMU - {subject}')
 
-plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'upperarm_IMU - {subject}')
+# plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'upperarm_IMU - {subject}')
 
-plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'shoulder_IMU - {subject}')
+# plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'shoulder_IMU - {subject}')
 
-plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'sternum_IMU - {subject}')
+# plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'sternum_IMU - {subject}')
 
-plt.tight_layout()  # Adjust layout to prevent overlap
-#plt.show()
+# plt.tight_layout()  # Adjust layout to prevent overlap
+# plt.show()
 
-plt.figure(figsize=(12, 6))
+# plt.figure(figsize=(12, 6))
 
-plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
-plt.xlabel('Element Numbers')
-plt.ylabel('Predicted Labels')
-plt.title(f'Predicted Labels vs acceleration data - {subject}')
-plt.legend()
-#plt.show()
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title(f'Predicted Labels vs acceleration data - {subject}')
+# plt.legend()
+# plt.show()
+
 # Get feature importances
 importances = clf.feature_importances_
-print(len(importances))
-print(importances[4])
+
 
 # Sort feature importances in descending order
 indices = np.argsort(importances)[::-1]
 
-# Plot the feature importances
-plt.figure(figsize=(10, 6))
-plt.title("Feature Importances")
-plt.bar(range(X_train.shape[1]), importances[indices], align="center")
-plt.xticks(range(X_train.shape[1]), indices)
-plt.xlabel("Feature Index")
-plt.ylabel("Feature Importance")
+# Compute confusion matrix for test data
+conf_matrix = confusion_matrix(y_test, y_test_pred)
+
+############################## NEW: ADDED PLOT FOR PRESENTATION ###################################### 
+# label maps for confusion matrix
+label_mapping = {0: 'N', 1: 'A', 2: 'B', 3: 'C'}
+
+
+# Plot confusion matrix
+print("Confusion Matrix:\n", conf_matrix)
+plt.figure(figsize=(8, 6))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
+            xticklabels=[label_mapping[key] for key in label_mapping.keys()],
+            yticklabels=[label_mapping[key] for key in label_mapping.keys()])
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.title(f'Confusion Matrix for {subject}')
 plt.show()
 
-# Calculate the number of unique classes in y_train
-num_classes = len(np.unique(y_train))
-
-# Set n_components for LDA
-n_components_lda = min(num_classes - 1, X_train.shape[1])  # Ensure n_components is <= min(num_classes - 1, num_features)
-
-# Fit LDA
-lda = LinearDiscriminantAnalysis(n_components=n_components_lda)
-X_train_lda = lda.fit_transform(X_train, y_train)
-X_test_lda = lda.transform(X_test)
-
-# Fit PCA
-pca = PCA(n_components=None)  # Set n_components=None to keep all components
-X_train_pca = pca.fit_transform(X_train)
-X_test_pca = pca.transform(X_test)
-
-# Train Random Forest classifier on LDA-transformed data
-clf_lda = RandomForestClassifier(n_estimators=100, random_state=42)
-clf_lda.fit(X_train_lda, y_train)
-y_test_pred_lda = clf_lda.predict(X_test_lda)
-
-# Train Random Forest classifier on PCA-transformed data
-clf_pca = RandomForestClassifier(n_estimators=100, random_state=42)
-clf_pca.fit(X_train_pca, y_train)
-y_test_pred_pca = clf_pca.predict(X_test_pca)
-
-# Display classification report of test data for LDA
-print("Classification Report of test data for LDA:")
-print(classification_report(y_test, y_test_pred_lda))
-
-# Display classification report of test data for PCA with zero_division parameter set
-print("Classification Report of test data for PCA:")
-print(classification_report(y_test, y_test_pred_pca, zero_division=1))
 
 
-# Get feature importances from LDA and PCA
-lda_feature_importance = np.abs(lda.coef_[0])  # Importance of features in LDA space
-
-# Get the number of input features
-n_features_lda = lda.n_features_in_
-
-# Get feature importances from LDA
-lda_feature_importance = np.abs(lda.coef_[0])  # Importance of features in LDA space
-
-# Optionally, you can normalize the feature importances
-lda_feature_importance /= np.sum(lda_feature_importance)  # Normalize to sum up to 1 if needed
-
-# Display the feature importances
-print("Feature Importances from LDA:")
-print(lda_feature_importance)
-
-# Get explained variance ratios from PCA
-pca_explained_variance_ratio = pca.explained_variance_ratio_
-
-# Display the explained variance ratios
-print("Explained Variance Ratios from PCA:")
-print(pca_explained_variance_ratio)
-
-# Compute feature importances from explained variance ratios
-pca_feature_importance = np.cumsum(pca_explained_variance_ratio)
-
-# Optionally, you can normalize the feature importances
-pca_feature_importance /= np.sum(pca_feature_importance)  # Normalize to sum up to 1 if needed
-
-# Display the feature importances
-print("Feature Importances from PCA:")
-print(pca_feature_importance)
 
 
-# Plot the feature importances obtained from LDA
-plt.figure(figsize=(10, 6))
-plt.bar(range(n_features_lda), lda_feature_importance, align="center", color='orange', label='LDA')
-plt.xlabel("Feature Index")
-plt.ylabel("Feature Importance (LDA)")
-plt.legend()
 
-# Plot the feature importances obtained from PCA
-plt.figure(figsize=(10, 6))
-plt.bar(range(X_train_pca.shape[1]), pca_feature_importance, align="center", color='green', label='PCA')
-plt.xlabel("PCA Component Index")
-plt.ylabel("Feature Importance (PCA)")
-plt.legend()
-plt.show()
+
+######################################################################################################
+
+
 # # Visualize one of the decision trees in the Random Forest
 # plt.figure(figsize=(150, 10))
 # plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
