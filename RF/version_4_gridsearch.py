@@ -146,7 +146,7 @@ clf = RandomForestClassifier(random_state=42)
 grid_search = GridSearchCV(estimator=clf, param_grid=param_grid)
 
 # Fit GridSearchCV on training data with progress bar
-with tqdm(total=len(param_grid['estimator__kernel'])) as pbar:
+with tqdm(total=len(param_grid['n_estimators'])*len(param_grid['max_depth'])*len(param_grid['min_samples_leaf'])) as pbar:
     grid_search.fit(X_train, y_train)
     pbar.update()
 
