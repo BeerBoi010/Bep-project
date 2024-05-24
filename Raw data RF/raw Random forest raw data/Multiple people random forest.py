@@ -272,7 +272,7 @@ plt.ylabel("Feature Importance")
 plt.show()
 
 
-# Visualize one of the decision trees in the Random Forest
-plt.figure(figsize=(150, 10))
-plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
-plt.show()
+# # Visualize one of the decision trees in the Random Forest
+# plt.figure(figsize=(150, 10))
+# plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
+# plt.show()
