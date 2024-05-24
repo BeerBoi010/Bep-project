@@ -13,7 +13,7 @@ from sklearn.tree import plot_tree
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 # from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.decomposition import PCA
+# from sklearn.decomposition import PCA
 
 #### Importing of necessary functions for algorithm  #############################################################################
 from Feature_Extraction import RMS_V2

@@ -97,7 +97,7 @@ param_grid = {'estimator__C': [0.1, 1, 10, 100],
               'estimator__kernel': ['rbf']}
 
 ovr_clf = OneVsRestClassifier(SVC(random_state=42))
-grid_search = GridSearchCV(ovr_clf, param_grid, cv=5)
+grid_search = GridSearchCV(ovr_clf, param_grid, cv=3)
 
 # Fit GridSearchCV on training data with progress bar
 with tqdm(total=len(param_grid['estimator__kernel'])*len(param_grid['estimator__gamma'])*len(param_grid['estimator__kernel'])) as pbar:
