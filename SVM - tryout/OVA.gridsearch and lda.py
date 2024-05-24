@@ -98,7 +98,7 @@ ovr_clf = OneVsRestClassifier(SVC(random_state=42))
 grid_search = GridSearchCV(ovr_clf, param_grid, cv=5)
 
 # Fit GridSearchCV on training data with progress bar
-with tqdm(total=len(param_grid['estimator__kernel'])) as pbar:
+with tqdm(total=len(param_grid['estimator__kernel'])*len(param_grid['estimator__gamma'])*len(param_grid['estimator__kernel'])) as pbar:
     grid_search.fit(X_train, y_train)
     pbar.update()
 
