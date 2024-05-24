@@ -9,6 +9,7 @@ from sklearn.tree import plot_tree
 from scipy.stats import pearsonr
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from tqdm import tqdm
 
 from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
 from Random_forest import labels_interpolation
@@ -143,7 +144,11 @@ clf = RandomForestClassifier(random_state=42)
 
 # Setting up code for a grid search
 grid_search = GridSearchCV(estimator=clf, param_grid=param_grid)
-grid_search.fit(X_train, y_train)
+
+# Fit GridSearchCV on training data with progress bar
+with tqdm(total=len(param_grid['estimator__kernel'])) as pbar:
+    grid_search.fit(X_train, y_train)
+    pbar.update()
 
 best_clf = grid_search.best_estimator_
 
