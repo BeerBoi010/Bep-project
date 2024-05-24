@@ -120,6 +120,7 @@ for subject in subjects[:5]:
     combined_data_patient = []
     for imu_location in imu_locations:
         acc_data_imu = acc_data_patient[imu_location]
+        print(acc_data_imu)
         rot_data_imu = rot_data_patient[imu_location]
         combined_data_imu = np.hstack((acc_data_imu, rot_data_imu))
         combined_data_patient.extend(combined_data_imu.T)
