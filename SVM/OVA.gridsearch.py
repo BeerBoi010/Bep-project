@@ -22,7 +22,7 @@ sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
 
-test_person = 2
+test_person = 7
 
 # Load data
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()

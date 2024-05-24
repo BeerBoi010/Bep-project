@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from sklearn.tree import plot_tree
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+# from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.decomposition import PCA
 
 #### Importing of necessary functions for algorithm  #############################################################################
@@ -38,7 +38,7 @@ sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
-test_person = 2
+test_person = 7
 #test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
 
 #######################################################################################################################

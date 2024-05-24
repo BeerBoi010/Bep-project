@@ -14,7 +14,7 @@ from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standa
 import labels_interpolation
 
 # Define parameters
-train_amount = 6
+train_amount = 5
 sampling_window = 3
 min_periods = 1
 test_amount = train_amount
@@ -25,7 +25,7 @@ sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
 
-test_person = 2
+test_person = 7
 
 # Load data
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
@@ -106,7 +106,6 @@ with tqdm(total=len(param_grid['estimator__kernel'])*len(param_grid['estimator__
 
 best_params = grid_search.best_params_
 best_estimator = grid_search.best_estimator_
-
 
 # Predictions
 y_test_pred = best_estimator.predict(X_test)
@@ -194,8 +193,8 @@ X_train_pca = pca.fit_transform(X_train)
 X_test_pca = pca.transform(X_test)
 
 # Extracting the best parameters from the grid search results
-#best_C = grid_search.best_params_['estimator__C']
-#best_gamma = grid_search.best_params_['estimator__gamma']
+best_C = grid_search.best_params_['estimator__C']
+best_gamma = grid_search.best_params_['estimator__gamma']
 best_kernel = grid_search.best_params_['estimator__kernel']
 
 # Using the determined parameters for OvA classification with SVC

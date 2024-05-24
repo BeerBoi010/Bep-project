@@ -1,12 +1,13 @@
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
+# from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 import sys
 
 #### description: first try implementing Arkady's ideas for cross-over zones and implementing them. 
 ###Rest is still similar to V1.
 
+##### Update 24-05-2024: code is not useful and will be discarded for furthher use.
 
 
 #important variables:
@@ -33,9 +34,6 @@ annotation7 = np.load("Data_tests/Annotated times/time_ranges_subject_7.npy", al
 # Define the label mapping dictionary
 label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
 
-
-
-# Function to handle crossover zones using majority voting
 
 # Function to handle crossover zones using majority voting
 def handle_crossover_zone(labels):
