@@ -24,7 +24,7 @@ sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
-test_person = 2
+test_person = 7
 
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
@@ -143,7 +143,7 @@ clf = RandomForestClassifier(random_state=42)
 
 
 # Setting up code for a grid search
-grid_search = GridSearchCV(estimator=clf, param_grid=param_grid)
+grid_search = GridSearchCV(estimator=clf, param_grid=param_grid, cv=3)
 
 # Fit GridSearchCV on training data with progress bar
 with tqdm(total=len(param_grid['n_estimators'])*len(param_grid['max_depth'])*len(param_grid['min_samples_leaf'])) as pbar:
