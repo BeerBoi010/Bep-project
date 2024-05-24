@@ -1,6 +1,8 @@
-#######changes######
+#######
 
-#introducing tanh to the model. 
+######### I5mplemented which features are redunant(so 30 features left) and correlation(removed this because pla and lca use correlation), it runs only with the 30 best features
+######### Added visualisation plots for Colloquium 2
+#############are most important features different between pla/lca/chatgpt importance model?!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ### Importing of necessary libraries ###############################################################################################
 import numpy as np
@@ -11,15 +13,19 @@ import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.tree import plot_tree
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
+from scipy.stats import pearsonr
 
 #### Importing of necessary functions for algorithm  #############################################################################
-from Normalized_Feature_Extraction import RMS_V2
-from Normalized_Feature_Extraction import Mean_V2
-from Normalized_Feature_Extraction import Slope_V2
-from Normalized_Feature_Extraction import Max_V2
-from Normalized_Feature_Extraction import Min_V2
-from Normalized_Feature_Extraction import Standard_Deviation
+from Feature_Extraction import RMS_V2
+from Feature_Extraction import Mean_V2
+from Feature_Extraction import  Slope_V2
+from Feature_Extraction import Max_V2
+from Feature_Extraction import Min_V2
+from Feature_Extraction import Standard_Deviation
 import labels_interpolation
+#import Feature_importance
 
 
 ##### VARIABLES ######################################################################################################
@@ -35,41 +41,15 @@ sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
-test_person = 3
-#test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
+#test_person = 5
+test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
 
 #######################################################################################################################
 ### Importing and naming of the datasets ##############################################################################
 
-def scale_imu_data_directly(data):
-    """
-    Scales all IMU data in a nested dictionary structure where each entry contains multiple
-    arrays representing different sensor data, scaling them directly to the range [-1, 1].
-    
-    Parameters:
-    data (dict): The input dictionary with multiple tests and sensor data in NumPy arrays.
-    
-    Returns:
-    dict: A new dictionary with the same structure, but with all arrays scaled to [-1, 1].
-    """
-    # Clone the dictionary structure to avoid modifying the original data
-    scaled_data = {test: {} for test in data}
-    
-    for test, sensors in data.items():
-        for sensor, array in sensors.items():
-            # Compute the minimum and maximum values of the array
-            min_val = np.min(array)
-            max_val = np.max(array)
-            # Apply the scaling transformation
-            scaled_array = -1 + 2 * (array - min_val) / (max_val - min_val)
-            scaled_data[test][sensor] = scaled_array
-    
-    return scaled_data
-
-
 ''' Full datasets'''
-acc = scale_imu_data_directly(np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item())
-rot = scale_imu_data_directly(np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item())
+acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
+rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 all_labels = labels_interpolation.expanded_matrices
 
 
@@ -89,6 +69,23 @@ all_labels.pop(test_person - 2)
 train_labels = all_labels
 #print("train labels:",train_labels)
 
+important = [34, 8, 35, 5, 36, 33, 26, 20, 41, 31, 44, 56, 29, 62, 59, 30, 69, 23,
+        32, 37, 65, 0, 47, 11, 4, 134, 3, 39, 6, 116, 67, 24, 71, 54, 18, 60,
+        19, 42, 43, 25, 128, 113, 90, 70, 115, 7, 133, 68, 109, 77, 28, 127, 
+        83, 27, 61, 22, 92, 95, 101, 78, 72, 96, 55, 10, 80, 147, 91, 98, 38,
+        2, 21, 132, 66, 114, 126, 63, 97, 1, 152, 131, 170, 58, 40, 137, 130,
+        57, 45, 9, 46, 79, 73, 107, 76, 164, 111, 117, 118, 100, 166, 173, 
+        149, 172, 64, 154, 16, 74, 75, 119, 136, 165, 53, 148, 94, 135, 153, 
+        167, 82, 143, 129, 171, 155, 151, 146, 169, 110, 112, 14, 99, 108, 
+        17, 163, 93, 15, 125, 138, 162, 145, 168, 81, 103, 52, 89, 12, 177, 
+        150, 142, 144, 50, 179, 13, 140, 105, 104, 102, 48, 51, 175, 174, 141, 
+        106, 139, 123, 159, 176, 178, 161, 124, 85, 88, 49, 120, 84, 160, 86, 
+        122, 121, 157, 156, 87, 158]
+# Number of top important features to select
+n = 30
+# Get indices of top n important features
+top_indices = important[:n]
+print(top_indices)
 #################################################################################################################
 ### Setting up the test and training sets with labels ###########################################################
 
@@ -113,7 +110,6 @@ X_test_STD = Standard_Deviation.STD_test(subjects_test, sampling_window_STD, min
 Y_train_labels = train_labels
 Y_test_labels = test_labels
 
-
 labels_train = []
 ###### for-loops to make annotation list for random forest method ###########################################################################
 for item in Y_train_labels:
@@ -133,7 +129,6 @@ label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
 y_train = [label_mapping[label] for label in labels_train]
 y_test = [label_mapping[label] for label in labels_test]
 
-print("y_test",len(y_test))
 
 #### Create lists to store test and train data and labels for each patient #################################################################
 
@@ -172,8 +167,7 @@ for subject in X_train_RMS:
 
 '''Arrays for all combined train data'''
 combined_X_data_train = np.concatenate(X_data_patients_train)
-X_train = combined_X_data_train
-print(combined_X_data_train.shape)
+X_train = combined_X_data_train[:, top_indices]
 #############################################################################################################################
 ###### Arrays for test data ################################################################################################
 
@@ -183,7 +177,7 @@ print(combined_X_data_train.shape)
 X_data_patients_test = []
 
 for subject in X_test_RMS:
-    print("test subject", subject)
+    #print("test subject", subject)
     # Initialize combined_data_patient for each patient
     combined_data_patient = []
 
@@ -213,9 +207,9 @@ for subject in X_test_RMS:
 
 '''Combine data from all patients'''
 combined_X_data_test = np.concatenate(X_data_patients_test)
-X_test = combined_X_data_test
+X_test = combined_X_data_test[:, top_indices]
 
-print(combined_X_data_test.shape) ##test print to see the general shape
+print('x_test shape is', X_test.shape) ##test print to see the general shape
 
 ########################################################################################################################
 ################ RANDOM FOREST CLASSIFIER ##############################################################################
@@ -247,55 +241,65 @@ element_numbers = list(range(len(y_test_pred)))
 '''Below plots are made to visualize what the Random classifier has done and how it has performed'''
 
 # Plot for y_pred
-plt.figure(figsize=(12, 6))
+# plt.figure(figsize=(12, 6))
 
-plt.subplot(2, 4, 1)  # 1 row, 2 columns, plot number 1
-plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
-plt.xlabel('Element Numbers')
-plt.ylabel('Predicted Labels')
-plt.title(f'Predicted Labels - {subject}')
-plt.legend()
+# plt.subplot(2, 4, 1)  # 1 row, 2 columns, plot number 1
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title(f'Predicted Labels - {subject}')
+# plt.legend()
 
 
-plt.subplot(2, 4, 2)  # 1 row, 2 columns, plot number 2
-plt.plot(element_numbers, y_test, label='True Labels', color='green')
-plt.xlabel('Element Numbers')
-plt.ylabel('True Labels')
-plt.title(f'True Labels - {subject}')
-plt.legend()
+# plt.subplot(2, 4, 2)  # 1 row, 2 columns, plot number 2
+# plt.plot(element_numbers, y_test, label='True Labels', color='green')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('True Labels')
+# plt.title(f'True Labels - {subject}')
+# plt.legend()
 
-plt.subplot(2, 4, 3)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'acceleration data hand_IMU - {subject}')
+# plt.subplot(2, 4, 3)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'hand_IMU - {subject}')
 
-plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'acceleration data lowerarm_IMU - {subject}')
+# plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'lowerarm_IMU - {subject}')
 
-plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'acceleration data upperarm_IMU - {subject}')
+# plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'upperarm_IMU - {subject}')
 
-plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'acceleration data shoulder_IMU - {subject}')
+# plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'shoulder_IMU - {subject}')
 
-plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'acceleration data sternum_IMU - {subject}')
+# plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'sternum_IMU - {subject}')
 
-plt.tight_layout()  # Adjust layout to prevent overlap
-plt.show()
+# plt.tight_layout()  # Adjust layout to prevent overlap
+# plt.show()
+
+# plt.figure(figsize=(12, 6))
+
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title(f'Predicted Labels vs acceleration data - {subject}')
+# plt.legend()
+# plt.show()
 
 # Get feature importances
 importances = clf.feature_importances_
@@ -304,14 +308,69 @@ importances = clf.feature_importances_
 # Sort feature importances in descending order
 indices = np.argsort(importances)[::-1]
 
-# Plot the feature importances
-plt.figure(figsize=(10, 6))
-plt.title("Feature Importances")
+# Compute confusion matrix for test data
+conf_matrix = confusion_matrix(y_test, y_test_pred)
+
+############################## NEW: ADDED PLOT FOR PRESENTATION ###################################### 
+# label maps for confusion matrix
+label_mapping = {0: 'N', 1: 'A', 2: 'B', 3: 'C'}
+
+
+# Plot confusion matrix
+print("Confusion Matrix:\n", conf_matrix)
+plt.figure(figsize=(8, 6))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
+            xticklabels=[label_mapping[key] for key in label_mapping.keys()],
+            yticklabels=[label_mapping[key] for key in label_maAping.keys()])
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.title(f'Confusion Matrix for {subject}')
+plt.show()
+
+
+
+
+# little code setup to edit the ylabels for predicted true plots
+yticks = [0,1,2,3]
+yticklabels = ['N','A', 'B', 'C']
+
+plt.figure(figsize=(12, 8))
+
+plt.subplot(2, 2, 1)  # 1 row, 2 columns, plot number 1
+plt.title(f'Plot of Predicted labels for person {subject}')
+plt.plot(element_numbers, y_test_pred, label='Predictions')
+plt.yticks(yticks, yticklabels)
+plt.xlabel('Element number')
+plt.ylabel('Movement steps')
+plt.legend()
+
+plt.subplot(2, 2, 2)  # 1 row, 2 columns, plot number 1
+plt.title(f'Plot of True labels for person {subject}')
+plt.plot(element_numbers, y_test, color = 'orange',  label='True Labels')
+plt.yticks(yticks, yticklabels)
+plt.xlabel('Element number')
+plt.ylabel('Movement steps')
+plt.legend()
+
+plt.subplot(2, 2, 3)  # 1 row, 2 columns, plot number 2, acceleration of hand imu
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+plt.xlabel('Element number')
+plt.ylabel('acceleration value')
+plt.title(f'hand_IMU - {subject}')
+
+plt.subplot(2, 2, 4)  # 1 row, 2 columns, plot number 2, acceleration of hand imu
+plt.title(f"Feature Importances for person {subject}")
 plt.bar(range(X_train.shape[1]), importances[indices], align="center")
 plt.xticks(range(X_train.shape[1]), indices)
 plt.xlabel("Feature Index")
 plt.ylabel("Feature Importance")
 plt.show()
+
+
+
+
+######################################################################################################
+
 
 # # Visualize one of the decision trees in the Random Forest
 # plt.figure(figsize=(150, 10))

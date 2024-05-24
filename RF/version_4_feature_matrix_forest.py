@@ -16,7 +16,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 #### Importing of necessary functions for algorithm  #############################################################################
 from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
-from Random_forest import labels_interpolation
+import labels_interpolation
 
 
 ##### VARIABLES ######################################################################################################
@@ -32,7 +32,7 @@ sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
-test_person = 2
+test_person = 7
 #test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
 
 #######################################################################################################################
