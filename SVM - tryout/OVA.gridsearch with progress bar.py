@@ -95,7 +95,7 @@ X_test = combine_features(subjects_test, X_test_RMS, X_test_Mean, X_test_Slope, 
 # Hyperparameter tuning with GridSearchCV
 param_grid = {'estimator__C': [0.1, 1, 10, 100],
               'estimator__gamma': [1, 0.1, 0.01, 0.001],
-              'estimator__kernel': ['linear', 'rbf']}
+              'estimator__kernel': ['rbf', 'linear', 'poly', 'sigmoid']}
 
 ovr_clf = OneVsRestClassifier(SVC(random_state=42))
 grid_search = GridSearchCV(ovr_clf, param_grid, cv=5)
