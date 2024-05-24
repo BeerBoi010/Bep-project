@@ -38,7 +38,7 @@ sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
-test_person = 3
+test_person = 2
 #test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
 
 #######################################################################################################################
@@ -52,7 +52,6 @@ all_labels = labels_interpolation.expanded_matrices
 
 subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'drinking_HealthySubject4_Test',   
         'drinking_HealthySubject5_Test', 'drinking_HealthySubject6_Test', 'drinking_HealthySubject7_Test']
-
 
 subjects.remove(f'drinking_HealthySubject{test_person}_Test')
 subjects_train = subjects
