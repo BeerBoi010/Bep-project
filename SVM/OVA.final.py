@@ -106,64 +106,70 @@ print(classification_report(y_train, y_train_pred))
 print("Classification Report of test data:")
 print(classification_report(y_test, y_test_pred))
 
-# Define minimum duration threshold
-min_duration_threshold = 5  # Minimum number of measurements for a label to be considered valid
+element_numbers = list(range(len(y_test_pred)))
 
-# Post-processing function
-def filter_short_labels(predictions, min_duration):
-    filtered_predictions = predictions.copy()
-    current_label = predictions[0]
-    current_start = 0
-
-    for i in range(1, len(predictions)):
-        if predictions[i] != current_label:
-            if i - current_start < min_duration:
-                filtered_predictions[current_start:i] = [filtered_predictions[current_start - 1]] * (i - current_start) if current_start > 0 else [0] * (i - current_start)
-            current_label = predictions[i]
-            current_start = i
-
-    # Check the last segment
-    if len(predictions) - current_start < min_duration:
-        filtered_predictions[current_start:] = [filtered_predictions[current_start - 1]] * (len(predictions) - current_start) if current_start > 0 else [0] * (len(predictions) - current_start)
-    
-    return filtered_predictions
-
-# Apply the filter to test predictions
-y_test_pred_filtered = filter_short_labels(y_test_pred, min_duration_threshold)
-
-# Apply the filter to train predictions if needed
-y_train_pred_filtered = filter_short_labels(y_train_pred, min_duration_threshold)
-
-# Generate Classification Report for filtered predictions
-print("Classification Report of test data (filtered):")
-print(classification_report(y_test, y_test_pred_filtered))
-
-print("Classification Report of train data (filtered):")
-print(classification_report(y_train, y_train_pred_filtered))
-
-# Plot filtered predictions
-element_numbers = list(range(len(y_test_pred_filtered)))
-
+### Setting up plots to illustrate code
 plt.figure(figsize=(12, 6))
-plt.subplot(2, 1, 1)
-plt.plot(element_numbers, y_test_pred_filtered, label='Filtered Predictions', color='blue')
+
+plt.subplot(2, 4, 1)
+plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
 plt.xlabel('Element Numbers')
 plt.ylabel('Predicted Labels')
-plt.title(f'Filtered Predicted Labels - {subjects_test[0]}')
+plt.title(f'Predicted Labels - {subjects_test[0]}')
 plt.legend()
 
-plt.subplot(2, 1, 2)
+plt.subplot(2, 4, 2)
 plt.plot(element_numbers, y_test, label='True Labels', color='green')
 plt.xlabel('Element Numbers')
 plt.ylabel('True Labels')
 plt.title(f'True Labels - {subjects_test[0]}')
 plt.legend()
 
+plt.subplot(2, 4, 3)
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+plt.xlabel('Element number')
+plt.ylabel('Acceleration value')
+plt.title(f'hand_IMU - {subjects_test[0]}')
+
+plt.subplot(2, 4, 5)
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
+plt.xlabel('Element number')
+plt.ylabel('Acceleration value')
+plt.title(f'lowerarm_IMU - {subjects_test[0]}')
+
+plt.subplot(2, 4, 6)
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
+plt.xlabel('Element number')
+plt.ylabel('Acceleration value')
+plt.title(f'upperarm_IMU - {subjects_test[0]}')
+
+plt.subplot(2, 4, 7)
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
+plt.xlabel('Element number')
+plt.ylabel('Acceleration value')
+plt.title(f'shoulder_IMU - {subjects_test[0]}')
+
+plt.subplot(2, 4, 8)
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
+plt.xlabel('Element number')
+plt.ylabel('Acceleration value')
+plt.title(f'sternum_IMU - {subjects_test[0]}')
+
 plt.tight_layout()
 plt.show()
 
+plt.figure(figsize=(12, 6))
+
+plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+plt.xlabel('Element Numbers')
+plt.ylabel('Predicted Labels')
+plt.title(f'Predicted Labels vs Acceleration Data - {subjects_test[0]}')
+plt.legend()
+plt.show()
+
 # Compute confusion matrix for test data
-conf_matrix = confusion_matrix(y_test, y_test_pred_filtered)
+conf_matrix = confusion_matrix(y_test, y_test_pred)
 
 # Label maps for confusion matrix
 label_mapping = {0: 'N', 1: 'A', 2: 'B', 3: 'C'}
@@ -208,6 +214,15 @@ print(classification_report(y_test, y_test_pred_pca, zero_division=1))
 lda_feature_importance = np.abs(lda.coef_[0])
 n_features_lda = lda.n_features_in_
 lda_feature_importance /= np.sum(lda_feature_importance)
+
+# Get the indices of the most important features
+important_features_indices = np.argsort(lda_feature_importance)[::-1]
+
+# Print the most important features
+top_n = 30  # Number of top features to print
+print(f"Top {top_n} most important features from LDA:")
+for i in range(top_n):
+    print(f"Feature {important_features_indices[i]}: Importance {lda_feature_importance[important_features_indices[i]]:.4f}")
 
 print("Feature Importances from LDA:")
 print(lda_feature_importance)
