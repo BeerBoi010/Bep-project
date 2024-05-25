@@ -1,14 +1,21 @@
+#########################################
+
+#uses best parameters found in gridsearch,added filter,added print for most important lda features, removed mistakes
+
+########################
+
 import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import accuracy_score, classification_report
+import sys
 import pandas as pd
 import matplotlib.pyplot as plt
-
-from sklearn.svm import SVC
-from sklearn.multiclass import OneVsOneClassifier
-from sklearn.metrics import accuracy_score, classification_report
-from sklearn.model_selection import GridSearchCV
-from tqdm import tqdm  # Import tqdm library for progress bars
+from sklearn.tree import plot_tree
+from scipy.stats import pearsonr
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from tqdm import tqdm
 
 from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
 import labels_interpolation
@@ -23,18 +30,19 @@ sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
-
 test_person = 7
 
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
+
 all_labels = labels_interpolation.expanded_matrices
 
-subjects = [f'drinking_HealthySubject{i+2}_Test' for i in range(6)]
+subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'drinking_HealthySubject4_Test',   
+            'drinking_HealthySubject5_Test', 'drinking_HealthySubject6_Test', 'drinking_HealthySubject7_Test']
+
 subjects.remove(f'drinking_HealthySubject{test_person}_Test')
 subjects_train = subjects
 subjects_test = [f'drinking_HealthySubject{test_person}_Test']
-#print(subjects_test)
 
 test_labels = all_labels[test_person - 2]
 all_labels.pop(test_person - 2)
@@ -58,61 +66,103 @@ X_test_Min = Min_V2.Min_test(subjects_test, sampling_window_min_max, min_periods
 X_train_STD = Standard_Deviation.STD_train(subjects_train, sampling_window_STD, min_periods)
 X_test_STD = Standard_Deviation.STD_test(subjects_test, sampling_window_STD, min_periods)
 
+Y_train_labels = train_labels
+Y_test_labels = test_labels
 
-labels_train = [i[1] for item in train_labels for i in item]
-labels_test = [item[1] for item in test_labels]
+labels_train = []
+for item in Y_train_labels:
+    for i in item:
+        labels_train.append(i[1])
+
+labels_test = []
+for item in Y_test_labels:
+    labels_test.append(item[1])
 
 label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
 
 y_train = [label_mapping[label] for label in labels_train]
 y_test = [label_mapping[label] for label in labels_test]
-#print("y_test",len(y_test))
 
-def combine_features(subjects, rms, mean, slope, max_val, min_val, std_dev):
-    combined_data_patients = []
-    for subject in subjects:
-        combined_data_patient = []
-        for imu_location in rms[subject]:
-            combined_data_imu = np.hstack((
-                rms[subject][imu_location]["acc_rms"], rms[subject][imu_location]["rot_rms"],
-                mean[subject][imu_location]["acc_mean"], mean[subject][imu_location]["rot_mean"],
-                slope[subject][imu_location]["acc_slope"], slope[subject][imu_location]["rot_slope"],
-                max_val[subject][imu_location]["acc_max"], max_val[subject][imu_location]["rot_max"],
-                min_val[subject][imu_location]["acc_min"], min_val[subject][imu_location]["rot_min"],
-                std_dev[subject][imu_location]["acc_STD"], std_dev[subject][imu_location]["rot_STD"]
-            ))
-            combined_data_patient.append(combined_data_imu)
-        combined_data_patients.append(np.hstack(combined_data_patient))
-    return np.concatenate(combined_data_patients)
+X_data_patients_train = []
 
-X_train = combine_features(subjects_train, X_train_RMS, X_train_Mean, X_train_Slope, X_train_Max, X_train_Min, X_train_STD)
-X_test = combine_features(subjects_test, X_test_RMS, X_test_Mean, X_test_Slope, X_test_Max, X_test_Min, X_test_STD)
+for subject in X_train_RMS:
+    combined_data_patient = []
 
-#print(X_train.shape)
-#print(X_test.shape)
+    for imu_location in X_train_RMS[subject]:
+        acc_rms_imu = X_train_RMS[subject][imu_location]["acc_rms"]
+        rot_rms_imu = X_train_RMS[subject][imu_location]["rot_rms"]
+        acc_mean_imu = X_train_Mean[subject][imu_location]["acc_mean"]
+        rot_mean_imu = X_train_Mean[subject][imu_location]["rot_mean"]
+        acc_slope_imu = X_train_Slope[subject][imu_location]["acc_slope"]
+        rot_slope_imu = X_train_Slope[subject][imu_location]["rot_slope"]
+        acc_max_imu = X_train_Max[subject][imu_location]["acc_max"]
+        rot_max_imu = X_train_Max[subject][imu_location]["rot_max"]
+        acc_min_imu = X_train_Min[subject][imu_location]["acc_min"]
+        rot_min_imu = X_train_Min[subject][imu_location]["rot_min"]
+        acc_STD_imu = X_train_STD[subject][imu_location]["acc_STD"]
+        rot_STD_imu = X_train_STD[subject][imu_location]["rot_STD"]
 
-# Hyperparameter tuning with GridSearchCV
-param_grid = {'estimator__C': [0.1, 1, 10, 100],
-              'estimator__gamma': [1, 0.1, 0.01, 0.001],
-              'estimator__kernel': ['rbf']}
+        combined_data_imu = np.hstack((acc_rms_imu, rot_rms_imu, acc_mean_imu, rot_mean_imu, acc_slope_imu, rot_slope_imu,
+                                       acc_max_imu, rot_max_imu, acc_min_imu, rot_min_imu, acc_STD_imu, rot_STD_imu))
+        combined_data_patient.append(combined_data_imu)
 
-ovr_clf = OneVsOneClassifier(SVC(random_state=42))
-grid_search = GridSearchCV(ovr_clf, param_grid, cv=3)
+    X_data_patients_train.append(np.hstack(combined_data_patient))
+
+combined_X_data_train = np.concatenate(X_data_patients_train)
+X_train = combined_X_data_train
+
+X_data_patients_test = []
+
+for subject in X_test_RMS:
+    combined_data_patient = []
+
+    for imu_location in X_test_RMS[subject]:
+        acc_rms_imu = X_test_RMS[subject][imu_location]["acc_rms"]
+        rot_rms_imu = X_test_RMS[subject][imu_location]["rot_rms"]
+        acc_mean_imu = X_test_Mean[subject][imu_location]["acc_mean"]
+        rot_mean_imu = X_test_Mean[subject][imu_location]["rot_mean"]
+        acc_slope_imu = X_test_Slope[subject][imu_location]["acc_slope"]
+        rot_slope_imu = X_test_Slope[subject][imu_location]["rot_slope"]
+        acc_max_imu = X_test_Max[subject][imu_location]["acc_max"]
+        rot_max_imu = X_test_Max[subject][imu_location]["rot_max"]
+        acc_min_imu = X_test_Min[subject][imu_location]["acc_min"]
+        rot_min_imu = X_test_Min[subject][imu_location]["rot_min"]
+        acc_STD_imu = X_test_STD[subject][imu_location]["acc_STD"]
+        rot_STD_imu = X_test_STD[subject][imu_location]["rot_STD"]
+
+        combined_data_imu = np.hstack((acc_rms_imu, rot_rms_imu, acc_mean_imu, rot_mean_imu, acc_slope_imu, rot_slope_imu,
+                                       acc_max_imu, rot_max_imu, acc_min_imu, rot_min_imu, acc_STD_imu, rot_STD_imu))
+        combined_data_patient.append(combined_data_imu)
+
+    X_data_patients_test.append(np.hstack(combined_data_patient))
+
+combined_X_data_test = np.concatenate(X_data_patients_test)
+X_test = combined_X_data_test
+
+param_grid = {
+    'n_estimators': [50, 100, 150],
+    'max_depth': [None, 10, 20, 30],
+    'min_samples_leaf': [1, 2, 4]
+}
+
+clf = RandomForestClassifier(random_state=42)
+
+
+# Setting up code for a grid search
+grid_search = GridSearchCV(estimator=clf, param_grid=param_grid, cv=3)
 
 # Fit GridSearchCV on training data with progress bar
-with tqdm(total=len(param_grid['estimator__kernel'])*len(param_grid['estimator__gamma'])*len(param_grid['estimator__kernel'])) as pbar:
+with tqdm(total=len(param_grid['n_estimators'])*len(param_grid['max_depth'])*len(param_grid['min_samples_leaf'])) as pbar:
     grid_search.fit(X_train, y_train)
     pbar.update()
 
-best_params = grid_search.best_params_
-best_estimator = grid_search.best_estimator_
+best_clf = grid_search.best_estimator_
 
-# Predictions
-y_test_pred = best_estimator.predict(X_test)
-y_train_pred = best_estimator.predict(X_train)
+y_test_pred = best_clf.predict(X_test)
+y_train_pred = best_clf.predict(X_train)
 
-# Print best parameters
-print("\nBest Parameters:", best_params)
+print("Best parameters found: ", grid_search.best_params_)
+
 print("Classification Report of train data:")
 print(classification_report(y_train, y_train_pred))
 
@@ -181,6 +231,18 @@ plt.title(f'Predicted Labels vs Acceleration Data - {subjects_test[0]}')
 plt.legend()
 plt.show()
 
+importances = best_clf.feature_importances_
+
+indices = np.argsort(importances)[::-1]
+
+plt.figure(figsize=(10, 6))
+plt.title("Feature Importances")
+plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+plt.xticks(range(X_train.shape[1]), indices)
+plt.xlabel("Feature Index")
+plt.ylabel("Feature Importance")
+plt.show()
+
 num_classes = len(np.unique(y_train))
 n_components_lda = min(num_classes - 1, X_train.shape[1])
 
@@ -192,19 +254,13 @@ pca = PCA(n_components=None)
 X_train_pca = pca.fit_transform(X_train)
 X_test_pca = pca.transform(X_test)
 
-# Extracting the best parameters from the grid search results
-best_C = grid_search.best_params_['estimator__C']
-best_gamma = grid_search.best_params_['estimator__gamma']
-best_kernel = grid_search.best_params_['estimator__kernel']
+clf_lda = RandomForestClassifier(n_estimators=best_clf['n_estimators'],min_samples_leaf=best_clf['min_samples_leaf'],max_depth=best_clf['max_depth'], random_state=42)
+clf_lda.fit(X_train_lda, y_train)
+y_test_pred_lda = clf_lda.predict(X_test_lda)
 
-# Using the determined parameters for OvA classification with SVC
-ova_clf_lda = OneVsOneClassifier(SVC(kernel=best_kernel,C=best_C,gamma=best_gamma, random_state=42))
-ova_clf_lda.fit(X_train_lda, y_train)
-y_test_pred_lda = ova_clf_lda.predict(X_test_lda)
-
-ova_clf_pca = OneVsOneClassifier(SVC(kernel=best_kernel,C=best_C,gamma=best_gamma, random_state=42))
-ova_clf_pca.fit(X_train_pca, y_train)
-y_test_pred_pca = ova_clf_pca.predict(X_test_pca)
+clf_pca = RandomForestClassifier(n_estimators=best_clf['n_estimators'],min_samples_leaf=best_clf['min_samples_leaf'],max_depth=best_clf['max_depth'], random_state=42)
+clf_pca.fit(X_train_pca, y_train)
+y_test_pred_pca = clf_pca.predict(X_test_pca)
 
 print("Classification Report of test data for LDA:")
 print(classification_report(y_test, y_test_pred_lda))

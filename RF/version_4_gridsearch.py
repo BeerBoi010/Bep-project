@@ -248,11 +248,11 @@ pca = PCA(n_components=None)
 X_train_pca = pca.fit_transform(X_train)
 X_test_pca = pca.transform(X_test)
 
-clf_lda = RandomForestClassifier(n_estimators=best_clf['n_estimators'], random_state=42)
+clf_lda = RandomForestClassifier(n_estimators=best_clf['n_estimators'],min_samples_leaf=best_clf['min_samples_leaf'],max_depth=best_clf['max_depth'], random_state=42)
 clf_lda.fit(X_train_lda, y_train)
 y_test_pred_lda = clf_lda.predict(X_test_lda)
 
-clf_pca = RandomForestClassifier(n_estimators=best_clf['n_estimators'], random_state=42)
+clf_pca = RandomForestClassifier(n_estimators=best_clf['n_estimators'],min_samples_leaf=best_clf['min_samples_leaf'],max_depth=best_clf['max_depth'], random_state=42)
 clf_pca.fit(X_train_pca, y_train)
 y_test_pred_pca = clf_pca.predict(X_test_pca)
 

@@ -198,11 +198,11 @@ best_gamma = grid_search.best_params_['estimator__gamma']
 best_kernel = grid_search.best_params_['estimator__kernel']
 
 # Using the determined parameters for OvA classification with SVC
-ova_clf_lda = OneVsRestClassifier(SVC(kernel=best_kernel, random_state=42))
+ova_clf_lda = OneVsRestClassifier(SVC(kernel=best_kernel,C=best_C,gamma=best_gamma, random_state=42))
 ova_clf_lda.fit(X_train_lda, y_train)
 y_test_pred_lda = ova_clf_lda.predict(X_test_lda)
 
-ova_clf_pca = OneVsRestClassifier(SVC(kernel=best_kernel, random_state=42))
+ova_clf_pca = OneVsRestClassifier(SVC(kernel=best_kernel,C=best_C,gamma=best_gamma, random_state=42))
 ova_clf_pca.fit(X_train_pca, y_train)
 y_test_pred_pca = ova_clf_pca.predict(X_test_pca)
 
