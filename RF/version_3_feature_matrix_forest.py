@@ -22,6 +22,7 @@ from Feature_Extraction import  Slope_V2
 from Feature_Extraction import Max_V2
 from Feature_Extraction import Min_V2
 from Feature_Extraction import Standard_Deviation
+from Feature_Extraction import entropy_V2
 import labels_interpolation
 
 
@@ -38,7 +39,8 @@ sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
-test_person = 7
+sampling_window_entropy = 3
+test_person = 5
 #test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
 
 #######################################################################################################################
@@ -85,6 +87,9 @@ X_test_Min = Min_V2.Min_test(subjects_test, sampling_window_min_max, min_periods
 
 X_train_STD = Standard_Deviation.STD_train(subjects_train, sampling_window_STD, min_periods)
 X_test_STD = Standard_Deviation.STD_test(subjects_test, sampling_window_STD, min_periods)
+
+X_train_entropy = entropy_V2.Entropy_train(subjects_train, sampling_window_entropy)
+X_test_entropy = entropy_V2.Entropy_test(subjects_test, sampling_window_entropy)
 
 Y_train_labels = train_labels
 Y_test_labels = test_labels
@@ -138,9 +143,11 @@ for subject in X_train_RMS:
         rot_min_imu = X_train_Min[subject][imu_location]["rot_min"]
         acc_STD_imu = X_train_STD[subject][imu_location]["acc_STD"]
         rot_STD_imu = X_train_STD[subject][imu_location]["rot_STD"]
+        acc_entropy_imu = X_train_entropy[subject][imu_location]["acc_entropy"]
+        rot_entropy_imu = X_train_entropy[subject][imu_location]["rot_entropy"]
 
         combined_data_imu = np.hstack((acc_rms_imu, rot_rms_imu, acc_mean_imu, rot_mean_imu,acc_slope_imu,rot_slope_imu,
-                                       acc_max_imu,rot_max_imu,acc_min_imu,rot_min_imu,acc_STD_imu,rot_STD_imu))
+                                       acc_max_imu,rot_max_imu,acc_min_imu,rot_min_imu,acc_STD_imu,rot_STD_imu,acc_entropy_imu,rot_entropy_imu))
         combined_data_patient.append(combined_data_imu)  # Append each sensor's data
 
     # Stack the data from all sensors for this patient
@@ -178,10 +185,12 @@ for subject in X_test_RMS:
         rot_min_imu = X_test_Min[subject][imu_location]["rot_min"]
         acc_STD_imu = X_test_STD[subject][imu_location]["acc_STD"]
         rot_STD_imu = X_test_STD[subject][imu_location]["rot_STD"]
+        acc_entropy_imu = X_test_entropy[subject][imu_location]["acc_entropy"]
+        rot_entropy_imu = X_test_entropy[subject][imu_location]["rot_entropy"]
 
 
         combined_data_imu = np.hstack((acc_rms_imu, rot_rms_imu, acc_mean_imu, rot_mean_imu,acc_slope_imu,rot_slope_imu,
-                                       acc_max_imu,rot_max_imu,acc_min_imu,rot_min_imu,acc_STD_imu,rot_STD_imu))
+                                       acc_max_imu,rot_max_imu,acc_min_imu,rot_min_imu,acc_STD_imu,rot_STD_imu,acc_entropy_imu,rot_entropy_imu))
         combined_data_patient.append(combined_data_imu)  # Append each sensor's data
 
     # Stack the data from all sensors for this patient
