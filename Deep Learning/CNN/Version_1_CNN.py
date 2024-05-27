@@ -9,7 +9,7 @@ import labels_interpolation
 
 # Define parameters
 train_amount = 5
-test_person = 6
+test_person = 7
 
 # Load data
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
@@ -47,9 +47,18 @@ def prepare_raw_data(subjects, acc, rot):
     for subject in subjects:
         subject_data = []
         for imu_location in acc[subject]:
+
             acc_data = acc[subject][imu_location]
+            min_val = np.min(acc_data, axis=None, keepdims=True)
+            max_val = np.max(acc_data, axis=None, keepdims=True)
+            normalized_acc = (acc_data - min_val) / (max_val - min_val) * 2 - 1
+
             rot_data = rot[subject][imu_location]
-            imu_data = np.hstack((acc_data, rot_data))
+            min_val = np.min(rot_data, axis=None, keepdims=True)
+            max_val = np.max(rot_data, axis=None, keepdims=True)
+            normalized_rot = (rot_data - min_val) / (max_val - min_val) * 2 - 1
+
+            imu_data = np.hstack((normalized_acc, normalized_rot))
             subject_data.append(imu_data)
         # Stack all IMU sensor data horizontally
         subject_data = np.hstack(subject_data)
@@ -58,6 +67,7 @@ def prepare_raw_data(subjects, acc, rot):
 
 # Prepare the training and test data
 X_train_raw = prepare_raw_data(subjects_train, acc, rot)
+print("data ........................................................................",X_train_raw[0])
 X_test_raw = prepare_raw_data(subjects_test, acc, rot)
 
 # Define the CNN model with 1D convolutions
@@ -91,7 +101,7 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 model.summary()
 
 # Train the model
-history = model.fit(X_train_raw, y_train_oh, epochs=80)
+history = model.fit(X_train_raw, y_train_oh, epochs=80,batch_size = 5, validation_data=(X_test_raw, y_test_oh))
 
 # Evaluate on test data
 test_loss, test_accuracy = model.evaluate(X_test_raw, y_test_oh)
@@ -121,20 +131,22 @@ plt.ylabel('True Labels')
 plt.title(f'Confusion Matrix for {test_person}')
 plt.show()
 
-# Plot training accuracy
+# Plot training and test accuracy
 plt.figure(figsize=(10, 5))
 plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
 plt.title('Model accuracy')
 plt.ylabel('Accuracy')
 plt.xlabel('Epoch')
-plt.legend(['Train'], loc='upper left')
+plt.legend(['Train', 'Test'], loc='upper left')
 plt.show()
 
-# Plot training loss
+# Plot training and test loss
 plt.figure(figsize=(10, 5))
 plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
 plt.title('Model loss')
 plt.ylabel('Loss')
 plt.xlabel('Epoch')
-plt.legend(['Train'], loc='upper left')
+plt.legend(['Train', 'Test'], loc='upper left')
 plt.show()
