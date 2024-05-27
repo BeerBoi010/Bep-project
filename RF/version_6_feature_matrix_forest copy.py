@@ -1,3 +1,9 @@
+#########################################
+
+#uses best parameters found in gridsearch,added filter,added print for most important lda features, removed mistakes
+
+########################
+
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
@@ -10,6 +16,9 @@ from scipy.stats import pearsonr
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from tqdm import tqdm
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
+
 
 from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
 import labels_interpolation
@@ -24,7 +33,7 @@ sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
-test_person = 2
+test_person = 7
 
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
@@ -133,29 +142,11 @@ for subject in X_test_RMS:
 combined_X_data_test = np.concatenate(X_data_patients_test)
 X_test = combined_X_data_test
 
-param_grid = {
-    'n_estimators': [50, 100, 150],
-    'max_depth': [None, 10, 20, 30],
-    'min_samples_leaf': [1, 2, 4]
-}
+clf = RandomForestClassifier(n_estimators=100,min_samples_leaf=1,max_depth=10, random_state=42)
+clf.fit(X_train, y_train)
 
-clf = RandomForestClassifier(random_state=42)
-
-
-# Setting up code for a grid search
-grid_search = GridSearchCV(estimator=clf, param_grid=param_grid, cv=3)
-
-# Fit GridSearchCV on training data with progress bar
-with tqdm(total=len(param_grid['n_estimators'])*len(param_grid['max_depth'])*len(param_grid['min_samples_leaf'])) as pbar:
-    grid_search.fit(X_train, y_train)
-    pbar.update()
-
-best_clf = grid_search.best_estimator_
-
-y_test_pred = best_clf.predict(X_test)
-y_train_pred = best_clf.predict(X_train)
-
-print("Best parameters found: ", grid_search.best_params_)
+y_test_pred = clf.predict(X_test)
+y_train_pred = clf.predict(X_train)
 
 print("Classification Report of train data:")
 print(classification_report(y_train, y_train_pred))
@@ -225,7 +216,24 @@ plt.title(f'Predicted Labels vs Acceleration Data - {subjects_test[0]}')
 plt.legend()
 plt.show()
 
-importances = best_clf.feature_importances_
+# Compute confusion matrix for test data
+conf_matrix = confusion_matrix(y_test, y_test_pred)
+
+# Label maps for confusion matrix
+label_mapping = {0: 'N', 1: 'A', 2: 'B', 3: 'C'}
+
+# Plot confusion matrix
+print("Confusion Matrix:\n", conf_matrix)
+plt.figure(figsize=(8, 6))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
+            xticklabels=[label_mapping[key] for key in label_mapping.keys()],
+            yticklabels=[label_mapping[key] for key in label_mapping.keys()])
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.title(f'Confusion Matrix for {test_person}')
+plt.show()
+
+importances = clf.feature_importances_
 
 indices = np.argsort(importances)[::-1]
 
@@ -248,11 +256,11 @@ pca = PCA(n_components=None)
 X_train_pca = pca.fit_transform(X_train)
 X_test_pca = pca.transform(X_test)
 
-clf_lda = RandomForestClassifier(n_estimators=best_clf['n_estimators'],min_samples_leaf=best_clf['min_samples_leaf'],max_depth=best_clf['max_depth'], random_state=42)
+clf_lda = RandomForestClassifier(n_estimators=100,min_samples_leaf=1,max_depth=10, random_state=42)
 clf_lda.fit(X_train_lda, y_train)
 y_test_pred_lda = clf_lda.predict(X_test_lda)
 
-clf_pca = RandomForestClassifier(n_estimators=best_clf['n_estimators'],min_samples_leaf=best_clf['min_samples_leaf'],max_depth=best_clf['max_depth'], random_state=42)
+clf_pca = RandomForestClassifier(n_estimators=100,min_samples_leaf=1,max_depth=10, random_state=42)
 clf_pca.fit(X_train_pca, y_train)
 y_test_pred_pca = clf_pca.predict(X_test_pca)
 
@@ -267,6 +275,15 @@ lda_feature_importance = np.abs(lda.coef_[0])
 n_features_lda = lda.n_features_in_
 
 lda_feature_importance /= np.sum(lda_feature_importance)
+
+#Get the indices of the most important features
+important_features_indices = np.argsort(lda_feature_importance)[::-1]
+
+# Print the most important features
+top_n = 30  # Number of top features to print
+print(f"Top {top_n} most important features from LDA:")
+for i in range(top_n):
+    print(f"Feature {important_features_indices[i]}: Importance {lda_feature_importance[important_features_indices[i]]:.4f}")
 
 print("Feature Importances from LDA:")
 print(lda_feature_importance)

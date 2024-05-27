@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 from sklearn.multiclass import OneVsOneClassifier
 from sklearn.metrics import accuracy_score, classification_report
+from sklearn.model_selection import GridSearchCV
+from tqdm import tqdm  # Import tqdm library for progress bars
+from sklearn.decomposition import PCA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
 import labels_interpolation
@@ -87,49 +91,157 @@ X_test = combine_features(subjects_test, X_test_RMS, X_test_Mean, X_test_Slope, 
 #print(X_train.shape)
 #print(X_test.shape)
 
+# Hyperparameter tuning with GridSearchCV
+param_grid = {'estimator__C': [0.1, 1, 10, 100],
+              'estimator__gamma': [1, 0.1, 0.01, 0.001],
+              'estimator__kernel': ['rbf']}
 
-ovo_clf = OneVsOneClassifier(SVC(kernel='rbf', gamma='scale', random_state=42))
-ovo_clf.fit(X_train, y_train)
+ovr_clf = OneVsOneClassifier(SVC(random_state=42))
+grid_search = GridSearchCV(ovr_clf, param_grid, cv=3)
 
+# Fit GridSearchCV on training data with progress bar
+with tqdm(total=len(param_grid['estimator__kernel'])*len(param_grid['estimator__gamma'])*len(param_grid['estimator__kernel'])) as pbar:
+    grid_search.fit(X_train, y_train)
+    pbar.update()
 
-y_test_pred = ovo_clf.predict(X_test)
-#print("y_test_pred",len(y_test_pred))
-y_train_pred = ovo_clf.predict(X_train)
+best_params = grid_search.best_params_
+best_estimator = grid_search.best_estimator_
 
+# Predictions
+y_test_pred = best_estimator.predict(X_test)
+y_train_pred = best_estimator.predict(X_train)
 
+# Print best parameters
+print("\nBest Parameters:", best_params)
 print("Classification Report of train data:")
 print(classification_report(y_train, y_train_pred))
 
-print("\nClassification Report of test data:")
+print("Classification Report of test data:")
 print(classification_report(y_test, y_test_pred))
 
 element_numbers = list(range(len(y_test_pred)))
 
-
+### Setting up plots to illustrate code
 plt.figure(figsize=(12, 6))
 
 plt.subplot(2, 4, 1)
 plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
 plt.xlabel('Element Numbers')
 plt.ylabel('Predicted Labels')
-plt.title('Predicted Labels')
+plt.title(f'Predicted Labels - {subjects_test[0]}')
 plt.legend()
 
 plt.subplot(2, 4, 2)
 plt.plot(element_numbers, y_test, label='True Labels', color='green')
 plt.xlabel('Element Numbers')
 plt.ylabel('True Labels')
-plt.title('True Labels')
+plt.title(f'True Labels - {subjects_test[0]}')
 plt.legend()
 
+plt.subplot(2, 4, 3)
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+plt.xlabel('Element number')
+plt.ylabel('Acceleration value')
+plt.title(f'hand_IMU - {subjects_test[0]}')
 
-for i, location in enumerate(['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']):
-    plt.subplot(2, 4, 3 + i)
-    plt.plot(acc[f'drinking_HealthySubject{test_person}_Test'][location])
-    plt.xlabel('Element number')
-    plt.ylabel('Acceleration value')
-    plt.title(f'{location} - Test Person {test_person}')
+plt.subplot(2, 4, 5)
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
+plt.xlabel('Element number')
+plt.ylabel('Acceleration value')
+plt.title(f'lowerarm_IMU - {subjects_test[0]}')
+
+plt.subplot(2, 4, 6)
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
+plt.xlabel('Element number')
+plt.ylabel('Acceleration value')
+plt.title(f'upperarm_IMU - {subjects_test[0]}')
+
+plt.subplot(2, 4, 7)
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
+plt.xlabel('Element number')
+plt.ylabel('Acceleration value')
+plt.title(f'shoulder_IMU - {subjects_test[0]}')
+
+plt.subplot(2, 4, 8)
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
+plt.xlabel('Element number')
+plt.ylabel('Acceleration value')
+plt.title(f'sternum_IMU - {subjects_test[0]}')
 
 plt.tight_layout()
 plt.show()
 
+plt.figure(figsize=(12, 6))
+
+plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+plt.xlabel('Element Numbers')
+plt.ylabel('Predicted Labels')
+plt.title(f'Predicted Labels vs Acceleration Data - {subjects_test[0]}')
+plt.legend()
+plt.show()
+
+num_classes = len(np.unique(y_train))
+n_components_lda = min(num_classes - 1, X_train.shape[1])
+
+lda = LinearDiscriminantAnalysis(n_components=n_components_lda)
+X_train_lda = lda.fit_transform(X_train, y_train)
+X_test_lda = lda.transform(X_test)
+
+pca = PCA(n_components=None)
+X_train_pca = pca.fit_transform(X_train)
+X_test_pca = pca.transform(X_test)
+
+# Extracting the best parameters from the grid search results
+best_C = grid_search.best_params_['estimator__C']
+best_gamma = grid_search.best_params_['estimator__gamma']
+best_kernel = grid_search.best_params_['estimator__kernel']
+
+# Using the determined parameters for OvA classification with SVC
+ova_clf_lda = OneVsOneClassifier(SVC(kernel=best_kernel,C=best_C,gamma=best_gamma, random_state=42))
+ova_clf_lda.fit(X_train_lda, y_train)
+y_test_pred_lda = ova_clf_lda.predict(X_test_lda)
+
+ova_clf_pca = OneVsOneClassifier(SVC(kernel=best_kernel,C=best_C,gamma=best_gamma, random_state=42))
+ova_clf_pca.fit(X_train_pca, y_train)
+y_test_pred_pca = ova_clf_pca.predict(X_test_pca)
+
+print("Classification Report of test data for LDA:")
+print(classification_report(y_test, y_test_pred_lda))
+
+print("Classification Report of test data for PCA:")
+print(classification_report(y_test, y_test_pred_pca, zero_division=1))
+
+lda_feature_importance = np.abs(lda.coef_[0])
+
+n_features_lda = lda.n_features_in_
+
+lda_feature_importance /= np.sum(lda_feature_importance)
+
+print("Feature Importances from LDA:")
+print(lda_feature_importance)
+
+pca_explained_variance_ratio = pca.explained_variance_ratio_
+
+print("Explained Variance Ratios from PCA:")
+print(pca_explained_variance_ratio)
+
+pca_feature_importance = np.cumsum(pca_explained_variance_ratio)
+
+pca_feature_importance /= np.sum(pca_feature_importance)
+
+print("Feature Importances from PCA:")
+print(pca_feature_importance)
+
+plt.figure(figsize=(10, 6))
+plt.bar(range(n_features_lda), lda_feature_importance, align="center", color='orange', label='LDA')
+plt.xlabel("Feature Index")
+plt.ylabel("Feature Importance (LDA)")
+plt.legend()
+
+plt.figure(figsize=(10, 6))
+plt.bar(range(X_train_pca.shape[1]), pca_feature_importance, align="center", color='green', label='PCA')
+plt.xlabel("PCA Component Index")
+plt.ylabel("Feature Importance (PCA)")
+plt.legend()
+plt.show()
