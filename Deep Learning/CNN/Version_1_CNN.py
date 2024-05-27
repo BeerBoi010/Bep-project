@@ -112,12 +112,14 @@ y_test_pred = model.predict(X_test_raw)
 y_test_pred_classes = np.argmax(y_test_pred, axis=2)
 y_test_true_classes = np.argmax(y_test_oh, axis=2)
 
+print(y_test_true_classes[0])
+
 # Classification report
 print("Classification Report of test data:")
-print(classification_report(y_test.ravel(), y_test_pred_classes.ravel(), zero_division=1))
+print(classification_report(y_test_true_classes[0], y_test, zero_division=1))
 
 # Compute confusion matrix
-conf_matrix = confusion_matrix(y_test_true_classes.ravel(), y_test_pred_classes.ravel())
+conf_matrix = confusion_matrix(y_test_true_classes[0], y_test_pred_classes[0])
 label_mapping_inv = {v: k for k, v in label_mapping.items()}
 
 # Plot confusion matrix
@@ -146,4 +148,43 @@ plt.title('Model loss')
 plt.ylabel('Loss')
 plt.xlabel('Epoch')
 plt.legend(['Train', 'Test'], loc='upper left')
+plt.show()
+
+# Additional plots to illustrate predictions, true labels, and sensor data
+element_numbers = np.arange(y_test_pred.shape[1])
+
+plt.figure(figsize=(12, 6))
+
+plt.subplot(2, 4, 1)
+plt.plot(element_numbers, y_test_pred_classes[0], label='Predictions', color='blue')
+plt.xlabel('Element Numbers')
+plt.ylabel('Predicted Labels')
+plt.title(f'Predicted Labels - {subjects_test[0]}')
+plt.legend()
+
+plt.subplot(2, 4, 2)
+plt.plot(element_numbers, y_test_true_classes[0], label='True Labels', color='green')
+plt.xlabel('Element Numbers')
+plt.ylabel('True Labels')
+plt.title(f'True Labels - {subjects_test[0]}')
+plt.legend()
+
+imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']
+for i, location in enumerate(imu_locations, start=3):
+    plt.subplot(2, 4, i)
+    plt.plot(acc[f'drinking_HealthySubject{test_person}_Test'][location])
+    plt.xlabel('Element number')
+    plt.ylabel('Acceleration value')
+    plt.title(f'{location} - {subjects_test[0]}')
+
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(12, 6))
+plt.plot(element_numbers, y_test_pred_classes[0], label='Predictions', color='black')
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+plt.xlabel('Element Numbers')
+plt.ylabel('Predicted Labels')
+plt.title(f'Predicted Labels vs Acceleration Data - {subjects_test[0]}')
+plt.legend()
 plt.show()
