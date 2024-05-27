@@ -1,16 +1,15 @@
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report, confusion_matrix
 import seaborn as sns
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense, Dropout
+from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense, Dropout, Reshape
 import labels_interpolation
 
 # Define parameters
 train_amount = 5
-test_person = 7
+test_person = 6
 
 # Load data
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
@@ -59,18 +58,10 @@ def prepare_raw_data(subjects, acc, rot):
 
 # Prepare the training and test data
 X_train_raw = prepare_raw_data(subjects_train, acc, rot)
-print(X_train_raw.shape)
 X_test_raw = prepare_raw_data(subjects_test, acc, rot)
 
-# Concatenate X_train_raw for multiple subjects
-X_train_raw = np.concatenate(X_train_raw, axis=0)
-
-# Reshape data for 1D CNN input (samples, timesteps, features)
-X_train_raw = X_train_raw.reshape((-1, X_train_raw.shape[1], X_train_raw.shape[2]))
-X_test_raw = X_test_raw.reshape((-1, X_test_raw.shape[1], X_test_raw.shape[2]))
-
 # Define the CNN model with 1D convolutions
-def create_cnn_model(input_shape, num_classes):
+def create_cnn_model(input_shape, output_shape):
     model = Sequential()
     
     model.add(Conv1D(filters=32, kernel_size=3, activation='relu', input_shape=input_shape))
@@ -85,21 +76,22 @@ def create_cnn_model(input_shape, num_classes):
     model.add(Dense(128, activation='relu'))
     model.add(Dropout(0.5))
     
-    model.add(Dense(num_classes, activation='softmax'))
+    model.add(Dense(output_shape[0] * output_shape[1], activation='softmax'))
+    model.add(Reshape(output_shape))
     
     return model
 
-# Input shape
-input_shape = (X_train_raw.shape[1], X_train_raw.shape[2])
-num_classes = y_train_oh.shape[-1]
+# Input and output shapes
+input_shape = (1905, 30)
+output_shape = (1905, 4)
 
 # Create and compile the model
-model = create_cnn_model(input_shape, num_classes)
+model = create_cnn_model(input_shape, output_shape)
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 model.summary()
 
 # Train the model
-history = model.fit(X_train_raw, y_train_oh, epochs=20, batch_size=32)
+history = model.fit(X_train_raw, y_train_oh, epochs=80)
 
 # Evaluate on test data
 test_loss, test_accuracy = model.evaluate(X_test_raw, y_test_oh)
@@ -122,29 +114,27 @@ label_mapping_inv = {v: k for k, v in label_mapping.items()}
 # Plot confusion matrix
 plt.figure(figsize=(8, 6))
 sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
-            xticklabels=[label_mapping_inv[key] for key in range(num_classes)],
-            yticklabels=[label_mapping_inv[key] for key in range(num_classes)])
+            xticklabels=[label_mapping_inv[key] for key in range(output_shape[1])],
+            yticklabels=[label_mapping_inv[key] for key in range(output_shape[1])])
 plt.xlabel('Predicted Labels')
 plt.ylabel('True Labels')
 plt.title(f'Confusion Matrix for {test_person}')
 plt.show()
 
-# Plot training & validation accuracy values
+# Plot training accuracy
 plt.figure(figsize=(10, 5))
 plt.plot(history.history['accuracy'])
-plt.plot(history.history['val_accuracy'])
 plt.title('Model accuracy')
 plt.ylabel('Accuracy')
 plt.xlabel('Epoch')
-plt.legend(['Train', 'Validation'], loc='upper left')
+plt.legend(['Train'], loc='upper left')
 plt.show()
 
-# Plot training & validation loss values
+# Plot training loss
 plt.figure(figsize=(10, 5))
 plt.plot(history.history['loss'])
-plt.plot(history.history['val_loss'])
 plt.title('Model loss')
 plt.ylabel('Loss')
 plt.xlabel('Epoch')
-plt.legend(['Train', 'Validation'], loc='upper left')
+plt.legend(['Train'], loc='upper left')
 plt.show()
