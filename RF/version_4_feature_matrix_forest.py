@@ -1,4 +1,4 @@
-#### description:testing for different window sizes, added pca and lda
+#### description:changing data so you dont input the whole dataset of a patient but their trial indivually/ testing for different window sizes
 
 ### Importing of necessary libraries ###############################################################################################
 import numpy as np
@@ -88,10 +88,10 @@ Y_train_labels = train_labels
 Y_test_labels = test_labels
 
 
-print(X_test_Slope["drinking_HealthySubject2_Test"]['hand_IMU']["acc_slope"][0])
-corr,_ = pearsonr(X_test_Slope["drinking_HealthySubject2_Test"]['hand_IMU']["acc_slope"][0],X_test_Max["drinking_HealthySubject2_Test"]['hand_IMU']["acc_max"][0])
+# print(X_test_Slope["drinking_HealthySubject2_Test"]['hand_IMU']["acc_slope"][0])
+# corr,_ = pearsonr(X_test_Slope["drinking_HealthySubject2_Test"]['hand_IMU']["acc_slope"][0],X_test_Max["drinking_HealthySubject2_Test"]['hand_IMU']["acc_max"][0])
 
-print("correlation between slope and max is:",corr)
+# print("correlation between slope and max is:",corr)
 
 
 ############################must be labels per movement#########################3
@@ -228,81 +228,79 @@ element_numbers = list(range(len(y_test_pred)))
 '''Below plots are made to visualize what the Random classifier has done and how it has performed'''
 
 # Plot for y_pred
-plt.figure(figsize=(12, 6))
+# plt.figure(figsize=(12, 6))
 
-plt.subplot(2, 4, 1)  # 1 row, 2 columns, plot number 1
-plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
-plt.xlabel('Element Numbers')
-plt.ylabel('Predicted Labels')
-plt.title(f'Predicted Labels - {subject}')
-plt.legend()
+# plt.subplot(2, 4, 1)  # 1 row, 2 columns, plot number 1
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title(f'Predicted Labels - {subject}')
+# plt.legend()
 
 
-plt.subplot(2, 4, 2)  # 1 row, 2 columns, plot number 2
-plt.plot(element_numbers, y_test, label='True Labels', color='green')
-plt.xlabel('Element Numbers')
-plt.ylabel('True Labels')
-plt.title(f'True Labels - {subject}')
-plt.legend()
+# plt.subplot(2, 4, 2)  # 1 row, 2 columns, plot number 2
+# plt.plot(element_numbers, y_test, label='True Labels', color='green')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('True Labels')
+# plt.title(f'True Labels - {subject}')
+# plt.legend()
 
-plt.subplot(2, 4, 3)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'hand_IMU - {subject}')
+# plt.subplot(2, 4, 3)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'hand_IMU - {subject}')
 
-plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'lowerarm_IMU - {subject}')
+# plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'lowerarm_IMU - {subject}')
 
-plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'upperarm_IMU - {subject}')
+# plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'upperarm_IMU - {subject}')
 
-plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'shoulder_IMU - {subject}')
+# plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'shoulder_IMU - {subject}')
 
-plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'sternum_IMU - {subject}')
+# plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'sternum_IMU - {subject}')
 
-plt.tight_layout()  # Adjust layout to prevent overlap
-#plt.show()
+# plt.tight_layout()  # Adjust layout to prevent overlap
+# #plt.show()
 
-plt.figure(figsize=(12, 6))
+# plt.figure(figsize=(12, 6))
 
-plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
-plt.xlabel('Element Numbers')
-plt.ylabel('Predicted Labels')
-plt.title(f'Predicted Labels vs acceleration data - {subject}')
-plt.legend()
-#plt.show()
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title(f'Predicted Labels vs acceleration data - {subject}')
+# plt.legend()
+# #plt.show()
 # Get feature importances
 importances = clf.feature_importances_
-print(len(importances))
-print(importances[4])
 
 # Sort feature importances in descending order
 indices = np.argsort(importances)[::-1]
 
-# Plot the feature importances
-plt.figure(figsize=(10, 6))
-plt.title("Feature Importances")
-plt.bar(range(X_train.shape[1]), importances[indices], align="center")
-plt.xticks(range(X_train.shape[1]), indices)
-plt.xlabel("Feature Index")
-plt.ylabel("Feature Importance")
-plt.show()
+# # Plot the feature importances
+# plt.figure(figsize=(10, 6))
+# plt.title("Feature Importances")
+# plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+# plt.xticks(range(X_train.shape[1]), indices)
+# plt.xlabel("Feature Index")
+# plt.ylabel("Feature Importance")
+# plt.show()
 
 # Calculate the number of unique classes in y_train
 num_classes = len(np.unique(y_train))
@@ -352,15 +350,15 @@ lda_feature_importance = np.abs(lda.coef_[0])  # Importance of features in LDA s
 lda_feature_importance /= np.sum(lda_feature_importance)  # Normalize to sum up to 1 if needed
 
 # Display the feature importances
-print("Feature Importances from LDA:")
-print(lda_feature_importance)
+# print("Feature Importances from LDA:")
+# print(lda_feature_importance)
 
 # Get explained variance ratios from PCA
 pca_explained_variance_ratio = pca.explained_variance_ratio_
 
 # Display the explained variance ratios
-print("Explained Variance Ratios from PCA:")
-print(pca_explained_variance_ratio)
+# print("Explained Variance Ratios from PCA:")
+# print(pca_explained_variance_ratio)
 
 # Compute feature importances from explained variance ratios
 pca_feature_importance = np.cumsum(pca_explained_variance_ratio)
@@ -368,9 +366,9 @@ pca_feature_importance = np.cumsum(pca_explained_variance_ratio)
 # Optionally, you can normalize the feature importances
 pca_feature_importance /= np.sum(pca_feature_importance)  # Normalize to sum up to 1 if needed
 
-# Display the feature importances
-print("Feature Importances from PCA:")
-print(pca_feature_importance)
+# # Display the feature importances
+# print("Feature Importances from PCA:")
+# print(pca_feature_importance)
 
 
 # Plot the feature importances obtained from LDA
@@ -387,10 +385,6 @@ plt.xlabel("PCA Component Index")
 plt.ylabel("Feature Importance (PCA)")
 plt.legend()
 plt.show()
-# # Visualize one of the decision trees in the Random Forest
-# plt.figure(figsize=(150, 10))
-# plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
-# plt.show()
 
 
 
