@@ -61,13 +61,16 @@ def prepare_raw_data(subjects, acc, rot):
 X_train_raw = prepare_raw_data(subjects_train, acc, rot)
 print(X_train_raw.shape)
 X_test_raw = prepare_raw_data(subjects_test, acc, rot)
+print(X_test_raw.shape)
 
 # Concatenate X_train_raw for multiple subjects
 X_train_raw = np.concatenate(X_train_raw, axis=0)
-
+print(X_train_raw)
 # Reshape data for 1D CNN input (samples, timesteps, features)
 X_train_raw = X_train_raw.reshape((-1, X_train_raw.shape[1], X_train_raw.shape[2]))
 X_test_raw = X_test_raw.reshape((-1, X_test_raw.shape[1], X_test_raw.shape[2]))
+
+
 
 # Define the CNN model with 1D convolutions
 def create_cnn_model(input_shape, num_classes):
