@@ -97,7 +97,7 @@ param_grid = {'estimator__C': [0.1, 1, 10, 100],
               'estimator__kernel': ['rbf']}
 
 ovr_clf = OneVsRestClassifier(SVC(random_state=42))
-grid_search = GridSearchCV(ovr_clf, param_grid, cv=3)
+grid_search = GridSearchCV(ovr_clf, param_grid, cv=5)
 
 # Fit GridSearchCV on training data with progress bar
 with tqdm(total=len(param_grid['estimator__kernel'])*len(param_grid['estimator__gamma'])*len(param_grid['estimator__kernel'])) as pbar:
@@ -198,11 +198,11 @@ best_gamma = grid_search.best_params_['estimator__gamma']
 best_kernel = grid_search.best_params_['estimator__kernel']
 
 # Using the determined parameters for OvA classification with SVC
-ova_clf_lda = OneVsRestClassifier(SVC(kernel=best_kernel,C=best_C,gamma=best_gamma, random_state=42))
+ova_clf_lda = OneVsRestClassifier(SVC(kernel=best_kernel, random_state=42))
 ova_clf_lda.fit(X_train_lda, y_train)
 y_test_pred_lda = ova_clf_lda.predict(X_test_lda)
 
-ova_clf_pca = OneVsRestClassifier(SVC(kernel=best_kernel,C=best_C,gamma=best_gamma, random_state=42))
+ova_clf_pca = OneVsRestClassifier(SVC(kernel=best_kernel, random_state=42))
 ova_clf_pca.fit(X_train_pca, y_train)
 y_test_pred_pca = ova_clf_pca.predict(X_test_pca)
 
