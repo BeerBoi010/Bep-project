@@ -230,7 +230,7 @@ sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
             yticklabels=[label_mapping[key] for key in label_mapping.keys()])
 plt.xlabel('Predicted Labels')
 plt.ylabel('True Labels')
-plt.title(f'Confusion Matrix for {test_person}')
+plt.title(f'Confusion Matrix of drinking_HealthySubject{test_person}_Test')
 plt.show()
 
 importances = clf.feature_importances_
