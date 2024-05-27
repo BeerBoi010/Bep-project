@@ -116,7 +116,7 @@ print(y_test_true_classes[0])
 
 # Classification report
 print("Classification Report of test data:")
-print(classification_report(y_test_true_classes[0], y_test, zero_division=1))
+print(classification_report(y_test_true_classes[0], y_test_pred_classes[0], zero_division=1))
 
 # Compute confusion matrix
 conf_matrix = confusion_matrix(y_test_true_classes[0], y_test_pred_classes[0])
