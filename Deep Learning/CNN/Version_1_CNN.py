@@ -5,6 +5,10 @@ import seaborn as sns
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense, Dropout, Reshape
+from tensorflow.keras.regularizers import l2
+from tensorflow.keras.callbacks import EarlyStopping
+import tensorflow_addons as tfa
+
 import labels_interpolation
 
 # Define parameters
@@ -47,7 +51,6 @@ def prepare_raw_data(subjects, acc, rot):
     for subject in subjects:
         subject_data = []
         for imu_location in acc[subject]:
-
             acc_data = acc[subject][imu_location]
             min_val = np.min(acc_data, axis=None, keepdims=True)
             max_val = np.max(acc_data, axis=None, keepdims=True)
@@ -60,35 +63,28 @@ def prepare_raw_data(subjects, acc, rot):
 
             imu_data = np.hstack((normalized_acc, normalized_rot))
             subject_data.append(imu_data)
-        # Stack all IMU sensor data horizontally
         subject_data = np.hstack(subject_data)
         data.append(subject_data)
     return np.array(data)
 
 # Prepare the training and test data
 X_train_raw = prepare_raw_data(subjects_train, acc, rot)
-print("data ........................................................................",X_train_raw[0])
 X_test_raw = prepare_raw_data(subjects_test, acc, rot)
 
-# Define the CNN model with 1D convolutions
-def create_cnn_model(input_shape, output_shape):
-    model = Sequential()
-    
-    model.add(Conv1D(filters=32, kernel_size=3, activation='relu', input_shape=input_shape))
-    model.add(MaxPooling1D(pool_size=2))
-    model.add(Dropout(0.5))
-    
-    model.add(Conv1D(filters=64, kernel_size=3, activation='relu'))
-    model.add(MaxPooling1D(pool_size=2))
-    model.add(Dropout(0.5))
-    
-    model.add(Flatten())
-    model.add(Dense(128, activation='relu'))
-    model.add(Dropout(0.5))
-    
-    model.add(Dense(output_shape[0] * output_shape[1], activation='softmax'))
-    model.add(Reshape(output_shape))
-    
+def create_cnn_model(input_shape, output_shape, l2_lambda=0.1):
+    model = Sequential([
+        Conv1D(32, 3, activation='relu', input_shape=input_shape, kernel_regularizer=l2(l2_lambda)),
+        MaxPooling1D(2),
+        Dropout(0.6),
+        Conv1D(64, 3, activation='relu', kernel_regularizer=l2(l2_lambda)),
+        MaxPooling1D(2),
+        Dropout(0.6),
+        Flatten(),
+        Dense(128, activation='relu', kernel_regularizer=l2(l2_lambda)),
+        Dropout(0.6),
+        Dense(output_shape[0] * output_shape[1], activation='softmax'),
+        Reshape(output_shape)
+    ])
     return model
 
 # Input and output shapes
@@ -96,12 +92,15 @@ input_shape = (1905, 30)
 output_shape = (1905, 4)
 
 # Create and compile the model
-model = create_cnn_model(input_shape, output_shape)
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-model.summary()
+model = create_cnn_model(input_shape, output_shape, l2_lambda=0.1)
+optimizer = tfa.optimizers.AdamW(learning_rate=0.001, weight_decay=0.01)
+model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+
+# Early stopping
+early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
 
 # Train the model
-history = model.fit(X_train_raw, y_train_oh, epochs=80,batch_size = 5, validation_data=(X_test_raw, y_test_oh))
+history = model.fit(X_train_raw, y_train_oh, epochs=300, batch_size=5, validation_data=(X_test_raw, y_test_oh), callbacks=[early_stopping])
 
 # Evaluate on test data
 test_loss, test_accuracy = model.evaluate(X_test_raw, y_test_oh)
@@ -123,9 +122,7 @@ label_mapping_inv = {v: k for k, v in label_mapping.items()}
 
 # Plot confusion matrix
 plt.figure(figsize=(8, 6))
-sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
-            xticklabels=[label_mapping_inv[key] for key in range(output_shape[1])],
-            yticklabels=[label_mapping_inv[key] for key in range(output_shape[1])])
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=[label_mapping_inv[key] for key in range(output_shape[1])], yticklabels=[label_mapping_inv[key] for key in range(output_shape[1])])
 plt.xlabel('Predicted Labels')
 plt.ylabel('True Labels')
 plt.title(f'Confusion Matrix for {test_person}')
