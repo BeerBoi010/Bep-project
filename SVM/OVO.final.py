@@ -27,7 +27,7 @@ sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
 
-test_person = 7
+test_person = 5
 
 # Load data
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
@@ -239,15 +239,15 @@ pca_feature_importance /= np.sum(pca_feature_importance)
 print("Feature Importances from PCA:")
 print(pca_feature_importance)
 
-plt.figure(figsize=(10, 6))
-plt.bar(range(n_features_lda), lda_feature_importance, align="center", color='orange', label='LDA')
-plt.xlabel("Feature Index")
-plt.ylabel("Feature Importance (LDA)")
-plt.legend()
+# plt.figure(figsize=(10, 6))
+# plt.bar(range(n_features_lda), lda_feature_importance, align="center", color='orange', label='LDA')
+# plt.xlabel("Feature Index")
+# plt.ylabel("Feature Importance (LDA)")
+# plt.legend()
 
-plt.figure(figsize=(10, 6))
-plt.bar(range(X_train_pca.shape[1]), pca_feature_importance, align="center", color='green', label='PCA')
-plt.xlabel("PCA Component Index")
-plt.ylabel("Feature Importance (PCA)")
-plt.legend()
-plt.show()
+# plt.figure(figsize=(10, 6))
+# plt.bar(range(X_train_pca.shape[1]), pca_feature_importance, align="center", color='green', label='PCA')
+# plt.xlabel("PCA Component Index")
+# plt.ylabel("Feature Importance (PCA)")
+# plt.legend()
+# plt.show()
