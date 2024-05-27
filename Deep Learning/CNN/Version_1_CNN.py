@@ -114,7 +114,7 @@ y_test_true_classes = np.argmax(y_test_oh, axis=2)
 
 # Classification report
 print("Classification Report of test data:")
-print(classification_report(y_test_true_classes.ravel(), y_test_pred_classes.ravel(), zero_division=1))
+print(classification_report(y_test.ravel(), y_test_pred_classes.ravel(), zero_division=1))
 
 # Compute confusion matrix
 conf_matrix = confusion_matrix(y_test_true_classes.ravel(), y_test_pred_classes.ravel())
