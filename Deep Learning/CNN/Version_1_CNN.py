@@ -69,6 +69,7 @@ def prepare_raw_data(subjects, acc, rot):
 
 # Prepare the training and test data
 X_train_raw = prepare_raw_data(subjects_train, acc, rot)
+print(X_train_raw[0])
 X_test_raw = prepare_raw_data(subjects_test, acc, rot)
 
 def create_cnn_model(input_shape, output_shape, l2_lambda=0.1):
@@ -92,7 +93,7 @@ input_shape = (1905, 30)
 output_shape = (1905, 4)
 
 # Create and compile the model
-model = create_cnn_model(input_shape, output_shape, l2_lambda=0.1)
+model = create_cnn_model(input_shape, output_shape, l2_lambda=0.01)
 optimizer = tfa.optimizers.AdamW(learning_rate=0.001, weight_decay=0.01)
 model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -100,7 +101,7 @@ model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['ac
 early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
 
 # Train the model
-history = model.fit(X_train_raw, y_train_oh, epochs=300, batch_size=5, validation_data=(X_test_raw, y_test_oh), callbacks=[early_stopping])
+history = model.fit(X_train_raw, y_train_oh, epochs=300, batch_size=1, validation_data=(X_test_raw, y_test_oh), callbacks=[early_stopping])
 
 # Evaluate on test data
 test_loss, test_accuracy = model.evaluate(X_test_raw, y_test_oh)
