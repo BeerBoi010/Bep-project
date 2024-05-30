@@ -1,11 +1,14 @@
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report, confusion_matrix
 import seaborn as sns
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense, Dropout
+from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense, Dropout, Reshape
+from tensorflow.keras.regularizers import l2
+from tensorflow.keras.callbacks import EarlyStopping
+import tensorflow_addons as tfa
+
 import labels_interpolation
 
 # Define parameters
@@ -49,60 +52,56 @@ def prepare_raw_data(subjects, acc, rot):
         subject_data = []
         for imu_location in acc[subject]:
             acc_data = acc[subject][imu_location]
+            min_val = np.min(acc_data, axis=None, keepdims=True)
+            max_val = np.max(acc_data, axis=None, keepdims=True)
+            normalized_acc = (acc_data - min_val) / (max_val - min_val) * 2 - 1
+
             rot_data = rot[subject][imu_location]
-            imu_data = np.hstack((acc_data, rot_data))
+            min_val = np.min(rot_data, axis=None, keepdims=True)
+            max_val = np.max(rot_data, axis=None, keepdims=True)
+            normalized_rot = (rot_data - min_val) / (max_val - min_val) * 2 - 1
+
+            imu_data = np.hstack((normalized_acc, normalized_rot))
             subject_data.append(imu_data)
-        # Stack all IMU sensor data horizontally
         subject_data = np.hstack(subject_data)
         data.append(subject_data)
     return np.array(data)
 
 # Prepare the training and test data
 X_train_raw = prepare_raw_data(subjects_train, acc, rot)
-print(X_train_raw.shape)
+print(X_train_raw[0])
 X_test_raw = prepare_raw_data(subjects_test, acc, rot)
-print(X_test_raw.shape)
 
-# Concatenate X_train_raw for multiple subjects
-X_train_raw = np.concatenate(X_train_raw, axis=0)
-print(X_train_raw)
-# Reshape data for 1D CNN input (samples, timesteps, features)
-X_train_raw = X_train_raw.reshape((-1, X_train_raw.shape[1], X_train_raw.shape[2]))
-X_test_raw = X_test_raw.reshape((-1, X_test_raw.shape[1], X_test_raw.shape[2]))
-
-
-
-# Define the CNN model with 1D convolutions
-def create_cnn_model(input_shape, num_classes):
-    model = Sequential()
-    
-    model.add(Conv1D(filters=32, kernel_size=3, activation='relu', input_shape=input_shape))
-    model.add(MaxPooling1D(pool_size=2))
-    model.add(Dropout(0.5))
-    
-    model.add(Conv1D(filters=64, kernel_size=3, activation='relu'))
-    model.add(MaxPooling1D(pool_size=2))
-    model.add(Dropout(0.5))
-    
-    model.add(Flatten())
-    model.add(Dense(128, activation='relu'))
-    model.add(Dropout(0.5))
-    
-    model.add(Dense(num_classes, activation='softmax'))
-    
+def create_cnn_model(input_shape, output_shape, l2_lambda=0.1):
+    model = Sequential([
+        Conv1D(32, 3, activation='relu', input_shape=input_shape, kernel_regularizer=l2(l2_lambda)),
+        MaxPooling1D(2),
+        Dropout(0.6),
+        Conv1D(64, 3, activation='relu', kernel_regularizer=l2(l2_lambda)),
+        MaxPooling1D(2),
+        Dropout(0.6),
+        Flatten(),
+        Dense(128, activation='relu', kernel_regularizer=l2(l2_lambda)),
+        Dropout(0.6),
+        Dense(output_shape[0] * output_shape[1], activation='softmax'),
+        Reshape(output_shape)
+    ])
     return model
 
-# Input shape
-input_shape = (X_train_raw.shape[1], X_train_raw.shape[2])
-num_classes = y_train_oh.shape[-1]
+# Input and output shapes
+input_shape = (1905, 30)
+output_shape = (1905, 4)
 
 # Create and compile the model
-model = create_cnn_model(input_shape, num_classes)
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-model.summary()
+model = create_cnn_model(input_shape, output_shape, l2_lambda=0.01)
+optimizer = tfa.optimizers.AdamW(learning_rate=0.001, weight_decay=0.01)
+model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+
+# Early stopping
+early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
 
 # Train the model
-history = model.fit(X_train_raw, y_train_oh, epochs=20, batch_size=32)
+history = model.fit(X_train_raw, y_train_oh, epochs=300, batch_size=1, validation_data=(X_test_raw, y_test_oh), callbacks=[early_stopping])
 
 # Evaluate on test data
 test_loss, test_accuracy = model.evaluate(X_test_raw, y_test_oh)
@@ -114,40 +113,79 @@ y_test_pred = model.predict(X_test_raw)
 y_test_pred_classes = np.argmax(y_test_pred, axis=2)
 y_test_true_classes = np.argmax(y_test_oh, axis=2)
 
+print(y_test_true_classes[0])
+
 # Classification report
 print("Classification Report of test data:")
-print(classification_report(y_test_true_classes.ravel(), y_test_pred_classes.ravel(), zero_division=1))
+print(classification_report(y_test_true_classes[0], y_test_pred_classes[0], zero_division=1))
 
 # Compute confusion matrix
-conf_matrix = confusion_matrix(y_test_true_classes.ravel(), y_test_pred_classes.ravel())
+conf_matrix = confusion_matrix(y_test_true_classes[0], y_test_pred_classes[0])
 label_mapping_inv = {v: k for k, v in label_mapping.items()}
 
 # Plot confusion matrix
 plt.figure(figsize=(8, 6))
-sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
-            xticklabels=[label_mapping_inv[key] for key in range(num_classes)],
-            yticklabels=[label_mapping_inv[key] for key in range(num_classes)])
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=[label_mapping_inv[key] for key in range(output_shape[1])], yticklabels=[label_mapping_inv[key] for key in range(output_shape[1])])
 plt.xlabel('Predicted Labels')
 plt.ylabel('True Labels')
 plt.title(f'Confusion Matrix for {test_person}')
 plt.show()
 
-# Plot training & validation accuracy values
+# Plot training and test accuracy
 plt.figure(figsize=(10, 5))
 plt.plot(history.history['accuracy'])
 plt.plot(history.history['val_accuracy'])
 plt.title('Model accuracy')
 plt.ylabel('Accuracy')
 plt.xlabel('Epoch')
-plt.legend(['Train', 'Validation'], loc='upper left')
+plt.legend(['Train', 'Test'], loc='upper left')
 plt.show()
 
-# Plot training & validation loss values
+# Plot training and test loss
 plt.figure(figsize=(10, 5))
 plt.plot(history.history['loss'])
 plt.plot(history.history['val_loss'])
 plt.title('Model loss')
 plt.ylabel('Loss')
 plt.xlabel('Epoch')
-plt.legend(['Train', 'Validation'], loc='upper left')
+plt.legend(['Train', 'Test'], loc='upper left')
+plt.show()
+
+# Additional plots to illustrate predictions, true labels, and sensor data
+element_numbers = np.arange(y_test_pred.shape[1])
+
+plt.figure(figsize=(12, 6))
+
+plt.subplot(2, 4, 1)
+plt.plot(element_numbers, y_test_pred_classes[0], label='Predictions', color='blue')
+plt.xlabel('Element Numbers')
+plt.ylabel('Predicted Labels')
+plt.title(f'Predicted Labels - {subjects_test[0]}')
+plt.legend()
+
+plt.subplot(2, 4, 2)
+plt.plot(element_numbers, y_test_true_classes[0], label='True Labels', color='green')
+plt.xlabel('Element Numbers')
+plt.ylabel('True Labels')
+plt.title(f'True Labels - {subjects_test[0]}')
+plt.legend()
+
+imu_locations = ['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoulder_IMU', 'sternum_IMU']
+for i, location in enumerate(imu_locations, start=3):
+    plt.subplot(2, 4, i)
+    plt.plot(acc[f'drinking_HealthySubject{test_person}_Test'][location])
+    plt.xlabel('Element number')
+    plt.ylabel('Acceleration value')
+    plt.title(f'{location} - {subjects_test[0]}')
+
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(12, 6))
+plt.plot(element_numbers, y_test_pred_classes[0], label='Predictions', color='black')
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+plt.xlabel('Element Numbers')
+plt.ylabel('Predicted Labels')
+plt.title(f'Predicted Labels vs Acceleration Data - {subjects_test[0]}')
+plt.legend()
 plt.show()
