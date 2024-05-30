@@ -19,7 +19,7 @@ from Normalized_Feature_Extraction import Slope_V2
 from Normalized_Feature_Extraction import Max_V2
 from Normalized_Feature_Extraction import Min_V2
 from Normalized_Feature_Extraction import Standard_Deviation
-import labels_interpolation
+from Random_forest import labels_interpolation
 
 
 ##### VARIABLES ######################################################################################################
@@ -80,7 +80,7 @@ subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'd
 subjects.remove(f'drinking_HealthySubject{test_person}_Test')
 subjects_train = subjects
 subjects_test = [f'drinking_HealthySubject{test_person}_Test']
-print(subjects_test)
+#print(subjects_test)
 
 test_labels = all_labels[test_person - 2]
 #print("test labels:",test_labels)
