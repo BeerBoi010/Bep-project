@@ -86,7 +86,7 @@ for subject in subjects:
             window_features = np.concatenate([Mean, STD, RMS, MIN, MAX])
             # Append the features for the current window to all_window_features
 
-        #Here we should implement that all imu locations should stack the columns to creat 180 of 150 features
+        #Here we should implement that all imu locations should stack the columns to creat 180 or 150 features
 
 
     # Convert the list of all window features to a NumPy array
