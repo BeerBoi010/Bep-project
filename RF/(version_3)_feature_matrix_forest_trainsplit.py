@@ -29,10 +29,8 @@ import labels_interpolation
 ##### VARIABLES ######################################################################################################
 '''later toevoegen dat random wordt gekozen wie train en test is'''
 
-train_amount = 5
 sampling_window = 3
 min_periods = 1
-test_amount = train_amount
 '''' sampling windows with respective values'''
 sampling_window_RMS = 3
 sampling_window_min_max = 3
@@ -40,7 +38,6 @@ sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
 sampling_window_entropy = 3
-test_person = 5
 #test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
 
 #######################################################################################################################
@@ -53,19 +50,27 @@ all_labels = labels_interpolation.expanded_matrices
 
 
 subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'drinking_HealthySubject4_Test',   
-        'drinking_HealthySubject5_Test', 'drinking_HealthySubject6_Test', 'drinking_HealthySubject7_Test']
+         'drinking_HealthySubject5_Test', 'drinking_HealthySubject6_Test', 'drinking_HealthySubject7_Test']
 
-subjects.remove(f'drinking_HealthySubject{test_person}_Test')
-subjects_train = subjects
-subjects_test = [f'drinking_HealthySubject{test_person}_Test']
-print(subjects_test)
+# subjects.remove(f'drinking_HealthySubject{test_person}_Test')
+# subjects_train = subjects
+# subjects_test = [f'drinking_HealthySubject{test_person}_Test']
+# print(subjects_test)
 
-test_labels = all_labels[test_person - 2]
-#print("test labels:",test_labels)
+# test_labels = all_labels[test_person - 2]
+# #print("test labels:",test_labels)
 
-all_labels.pop(test_person - 2)
-train_labels = all_labels
-#print("train labels:",train_labels)
+# all_labels.pop(test_person - 2)
+# train_labels = all_labels
+# #print("train labels:",train_labels)
+#1524 381
+subject = 7
+subjects_train = [f'drinking_HealthySubject{subject}_Test']
+subjects_test = [f'drinking_HealthySubject{subject}_Test']
+
+label = all_labels[subject - 2]
+train_labels = label[:1524]
+test_labels = label[1524:]
 
 #################################################################################################################
 ### Setting up the test and training sets with labels ###########################################################
@@ -98,8 +103,7 @@ Y_test_labels = test_labels
 labels_train = []
 ###### for-loops to make annotation list for random forest method ###########################################################################
 for item in Y_train_labels:
-    for i in item:
-        labels_train.append(i[1])
+    labels_train.append(item[1])
 
 labels_test = []
 
@@ -148,15 +152,16 @@ for subject in X_train_RMS:
 
         combined_data_imu = np.hstack((acc_rms_imu, rot_rms_imu, acc_mean_imu, rot_mean_imu,acc_slope_imu,rot_slope_imu,
                                        acc_max_imu,rot_max_imu,acc_min_imu,rot_min_imu,acc_STD_imu,rot_STD_imu))
+        # ,acc_entropy_imu,rot_entropy_imu
         combined_data_patient.append(combined_data_imu)  # Append each sensor's data
-        print(combined_data_imu.shape)
+
     # Stack the data from all sensors for this patient
     X_data_patients_train.append(np.hstack(combined_data_patient))
 
 '''Arrays for all combined train data'''
 combined_X_data_train = np.concatenate(X_data_patients_train)
-X_train = combined_X_data_train
-print(combined_X_data_train.shape)
+X_train = combined_X_data_train[:1524]
+print(X_train.shape)
 #############################################################################################################################
 ###### Arrays for test data ################################################################################################
 
@@ -185,11 +190,13 @@ for subject in X_test_RMS:
         rot_min_imu = X_test_Min[subject][imu_location]["rot_min"]
         acc_STD_imu = X_test_STD[subject][imu_location]["acc_STD"]
         rot_STD_imu = X_test_STD[subject][imu_location]["rot_STD"]
-
+        # acc_entropy_imu = X_test_entropy[subject][imu_location]["acc_entropy"]
+        # rot_entropy_imu = X_test_entropy[subject][imu_location]["rot_entropy"]
 
 
         combined_data_imu = np.hstack((acc_rms_imu, rot_rms_imu, acc_mean_imu, rot_mean_imu,acc_slope_imu,rot_slope_imu,
                                        acc_max_imu,rot_max_imu,acc_min_imu,rot_min_imu,acc_STD_imu,rot_STD_imu))
+        # ,acc_entropy_imu,rot_entropy_imu
         combined_data_patient.append(combined_data_imu)  # Append each sensor's data
 
     # Stack the data from all sensors for this patient
@@ -197,9 +204,9 @@ for subject in X_test_RMS:
 
 '''Combine data from all patients'''
 combined_X_data_test = np.concatenate(X_data_patients_test)
-X_test = combined_X_data_test
+X_test = combined_X_data_test[1524:]
 
-print(combined_X_data_test.shape) ##test print to see the general shape
+print(X_test.shape) ##test print to see the general shape
 
 ########################################################################################################################
 ################ RANDOM FOREST CLASSIFIER ##############################################################################
@@ -230,83 +237,83 @@ element_numbers = list(range(len(y_test_pred)))
 
 '''Below plots are made to visualize what the Random classifier has done and how it has performed'''
 
-# Plot for y_pred
-plt.figure(figsize=(12, 6))
+# # Plot for y_pred
+# plt.figure(figsize=(12, 6))
 
-plt.subplot(2, 4, 1)  # 1 row, 2 columns, plot number 1
-plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
-plt.xlabel('Element Numbers')
-plt.ylabel('Predicted Labels')
-plt.title(f'Predicted Labels - {subject}')
-plt.legend()
-
-
-plt.subplot(2, 4, 2)  # 1 row, 2 columns, plot number 2
-plt.plot(element_numbers, y_test, label='True Labels', color='green')
-plt.xlabel('Element Numbers')
-plt.ylabel('True Labels')
-plt.title(f'True Labels - {subject}')
-plt.legend()
-
-plt.subplot(2, 4, 3)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'hand_IMU - {subject}')
-
-plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'lowerarm_IMU - {subject}')
-
-plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'upperarm_IMU - {subject}')
-
-plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'shoulder_IMU - {subject}')
-
-plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'sternum_IMU - {subject}')
-
-plt.tight_layout()  # Adjust layout to prevent overlap
-plt.show()
-
-plt.figure(figsize=(12, 6))
-
-plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
-plt.xlabel('Element Numbers')
-plt.ylabel('Predicted Labels')
-plt.title(f'Predicted Labels vs acceleration data - {subject}')
-plt.legend()
-plt.show()
-# Get feature importances
-importances = clf.feature_importances_
+# plt.subplot(2, 4, 1)  # 1 row, 2 columns, plot number 1
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title(f'Predicted Labels - {subject}')
+# plt.legend()
 
 
-# Sort feature importances in descending order
-indices = np.argsort(importances)[::-1]
+# plt.subplot(2, 4, 2)  # 1 row, 2 columns, plot number 2
+# plt.plot(element_numbers, y_test, label='True Labels', color='green')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('True Labels')
+# plt.title(f'True Labels - {subject}')
+# plt.legend()
 
-# Compute confusion matrix for test data
-conf_matrix = confusion_matrix(y_test, y_test_pred)
+# plt.subplot(2, 4, 3)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'hand_IMU - {subject}')
 
-# Plot confusion matrix
-plt.figure(figsize=(8, 6))
-sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=label_mapping.keys(), yticklabels=label_mapping.keys())
-plt.xlabel('Predicted Labels')
-plt.ylabel('True Labels')
-plt.title('Confusion Matrix for Test Data')
-plt.show()
+# plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'lowerarm_IMU - {subject}')
+
+# plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'upperarm_IMU - {subject}')
+
+# plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'shoulder_IMU - {subject}')
+
+# plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'sternum_IMU - {subject}')
+
+# plt.tight_layout()  # Adjust layout to prevent overlap
+# plt.show()
+
+# plt.figure(figsize=(12, 6))
+
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title(f'Predicted Labels vs acceleration data - {subject}')
+# plt.legend()
+# plt.show()
+# # Get feature importances
+# importances = clf.feature_importances_
+
+
+# # Sort feature importances in descending order
+# indices = np.argsort(importances)[::-1]
+
+# # Compute confusion matrix for test data
+# conf_matrix = confusion_matrix(y_test, y_test_pred)
+
+# # Plot confusion matrix
+# plt.figure(figsize=(8, 6))
+# sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=label_mapping.keys(), yticklabels=label_mapping.keys())
+# plt.xlabel('Predicted Labels')
+# plt.ylabel('True Labels')
+# plt.title('Confusion Matrix for Test Data')
+# plt.show()
 
 # # Plot the feature importances
 # plt.figure(figsize=(10, 6))
