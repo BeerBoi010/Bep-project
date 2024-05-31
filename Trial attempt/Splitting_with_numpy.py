@@ -48,63 +48,53 @@ test_labels = all_labels[test_person - 2]
 all_labels.pop(test_person - 2)
 train_labels = all_labels
 
+all_window_features = []
+full_data = []
+
 num_features = 30
+# Initialize Feature_Matrix as an empty array with the correct number of columns
+Feature_Matrix = np.empty((0, num_features))
+imu_list  = np.empty((0, num_features))
+Full_feature_split = np.empty((0, num_features))
 for subject in subjects:
-    subject_feature_matrix = np.zeros((0, num_features))
+    all_window_features = []
 
     for imu_location in acc[subject]:
-        data_imu = [] 
-        #Stacking of both acc and rot data to put through features
-        acc_data_imu_split = np.array_split(acc[subject][imu_location],381)
-        rot_data_imu_split = np.array_split(rot[subject][imu_location],381)
-        full_data = np.hstack((acc_data_imu_split, rot_data_imu_split))
+        # Splitting the data into 381 segments
+        acc_data_imu_split = np.array_split(acc[subject][imu_location], 381)
+        rot_data_imu_split = np.array_split(rot[subject][imu_location], 381)
+
+        # Concatenate acc and rot data for each segment
+        full_data = [np.concatenate((acc, rot), axis=1) for acc, rot in zip(acc_data_imu_split, rot_data_imu_split)]
 
         for split in full_data:
-            for step in split:      #calculate the features for each channel (column)
-                Mean = np.mean(step, axis=0)
-                STD = np.std(step, axis=0)
-                RMS = np.sqrt(np.mean(step**2, axis=0))  #RMS value of each column.
-                MIN = np.min(step, axis=0)
-                MAX = np.max(step, axis=0)
-                window_features = np.hstack((Mean, STD, RMS, MIN, MAX))
+            # Calculate the features for each segment
+            Mean = np.mean(split, axis=0)
+            STD = np.std(split, axis=0)
+            RMS = np.sqrt(np.mean(split**2, axis=0))
+            MIN = np.min(split, axis=0)
+            MAX = np.max(split, axis=0)
 
-        # Append the features for the current window to subject_feature_matrix
-        subject_feature_matrix = np.vstack((subject_feature_matrix, window_features))
+            # Ensure features are arrays before concatenation
+            Mean = np.atleast_1d(Mean)
+            STD = np.atleast_1d(STD)
+            RMS = np.atleast_1d(RMS)
+            MIN = np.atleast_1d(MIN)
+            MAX = np.atleast_1d(MAX)
 
-    # Append the features for the current subject to Feature_Matrix    
+            # Concatenate features into a single array
+            window_features = np.concatenate([Mean, STD, RMS, MIN, MAX])
+            # Append the features for the current window to all_window_features
+
+        #Here we should implement that all imu locations should stack the columns to creat 180 of 150 features
+
+
+    # Convert the list of all window features to a NumPy array
+    subject_feature_matrix = np.array(all_window_features)
+    print(subject_feature_matrix.shape)
+
+    # Append the features for the current subject to Feature_Matrix
     Feature_Matrix = np.vstack((Feature_Matrix, subject_feature_matrix))
 
-print(Feature_Matrix)
-Y_train_labels = train_labels
-Y_test_labels = test_labels
-
-labels_train = []
-for item in Y_train_labels:
-    for i in item:
-        labels_train.append(i[1])
-
-labels_test = []
-for item in Y_test_labels:
-    labels_test.append(item[1])
-
-label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
-
-y_train = [label_mapping[label] for label in labels_train]
-y_test = [label_mapping[label] for label in labels_test]
-
-
-windowsize = 1905/5
-
-y_train= np.array_split(y_train, windowsize)
-y_train = np.array(y_train)
-
-print(y_train)
-print(y_train.shape)
-
-np.set_printoptions(threshold=sys.maxsize)
-
-y_test= np.array_split(y_test, windowsize)
-y_test = np.array(y_test)
-
-print(y_test)
-
+print('Final Feature Matrix shape: ', Feature_Matrix.shape)
+print('Final Feature Matrix: \n', Feature_Matrix)
