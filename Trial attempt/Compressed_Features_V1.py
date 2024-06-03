@@ -39,43 +39,74 @@ subjects.remove(f'drinking_HealthySubject{test_person}_Test')
 subjects_train = subjects
 subjects_test = [f'drinking_HealthySubject{test_person}_Test']
 
+##################################################################################################################################
+Y_test_labels = all_labels[test_person - 2]
+all_labels.pop(test_person - 2)
+Y_train_labels = all_labels
+
+labels_train = []
+###### for-loops to make annotation list for random forest method ###########################################################################
+# for item in Y_train_labels:
+#     filtered_array = []
+#     for i in range(0, len(Y_train_labels), 5):
+#     # Append every 5th element to the filtered_array
+#         filtered_array.append(Y_train_labels[i])
+#         labels_train.append(filtered_array)
+# print("labels train", labels_train, labels_train.shape)
+
+# labels_test1 = []
+# for item in Y_test_labels:
+#     labels_test1.append(item[1])
+# labels_test = labels_test1
+# # print("labels test", labels_test)
+
+# # Dictionary to map labels to numerical values
+# label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
+
+# # Convert labels to numerical values
+# y_train = [label_mapping[label] for label in labels_train]
+# y_test = [label_mapping[label] for label in labels_test]
+#############################################################################################################################
 #%% Extracting features: 
 window_length_sec = 0.5 # 0.5 second
 overlap = 0.5
 windows_AllSubject = []
 Labels_AllSubject = []
 window_counts_AllSubject = [] 
-# To fix the length of windows for each subject as the same, 
-# Define the number of features
-num_features = 15  # 7 statistical features per channel * 3 channels + 3 correlation coefficients
 
-List_1= np.split(acc['drinking_HealthySubject2_Test'])
+#stacking of acceleration and rotation matrices next to each other. This way we can prime the data before the feature extraction.
+X_data_patients_dict = {}
+
+for subject in subjects:
+    combined_data_patient = []
+    for imu in acc[subject]:
+        combined_data_imu = np.hstack((acc[subject][imu], rot[subject][imu]))
+        combined_data_patient.append(combined_data_imu)
+    #Dictionary with the combined acc and rot data per subject
+    X_data_patients_dict[subject] = np.hstack((combined_data_patient))
+
+# Combine data for all subjects into a single array
+combined_X_data_train = np.concatenate(list(X_data_patients_dict.values()))
+FullCombinedData = combined_X_data_train
+
+#print(X_data_patients_dict['drinking_HealthySubject5_Test'],X_data_patients_dict['drinking_HealthySubject5_Test'].shape)
 
 
-# # Initialize Feature_Matrix
+################## Setting up the feature matrix ###################
+feature_matrix = {'drinking_HealthySubject2_Test': [],'drinking_HealthySubject3_Test': [], 'drinking_HealthySubject4_Test': [],
+                        'drinking_HealthySubject5_Test': [],'drinking_HealthySubject6_Test': [],'drinking_HealthySubject7_Test': []}
+for patient in X_data_patients_dict:
+    X_data_patients_dict[patient] = np.array_split(X_data_patients_dict[patient], 381)
+    for split in X_data_patients_dict[patient]:
+        #Setting up features that loop through the columns: mean_x_acc,mean_y_acc....,Mean_x_rot. For all features, so
+        #a row of 5*5*6 = 150 features 
+        Mean = np.mean(split, axis=0)
+        STD = np.std(split, axis=0)
+        RMS = np.sqrt(np.mean(split**2, axis=0))  # RMS value of each column
+        MIN = np.min(split, axis=0)
+        MAX = np.max(split, axis=0)
+        feature_matrix[patient].append(np.hstack((Mean,STD,RMS,MIN,MAX)))
 
-for subject_windows_data in windows_AllSubject:
-    subject_feature_matrix = np.zeros((0, num_features)) #subject_feature_matrix has same number of rows as the number of windows and same number of colmuns as the number of Feature*Channels.
-    
-    for seg in subject_windows_data:
-        # Calculate statistical features for each channel(Column)
-        Mean = np.mean(seg, axis=0)
-        STD = np.std(seg, axis=0)
-        RMS = np.sqrt(np.mean(seg**2, axis=0))  #RMS value of each column.
-        MIN = np.min(seg, axis=0)
-        MAX = np.max(seg, axis=0)
-        
-        # Calculate correlation coefficients between channels
-        # Calculating the corr between channels can help to remove reduandant features, (if two channels are highly corrolated, then the feature space can be minimized)
-        CorrCoefXY, _ = pearsonr(seg[:, 0], seg[:, 1])
-        CorrCoefYZ, _ = pearsonr(seg[:, 1], seg[:, 2])
-        CorrCoefXZ, _ = pearsonr(seg[:, 0], seg[:, 2])
-        
-        window_features = np.concatenate((Mean, STD, RMS, MIN, MAX, KURTOSIS, SKEWNESS, [CorrCoefXY, CorrCoefYZ, CorrCoefXZ]))
-        
-        # Append the features for the current window to subject_feature_matrix
-        subject_feature_matrix = np.vstack((subject_feature_matrix, window_features))
-    
-    # Append the features for the current subject to Feature_Matrix
-    Feature_Matrix = np.vstack((Feature_Matrix, subject_feature_matrix))
-
+feature_matrix['drinking_HealthySubject2_Test'] = np.array(feature_matrix['drinking_HealthySubject2_Test'])
+print(feature_matrix['drinking_HealthySubject2_Test'],feature_matrix['drinking_HealthySubject2_Test'].shape)
+#print(X_data_patients_dict['drinking_HealthySubject2_Test'],X_data_patients_dict['drinking_HealthySubject2_Test'].shape)
