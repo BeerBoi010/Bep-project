@@ -24,16 +24,29 @@ from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standa
 import labels_interpolation
 
 train_amount = 5
-sampling_window = 3
-min_periods = 1
+sampling_window = 50
+min_periods = 25
 test_amount = train_amount
 
-sampling_window_RMS = 3
-sampling_window_min_max = 3
-sampling_window_mean = 3
-sampling_window_STD = 3
-sampling_window_slope = 3
+sampling_window_RMS = 50
+sampling_window_min_max = 50
+sampling_window_mean = 50
+sampling_window_STD = 50
+sampling_window_slope = 50
 test_person = 7
+
+
+# train_amount = 5
+# sampling_window = 3
+# min_periods = 1
+# test_amount = train_amount
+
+# sampling_window_RMS = 3
+# sampling_window_min_max = 3
+# sampling_window_mean = 3
+# sampling_window_STD = 3
+# sampling_window_slope = 3
+# test_person = 7
 print(f'drinking_HealthySubject{test_person}_Test')
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
