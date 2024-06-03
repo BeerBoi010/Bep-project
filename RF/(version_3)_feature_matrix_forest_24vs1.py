@@ -81,6 +81,8 @@ n = 30
 # Get indices of top n important features
 top_indices = important[:n]
 subject = 7
+split = 0.8
+split1 = int(split * 1905)
 subjects_train = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'drinking_HealthySubject4_Test',   
          'drinking_HealthySubject5_Test', 'drinking_HealthySubject6_Test', 'drinking_HealthySubject7_Test']
 subjects_test = [f'drinking_HealthySubject{subject}_Test']
@@ -121,14 +123,14 @@ Y_test_labels = test_labels
 labels_train = []
 ###### for-loops to make annotation list for random forest method ###########################################################################
 for item in Y_train_labels:
-    for i in item[:1524]:
+    for i in item[:split1]:
         labels_train.append(i[1])
 # print("labels train", labels_train)
 
 labels_test1 = []
 for item in Y_test_labels:
     labels_test1.append(item[1])
-labels_test = labels_test1[1524:]
+labels_test = labels_test1[split1:]
 # print("labels test", labels_test)
 
 # Dictionary to map labels to numerical values
@@ -174,7 +176,7 @@ for subject in X_train_RMS:
         combined_data_imu = np.hstack((acc_rms_imu, rot_rms_imu, acc_mean_imu, rot_mean_imu,acc_slope_imu,rot_slope_imu,
                                        acc_max_imu,rot_max_imu,acc_min_imu,rot_min_imu,acc_STD_imu,rot_STD_imu))
         # ,acc_entropy_imu,rot_entropy_imu
-        combined_data_patient.append(combined_data_imu[:1524])  # Append each sensor's data
+        combined_data_patient.append(combined_data_imu[:split1])  # Append each sensor's data
 
     # Stack the data from all sensors for this patient
     X_data_patients_train.append(np.hstack(combined_data_patient))
@@ -219,7 +221,7 @@ for subject in X_test_RMS:
         combined_data_imu = np.hstack((acc_rms_imu, rot_rms_imu, acc_mean_imu, rot_mean_imu,acc_slope_imu,rot_slope_imu,
                                        acc_max_imu,rot_max_imu,acc_min_imu,rot_min_imu,acc_STD_imu,rot_STD_imu))
         # ,acc_entropy_imu,rot_entropy_imu
-        combined_data_patient.append(combined_data_imu[1524:])  # Append each sensor's data
+        combined_data_patient.append(combined_data_imu[split1:])  # Append each sensor's data
 
     # Stack the data from all sensors for this patient
     X_data_patients_test.append(np.hstack(combined_data_patient))

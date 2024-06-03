@@ -71,7 +71,7 @@ subjects_test = [f'drinking_HealthySubject{subject}_Test']
 label = all_labels[subject - 2]
 train_labels = label[:1524]
 test_labels = label[1524:]
-
+print(test_labels)
 #################################################################################################################
 ### Setting up the test and training sets with labels ###########################################################
 
