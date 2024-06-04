@@ -62,48 +62,6 @@ Y_train_labels = all_labels
 
 
 
-def majority_vote(labels):
-    """Returns the label with the highest count in the labels list."""
-    counter = Counter(labels)
-    return counter.most_common(1)[0][0]
-
-def process_labels(labels, window_size, overlap):
-    """Processes the labels with majority voting in each window with the specified overlap."""
-    step = window_size - overlap
-    processed_labels = []
-    
-    for start in range(0, len(labels) - window_size + 1, step):
-        window = labels[start:start + window_size]
-        majority_label = majority_vote([label[1] for label in window])
-        processed_labels.append(majority_label)
-    
-    return processed_labels
-
-# Parameters
-window_size = 5
-overlap = 0
-
-# Process Y_train_labels
-labels_train = []
-for item in Y_train_labels:
-    labels_train.extend(process_labels(item, window_size, overlap))
-print("labels train", labels_train, len(labels_train))
-
-# Process Y_test_labels
-labels_test = process_labels(Y_test_labels, window_size, overlap)
-print("labels test", labels_test, len(labels_test))
-
-# Dictionary to map labels to numerical values
-label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
-
-# Convert labels to numerical values
-y_train = [label_mapping[label] for label in labels_train]
-y_test = [label_mapping[label] for label in labels_test]
-
-print("y_train", y_train, len(y_train))
-print("y_test", y_test, len(y_test))
-
-
 #############################################################################################################################
 #stacking of acceleration and rotation matrices for all imu sensors next to each other. This way we can prime the data before the feature extraction.
 X_data_patients_dict = {}
