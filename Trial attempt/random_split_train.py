@@ -16,11 +16,11 @@ from collections import Counter
 from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
 import labels_interpolation
 
-test_person = 5
-bin_size = 1
+#test_person = 5
+bin_size = 7
 bin_val = int(1905/bin_size)
 
-print(f'drinking_HealthySubject{test_person}_Test')
+#print(f'drinking_HealthySubject{test_person}_Test')
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 
@@ -31,7 +31,7 @@ subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'd
 
 # subjects.remove(f'drinking_HealthySubject{test_person}_Test')
 subjects_train = subjects
-subjects_test = [f'drinking_HealthySubject{test_person}_Test']
+#subjects_test = [f'drinking_HealthySubject{test_person}_Test']
 
 ##################################################################################################################################
 Y_train_labels = all_labels
@@ -68,21 +68,10 @@ label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
 # Convert labels to numerical values
 y_train = [label_mapping[label] for label in labels_train]
 
-# labels_train = []
-# ###### for-loops to make annotation list for random forest method ###########################################################################
-# # Iterate over each item in Y_train_labels
-# for item in Y_train_labels:
-#     # Iterate over the item, taking every 5th element
-#     for i in range(0, len(item), bin_size):
-#         labels_train.append(item[i][1])  # Append the 2nd element of every 5th sublist
-# print("labels train", labels_train, len(labels_train))
+print(len(y_train))
 
-# # Dictionary to map labels to numerical values
-# label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
-
-# # Convert labels to numerical values
-# y_train = [label_mapping[label] for label in labels_train]
 #############################################################################################################################
+
 #stacking of acceleration and rotation matrices for all imu sensors next to each other. This way we can prime the data before the feature extraction.
 X_data_patients_dict = {}
 
@@ -94,11 +83,7 @@ for subject in subjects_train:
     #Dictionary with the combined acc and rot data per subject
     X_data_patients_dict[subject] = np.hstack((combined_data_patient))
 
-# Combine data for all subjects into a single array
-combined_X_data_train = np.concatenate(list(X_data_patients_dict.values()))
-FullCombinedData = combined_X_data_train
-
-
+print('Full shape of one patient', X_data_patients_dict['drinking_HealthySubject2_Test'].shape)
 ################## Setting up the feature matrix ###################
 feature_dict = {'drinking_HealthySubject2_Test': [],'drinking_HealthySubject3_Test': [], 'drinking_HealthySubject4_Test': [],'drinking_HealthySubject5_Test': [],
                   
@@ -106,19 +91,22 @@ feature_dict = {'drinking_HealthySubject2_Test': [],'drinking_HealthySubject3_Te
 for patient in X_data_patients_dict:
     #Calls the array for one subject and splits it in equal parts of five
     X_data_patients_dict[patient] = np.array_split(X_data_patients_dict[patient], bin_val)
-
     for split in X_data_patients_dict[patient]:
-
+        #print(split,split.shape)
         #Setting up features that loop through the columns: mean_x_acc,mean_y_acc....,Mean_x_rot. For all featured and 5 imu sensors so
-        #a row of 5*5*6 = 150 features 
+        #a row of 5*6*6 = 180 features 
         Mean = np.mean(split, axis=0)
         STD = np.std(split, axis=0)
         RMS = np.sqrt(np.mean(split**2, axis=0))  # RMS value of each column
         MIN = np.min(split, axis=0)
         MAX = np.max(split, axis=0)
+        Slope = np.gradient(split, axis=0)
+        Slope = (X_data_patients_dict[patient][split][:, -1]- X_data_patients_dict[patient][split],[:, -1])/ split
         #appends all features in a dictionary for each patient 
-        feature_dict[patient].append(np.hstack((Mean,STD,RMS,MIN,MAX)))
+        feature_dict[patient].append(np.hstack((Mean,STD,RMS,MIN,MAX, Slope)))
 
+for window in X_data_patients_dict['drinking_HealthySubject2_Test']:
+    print(window.shape)
 # feature_matrix['drinking_HealthySubject2_Test'] = np.array(feature_matrix['drinking_HealthySubject2_Test'])
 # print(feature_matrix['drinking_HealthySubject2_Test'],feature_matrix['drinking_HealthySubject2_Test'].shape)
 # #print(X_data_patients_dict['drinking_HealthySubject2_Test'],X_data_patients_dict['drinking_HealthySubject2_Test'].shape
@@ -128,10 +116,30 @@ compressed_array_train = np.concatenate(list(feature_dict.values()), axis=0)
 
 print(compressed_array_train.shape,(np.array(y_train)).shape)
 
+
+#Set up a random train-test split for a subjective model
 X_train, X_val, y_train, y_val = train_test_split(compressed_array_train, y_train, test_size=0.2, random_state=42)
 
 # Initialize the RandomForestClassifier
 rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
+
+# # Optimisation: LDA and PCA for feature decrease
+# lda = LinearDiscriminantAnalysis(n_components=n_components_lda)
+# X_train_lda = lda.fit_transform(X_train, y_train)
+# X_test_lda = lda.transform(X_test)
+
+# pca = PCA(n_components=None)
+# X_train_pca = pca.fit_transform(X_train)
+# X_test_pca = pca.transform(X_test)
+
+# clf_lda = RandomForestClassifier(n_estimators=100,min_samples_leaf=1,max_depth=10, random_state=42)
+# clf_lda.fit(X_train_lda, y_train)
+# y_test_pred_lda = clf_lda.predict(X_test_lda)
+
+# clf_pca = RandomForestClassifier(n_estimators=100,min_samples_leaf=1,max_depth=10, random_state=42)
+# clf_pca.fit(X_train_pca, y_train)
+# y_test_pred_pca = clf_pca.predict(X_test_pca)
+
 
 # Train the model
 rf_model.fit(X_train, y_train)
@@ -147,44 +155,44 @@ print(report)
 
 # Plot visualizations
 
-# Confusion Matrix Plot
-cm = confusion_matrix(y_val, y_pred)
-plt.figure(figsize=(8, 6))
-sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=label_mapping.keys(), yticklabels=label_mapping.keys())
-plt.xlabel('Predicted')
-plt.ylabel('Actual')
-plt.title('Confusion Matrix')
-plt.show()
+# # Confusion Matrix Plot
+# cm = confusion_matrix(y_val, y_pred)
+# plt.figure(figsize=(8, 6))
+# sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=label_mapping.keys(), yticklabels=label_mapping.keys())
+# plt.xlabel('Predicted')
+# plt.ylabel('Actual')
+# plt.title('Confusion Matrix')
+# plt.show()
 
-# Feature Importance Plot
-importances = rf_model.feature_importances_
-indices = np.argsort(importances)[::-1]
+# # Feature Importance Plot
+# importances = rf_model.feature_importances_
+# indices = np.argsort(importances)[::-1]
 
-plt.figure(figsize=(12, 6))
-plt.title("Feature Importances")
-plt.bar(range(X_train.shape[1]), importances[indices], align="center")
-plt.xticks(range(X_train.shape[1]), indices)
-plt.xlim([-1, X_train.shape[1]])
-plt.xlabel("Feature Index")
-plt.ylabel("Importance")
-plt.show()
+# plt.figure(figsize=(12, 6))
+# plt.title("Feature Importances")
+# plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+# plt.xticks(range(X_train.shape[1]), indices)
+# plt.xlim([-1, X_train.shape[1]])
+# plt.xlabel("Feature Index")
+# plt.ylabel("Importance")
+# plt.show()
 
-# Classification Report Metrics Plot
-report_dict = classification_report(y_val, y_pred, output_dict=True)
+# # Classification Report Metrics Plot
+# report_dict = classification_report(y_val, y_pred, output_dict=True)
 
-metrics_df = pd.DataFrame(report_dict).transpose()
-metrics_df = metrics_df.iloc[:-3, :3]  # Exclude the last 3 summary rows
+# metrics_df = pd.DataFrame(report_dict).transpose()
+# metrics_df = metrics_df.iloc[:-3, :3]  # Exclude the last 3 summary rows
 
-metrics_df.plot(kind='bar', figsize=(12, 6))
-plt.title('Classification Report Metrics')
-plt.xlabel('Classes')
-plt.ylabel('Score')
-plt.xticks(rotation=0)
-plt.legend(loc='lower right')
-plt.show()
+# metrics_df.plot(kind='bar', figsize=(12, 6))
+# plt.title('Classification Report Metrics')
+# plt.xlabel('Classes')
+# plt.ylabel('Score')
+# plt.xticks(rotation=0)
+# plt.legend(loc='lower right')
+# plt.show()
 
-# Decision Trees Plot
-plt.figure(figsize=(20, 10))
-plot_tree(rf_model.estimators_[0], feature_names=[f'Feature {i}' for i in range(X_train.shape[1])], filled=True, max_depth=3)
-plt.title("Decision Tree from Random Forest")
-plt.show()
+# # Decision Trees Plot
+# plt.figure(figsize=(20, 10))
+# plot_tree(rf_model.estimators_[0], feature_names=[f'Feature {i}' for i in range(X_train.shape[1])], filled=True, max_depth=3)
+# plt.title("Decision Tree from Random Forest")
+# plt.show()
