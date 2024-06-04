@@ -94,22 +94,17 @@ for patient in X_data_patients_dict:
     for split in X_data_patients_dict[patient]:
         #print(split,split.shape)
         #Setting up features that loop through the columns: mean_x_acc,mean_y_acc....,Mean_x_rot. For all featured and 5 imu sensors so
-        #a row of 5*6*6 = 180 features 
-        Mean = np.mean(split, axis=0)
-        STD = np.std(split, axis=0)
-        RMS = np.sqrt(np.mean(split**2, axis=0))  # RMS value of each column
-        MIN = np.min(split, axis=0)
-        MAX = np.max(split, axis=0)
-        Slope = np.gradient(split, axis=0)
-        Slope = (X_data_patients_dict[patient][split][:, -1]- X_data_patients_dict[patient][split],[:, -1])/ split
-        #appends all features in a dictionary for each patient 
-        feature_dict[patient].append(np.hstack((Mean,STD,RMS,MIN,MAX, Slope)))
+        #a row of 5*6*6 = 180 features
 
-for window in X_data_patients_dict['drinking_HealthySubject2_Test']:
-    print(window.shape)
-# feature_matrix['drinking_HealthySubject2_Test'] = np.array(feature_matrix['drinking_HealthySubject2_Test'])
-# print(feature_matrix['drinking_HealthySubject2_Test'],feature_matrix['drinking_HealthySubject2_Test'].shape)
-# #print(X_data_patients_dict['drinking_HealthySubject2_Test'],X_data_patients_dict['drinking_HealthySubject2_Test'].shape
+        RMS = np.sqrt(np.mean(split**2, axis=0))  # RMS value of each column
+        Mean = np.mean(split, axis=0)
+        Slope = (np.take(split, -1, axis =0) - np.take(split, 0, axis =0))/bin_size #Formula to calculate the slope of the first and last point
+        MAX = np.max(split, axis=0)
+        MIN = np.min(split, axis=0)
+        STD = np.std(split, axis=0)        
+
+        #appends all features in a dictionary for each patient 
+        feature_dict[patient].append(np.hstack((RMS,Mean,Slope,MIN,MAX,STD)))
 
 # Combine all feature arrays into a single array
 compressed_array_train = np.concatenate(list(feature_dict.values()), axis=0)
@@ -118,81 +113,113 @@ print(compressed_array_train.shape,(np.array(y_train)).shape)
 
 
 #Set up a random train-test split for a subjective model
-X_train, X_val, y_train, y_val = train_test_split(compressed_array_train, y_train, test_size=0.2, random_state=42)
-
-# Initialize the RandomForestClassifier
-rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
-
-# # Optimisation: LDA and PCA for feature decrease
-# lda = LinearDiscriminantAnalysis(n_components=n_components_lda)
-# X_train_lda = lda.fit_transform(X_train, y_train)
-# X_test_lda = lda.transform(X_test)
-
-# pca = PCA(n_components=None)
-# X_train_pca = pca.fit_transform(X_train)
-# X_test_pca = pca.transform(X_test)
-
-# clf_lda = RandomForestClassifier(n_estimators=100,min_samples_leaf=1,max_depth=10, random_state=42)
-# clf_lda.fit(X_train_lda, y_train)
-# y_test_pred_lda = clf_lda.predict(X_test_lda)
-
-# clf_pca = RandomForestClassifier(n_estimators=100,min_samples_leaf=1,max_depth=10, random_state=42)
-# clf_pca.fit(X_train_pca, y_train)
-# y_test_pred_pca = clf_pca.predict(X_test_pca)
+X_train, X_test, y_train, y_test = train_test_split(compressed_array_train, y_train, test_size=0.2, random_state=42)
 
 
-# Train the model
-rf_model.fit(X_train, y_train)
+clf = RandomForestClassifier(n_estimators=150,min_samples_leaf=1,max_depth=None, random_state=42)
+clf.fit(X_train, y_train)
 
-# Make predictions on the validation set
-y_pred = rf_model.predict(X_val)
+y_test_pred = clf.predict(X_test)
+y_train_pred = clf.predict(X_train)
 
-# Evaluate the model
-accuracy = accuracy_score(y_val, y_pred)
-print(accuracy)
-report = classification_report(y_val, y_pred)
-print(report)
+print("Classification Report of train data:")
+print(classification_report(y_train, y_train_pred))
 
-# Plot visualizations
+print("Classification Report of test data:")
+print(classification_report(y_test, y_test_pred))
 
-# # Confusion Matrix Plot
-# cm = confusion_matrix(y_val, y_pred)
-# plt.figure(figsize=(8, 6))
-# sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=label_mapping.keys(), yticklabels=label_mapping.keys())
-# plt.xlabel('Predicted')
-# plt.ylabel('Actual')
-# plt.title('Confusion Matrix')
-# plt.show()
+# Compute confusion matrix for test data
+conf_matrix = confusion_matrix(y_test, y_test_pred)
 
-# # Feature Importance Plot
-# importances = rf_model.feature_importances_
-# indices = np.argsort(importances)[::-1]
+# Label maps for confusion matrix
+label_mapping = {0: 'N', 1: 'A', 2: 'B', 3: 'C'}
 
-# plt.figure(figsize=(12, 6))
-# plt.title("Feature Importances")
-# plt.bar(range(X_train.shape[1]), importances[indices], align="center")
-# plt.xticks(range(X_train.shape[1]), indices)
-# plt.xlim([-1, X_train.shape[1]])
-# plt.xlabel("Feature Index")
-# plt.ylabel("Importance")
-# plt.show()
+# Plot confusion matrix
+print("Confusion Matrix:\n", conf_matrix)
+plt.figure(figsize=(8, 6))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
+            xticklabels=[label_mapping[key] for key in label_mapping.keys()],
+            yticklabels=[label_mapping[key] for key in label_mapping.keys()])
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.show()
 
-# # Classification Report Metrics Plot
-# report_dict = classification_report(y_val, y_pred, output_dict=True)
+importances = clf.feature_importances_
 
-# metrics_df = pd.DataFrame(report_dict).transpose()
-# metrics_df = metrics_df.iloc[:-3, :3]  # Exclude the last 3 summary rows
+indices = np.argsort(importances)[::-1]
 
-# metrics_df.plot(kind='bar', figsize=(12, 6))
-# plt.title('Classification Report Metrics')
-# plt.xlabel('Classes')
-# plt.ylabel('Score')
-# plt.xticks(rotation=0)
-# plt.legend(loc='lower right')
-# plt.show()
+plt.figure(figsize=(10, 6))
+plt.title("Feature Importances")
+plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+plt.xticks(range(X_train.shape[1]), indices)
+plt.xlabel("Feature Index")
+plt.ylabel("Feature Importance")
+plt.show()
 
-# # Decision Trees Plot
-# plt.figure(figsize=(20, 10))
-# plot_tree(rf_model.estimators_[0], feature_names=[f'Feature {i}' for i in range(X_train.shape[1])], filled=True, max_depth=3)
-# plt.title("Decision Tree from Random Forest")
-# plt.show()
+num_classes = len(np.unique(y_train))
+n_components_lda = min(num_classes - 1, X_train.shape[1])
+
+lda = LinearDiscriminantAnalysis(n_components=n_components_lda)
+X_train_lda = lda.fit_transform(X_train, y_train)
+X_test_lda = lda.transform(X_test)
+
+pca = PCA(n_components=None)
+X_train_pca = pca.fit_transform(X_train)
+X_test_pca = pca.transform(X_test)
+
+clf_lda = RandomForestClassifier(n_estimators=150,min_samples_leaf=1,max_depth=None, random_state=42)
+clf_lda.fit(X_train_lda, y_train)
+y_test_pred_lda = clf_lda.predict(X_test_lda)
+
+clf_pca = RandomForestClassifier(n_estimators=150,min_samples_leaf=1,max_depth=None, random_state=42)
+clf_pca.fit(X_train_pca, y_train)
+y_test_pred_pca = clf_pca.predict(X_test_pca)
+
+print("Classification Report of test data for LDA:")
+print(classification_report(y_test, y_test_pred_lda))
+
+print("Classification Report of test data for PCA:")
+print(classification_report(y_test, y_test_pred_pca, zero_division=1))
+
+lda_feature_importance = np.abs(lda.coef_[0])
+
+n_features_lda = lda.n_features_in_
+
+lda_feature_importance /= np.sum(lda_feature_importance)
+
+#Get the indices of the most important features
+important_features_indices = np.argsort(lda_feature_importance)[::-1]
+
+# Print the most important features
+top_n = 30  # Number of top features to print
+print(f"Top {top_n} most important features from LDA:")
+for i in range(top_n):
+    print(f"Feature {important_features_indices[i]}: Importance {lda_feature_importance[important_features_indices[i]]:.4f}")
+
+print("Feature Importances from LDA:")
+print(lda_feature_importance)
+
+pca_explained_variance_ratio = pca.explained_variance_ratio_
+
+print("Explained Variance Ratios from PCA:")
+print(pca_explained_variance_ratio)
+
+pca_feature_importance = np.cumsum(pca_explained_variance_ratio)
+
+pca_feature_importance /= np.sum(pca_feature_importance)
+
+print("Feature Importances from PCA:")
+print(pca_feature_importance)
+
+plt.figure(figsize=(10, 6))
+plt.bar(range(n_features_lda), lda_feature_importance, align="center", color='orange', label='LDA')
+plt.xlabel("Feature Index")
+plt.ylabel("Feature Importance (LDA)")
+plt.legend()
+
+plt.figure(figsize=(10, 6))
+plt.bar(range(X_train_pca.shape[1]), pca_feature_importance, align="center", color='green', label='PCA')
+plt.xlabel("PCA Component Index")
+plt.ylabel("Feature Importance (PCA)")
+plt.legend()
+plt.show()
