@@ -33,7 +33,7 @@ sampling_window_min_max = 50
 sampling_window_mean = 50
 sampling_window_STD = 50
 sampling_window_slope = 50
-test_person = 7
+test_person = 6
 
 
 # train_amount = 5
@@ -172,8 +172,18 @@ element_numbers = list(range(len(y_test_pred)))
 ### Setting up plots to illustrate code
 plt.figure(figsize=(12, 6))
 
+plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
+plt.plot(element_numbers, y_test, label='True Labels', color='black')
+plt.xlabel('Element Numbers')
+plt.ylabel('Predicted Labels')
+plt.title(f'Predicted Labels - {subjects_test[0]}')
+plt.legend()
+plt.show
+
+plt.figure(figsize=(12, 6))
 plt.subplot(2, 4, 1)
 plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
+plt.plot(element_numbers, y_test, label='True Labels', color='black')
 plt.xlabel('Element Numbers')
 plt.ylabel('Predicted Labels')
 plt.title(f'Predicted Labels - {subjects_test[0]}')
