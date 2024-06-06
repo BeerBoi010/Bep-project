@@ -239,7 +239,15 @@ element_numbers = list(range(len(y_test_pred)))
 #### Plots for visualization #############################################################################################
 
 '''Below plots are made to visualize what the Random classifier has done and how it has performed'''
+plt.figure(figsize=(12, 6))
 
+plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
+plt.plot(element_numbers, y_test, label='True Labels', color='black')
+plt.xlabel('Element Numbers')
+plt.ylabel('Predicted Labels')
+plt.title(f'Predicted Labels - {subjects_test[0]}')
+plt.legend()
+plt.show
 # Plot for y_pred
 # plt.figure(figsize=(12, 6))
 

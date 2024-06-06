@@ -107,7 +107,8 @@ def train_and_evaluate_model(train_subjects, test_subjects, imu_locations):
     # Preprocess test data
     X_test, y_test = preprocess_data(test_subjects, imu_locations, annotations, acc, rot)
     X_test = scaler.transform(X_test)
-
+    print("X_train", X_train.shape)
+    print("X_test", X_test.shape)
     # Train the model
     clf = RandomForestClassifier(n_estimators=100, random_state=42)
     clf.fit(X_train, y_train)

@@ -28,11 +28,19 @@ sampling_window = 3
 min_periods = 1
 test_amount = train_amount
 
+<<<<<<< HEAD
+sampling_window_RMS = 50
+sampling_window_min_max = 50
+sampling_window_mean = 50
+sampling_window_STD = 50
+sampling_window_slope = 50
+=======
 sampling_window_RMS = 3
 sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
+>>>>>>> ce790ea93918e89e1362491541b04292c2f80496
 test_person = 7
 
 
@@ -172,6 +180,18 @@ element_numbers = list(range(len(y_test_pred)))
 ### Setting up plots to illustrate code
 plt.figure(figsize=(12, 6))
 
+<<<<<<< HEAD
+plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
+plt.plot(element_numbers, y_test, label='True Labels', color='black')
+plt.xlabel('Element Numbers', fontsize = 15)
+plt.ylabel('Predicted Labels', fontsize = 15)
+plt.title(f'Predicted Labels vs true labels', fontsize = 16)
+plt.tick_params(axis='both', which='major', labelsize=15)
+plt.tick_params(axis='both', which='minor', labelsize=15)
+plt.legend(fontsize=14)  # Increase the legend font size to 14
+
+plt.show
+=======
 plt.subplot(2, 4, 1)
 plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
 plt.xlabel('Element Numbers')
@@ -228,6 +248,7 @@ plt.ylabel('Predicted Labels')
 plt.title(f'Predicted Labels vs Acceleration Data - {subjects_test[0]}')
 plt.legend()
 plt.show()
+>>>>>>> ce790ea93918e89e1362491541b04292c2f80496
 
 # Compute confusion matrix for test data
 conf_matrix = confusion_matrix(y_test, y_test_pred)
@@ -238,13 +259,77 @@ label_mapping = {0: 'N', 1: 'A', 2: 'B', 3: 'C'}
 # Plot confusion matrix
 print("Confusion Matrix:\n", conf_matrix)
 plt.figure(figsize=(8, 6))
-sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', annot_kws={"size": 16},
             xticklabels=[label_mapping[key] for key in label_mapping.keys()],
             yticklabels=[label_mapping[key] for key in label_mapping.keys()])
-plt.xlabel('Predicted Labels')
-plt.ylabel('True Labels')
-plt.title(f'Confusion Matrix of drinking_HealthySubject{test_person}_Test')
+plt.xlabel('Predicted Labels', fontsize = 12)
+plt.ylabel('True Labels', fontsize = 12)
+plt.title(f'Confusion Matrix of subject 7', fontsize = 12)
+plt.tick_params(axis='both', which='major', labelsize=10)
+plt.tick_params(axis='both', which='minor', labelsize=10)
 plt.show()
+
+# plt.figure(figsize=(12, 6))
+
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title(f'Predicted Labels vs Acceleration Data - {subjects_test[0]}')
+# plt.legend()
+# plt.show()
+# plt.figure(figsize=(12, 6))
+# plt.subplot(2, 4, 1)
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
+# plt.plot(element_numbers, y_test, label='True Labels', color='black')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title(f'Predicted Labels - {subjects_test[0]}')
+# plt.legend()
+
+# plt.subplot(2, 4, 2)
+# plt.plot(element_numbers, y_test, label='True Labels', color='green')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('True Labels')
+# plt.title(f'True Labels - {subjects_test[0]}')
+# plt.legend()
+
+# plt.subplot(2, 4, 3)
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('Acceleration value')
+# plt.title(f'hand_IMU - {subjects_test[0]}')
+
+# plt.subplot(2, 4, 5)
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('Acceleration value')
+# plt.title(f'lowerarm_IMU - {subjects_test[0]}')
+
+# plt.subplot(2, 4, 6)
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('Acceleration value')
+# plt.title(f'upperarm_IMU - {subjects_test[0]}')
+
+# plt.subplot(2, 4, 7)
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('Acceleration value')
+# plt.title(f'shoulder_IMU - {subjects_test[0]}')
+
+# plt.subplot(2, 4, 8)
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('Acceleration value')
+# plt.title(f'sternum_IMU - {subjects_test[0]}')
+
+# plt.tight_layout()
+# plt.show()
+
+
+
+
 
 importances = clf.feature_importances_
 
