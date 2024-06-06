@@ -28,20 +28,12 @@ sampling_window = 3
 min_periods = 1
 test_amount = train_amount
 
-<<<<<<< HEAD
-sampling_window_RMS = 50
-sampling_window_min_max = 50
-sampling_window_mean = 50
-sampling_window_STD = 50
-sampling_window_slope = 50
-=======
 sampling_window_RMS = 3
 sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
->>>>>>> ce790ea93918e89e1362491541b04292c2f80496
-test_person = 7
+test_person = 2
 
 
 # train_amount = 5
@@ -180,18 +172,6 @@ element_numbers = list(range(len(y_test_pred)))
 ### Setting up plots to illustrate code
 plt.figure(figsize=(12, 6))
 
-<<<<<<< HEAD
-plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
-plt.plot(element_numbers, y_test, label='True Labels', color='black')
-plt.xlabel('Element Numbers', fontsize = 15)
-plt.ylabel('Predicted Labels', fontsize = 15)
-plt.title(f'Predicted Labels vs true labels', fontsize = 16)
-plt.tick_params(axis='both', which='major', labelsize=15)
-plt.tick_params(axis='both', which='minor', labelsize=15)
-plt.legend(fontsize=14)  # Increase the legend font size to 14
-
-plt.show
-=======
 plt.subplot(2, 4, 1)
 plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
 plt.xlabel('Element Numbers')
@@ -248,7 +228,6 @@ plt.ylabel('Predicted Labels')
 plt.title(f'Predicted Labels vs Acceleration Data - {subjects_test[0]}')
 plt.legend()
 plt.show()
->>>>>>> ce790ea93918e89e1362491541b04292c2f80496
 
 # Compute confusion matrix for test data
 conf_matrix = confusion_matrix(y_test, y_test_pred)
@@ -335,13 +314,13 @@ importances = clf.feature_importances_
 
 indices = np.argsort(importances)[::-1]
 
-plt.figure(figsize=(10, 6))
-plt.title("Feature Importances")
-plt.bar(range(X_train.shape[1]), importances[indices], align="center")
-plt.xticks(range(X_train.shape[1]), indices)
-plt.xlabel("Feature Index")
-plt.ylabel("Feature Importance")
-plt.show()
+# plt.figure(figsize=(10, 6))
+# plt.title("Feature Importances")
+# plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+# plt.xticks(range(X_train.shape[1]), indices)
+# plt.xlabel("Feature Index")
+# plt.ylabel("Feature Importance")
+# plt.show()
 
 num_classes = len(np.unique(y_train))
 n_components_lda = min(num_classes - 1, X_train.shape[1])
@@ -379,34 +358,34 @@ important_features_indices = np.argsort(lda_feature_importance)[::-1]
 
 # Print the most important features
 top_n = 30  # Number of top features to print
-print(f"Top {top_n} most important features from LDA:")
-for i in range(top_n):
-    print(f"Feature {important_features_indices[i]}: Importance {lda_feature_importance[important_features_indices[i]]:.4f}")
+#print(f"Top {top_n} most important features from LDA:")
+#for i in range(top_n):
+    #print(f"Feature {important_features_indices[i]}: Importance {lda_feature_importance[important_features_indices[i]]:.4f}")
 
-print("Feature Importances from LDA:")
-print(lda_feature_importance)
+# print("Feature Importances from LDA:")
+# print(lda_feature_importance)
 
 pca_explained_variance_ratio = pca.explained_variance_ratio_
 
-print("Explained Variance Ratios from PCA:")
-print(pca_explained_variance_ratio)
+# print("Explained Variance Ratios from PCA:")
+# print(pca_explained_variance_ratio)
 
 pca_feature_importance = np.cumsum(pca_explained_variance_ratio)
 
 pca_feature_importance /= np.sum(pca_feature_importance)
 
-print("Feature Importances from PCA:")
-print(pca_feature_importance)
+# print("Feature Importances from PCA:")
+# print(pca_feature_importance)
 
-plt.figure(figsize=(10, 6))
-plt.bar(range(n_features_lda), lda_feature_importance, align="center", color='orange', label='LDA')
-plt.xlabel("Feature Index")
-plt.ylabel("Feature Importance (LDA)")
-plt.legend()
+# plt.figure(figsize=(10, 6))
+# plt.bar(range(n_features_lda), lda_feature_importance, align="center", color='orange', label='LDA')
+# plt.xlabel("Feature Index")
+# plt.ylabel("Feature Importance (LDA)")
+# plt.legend()
 
-plt.figure(figsize=(10, 6))
-plt.bar(range(X_train_pca.shape[1]), pca_feature_importance, align="center", color='green', label='PCA')
-plt.xlabel("PCA Component Index")
-plt.ylabel("Feature Importance (PCA)")
-plt.legend()
-plt.show()
+# plt.figure(figsize=(10, 6))
+# plt.bar(range(X_train_pca.shape[1]), pca_feature_importance, align="center", color='green', label='PCA')
+# plt.xlabel("PCA Component Index")
+# plt.ylabel("Feature Importance (PCA)")
+# plt.legend()
+# plt.show()

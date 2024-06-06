@@ -37,7 +37,7 @@ from scipy.stats import pearsonr
 
        
 Arm_side = 'R'         # 'R' for right body side, 'L' for left body side.
-fs= 50                 # Sampling frequency
+fs= 50              # Sampling frequency
 
 #%% Import PreProcessed data: 
 # wdir= r"C:\Users\Mieke\Documents\dir_machinelearning"
@@ -98,8 +98,8 @@ np.save('time_ranges_subject_7.npy', time_ranges_subject_7)
 
 #%% This piece of code, segments each subject data according to their labels, including the same length windows: 
 
-window_length_sec = 0.5 # 0.5 second
-overlap = 0.5
+window_length_sec = 1 # 0.5 second
+overlap = 0.5 #0.5
 window_length_samples = int(window_length_sec * fs)
 windows_AllSubject = []
 Labels_AllSubject = []
@@ -313,57 +313,57 @@ for subject_ind, part in enumerate(window_counts_AllSubject):
 ## each CNN has three main blocks: Convlution layer, Pooling layer and a fully connected layer.  
 
 
-from sklearn.model_selection import LeaveOneGroupOut
-from keras.models import Sequential
-from keras.layers import Dense, Flatten, Dropout
-from sklearn.metrics import accuracy_score
+# from sklearn.model_selection import LeaveOneGroupOut
+# from keras.models import Sequential
+# from keras.layers import Dense, Flatten, Dropout
+# from sklearn.metrics import accuracy_score
 
 
 
-# Convert the lists to numpy arrays for easier manipulation
-windows_AllSubject_array = np.array(windows_AllSubject)
-Labels_AllSubject_array = np.array(Labels_AllSubject)
+# # Convert the lists to numpy arrays for easier manipulation
+# windows_AllSubject_array = np.array(windows_AllSubject)
+# Labels_AllSubject_array = np.array(Labels_AllSubject)
 
-logo_outer = LeaveOneGroupOut()
-accuracies_CNN=[]
+# logo_outer = LeaveOneGroupOut()
+# accuracies_CNN=[]
 
-# Iterate over each subject for leave-one-subject-out
-for train_index, test_index in logo_outer.split(windows_AllSubject_array, groups=np.arange(len(windows_AllSubject_array))):
+# # Iterate over each subject for leave-one-subject-out
+# for train_index, test_index in logo_outer.split(windows_AllSubject_array, groups=np.arange(len(windows_AllSubject_array))):
     
-    X_train, X_test = windows_AllSubject_array[train_index], windows_AllSubject_array[test_index]
-    y_train, y_test = Labels_AllSubject_array[train_index], Labels_AllSubject_array[test_index]
+#     X_train, X_test = windows_AllSubject_array[train_index], windows_AllSubject_array[test_index]
+#     y_train, y_test = Labels_AllSubject_array[train_index], Labels_AllSubject_array[test_index]
     
-    # Print the group identifiers for training and test subjects
-    train_groups = np.arange(len(windows_AllSubject_array))[train_index]
-    test_group = np.arange(len(windows_AllSubject_array))[test_index]
-    print("Training Groups:", train_groups)
-    print("Test Group:", test_group)
+#     # Print the group identifiers for training and test subjects
+#     train_groups = np.arange(len(windows_AllSubject_array))[train_index]
+#     test_group = np.arange(len(windows_AllSubject_array))[test_index]
+#     print("Training Groups:", train_groups)
+#     print("Test Group:", test_group)
     
-    # Flatten the windows dats % The faltten is because the input to the fully connceted Convolution must be only one dimension. 
-    X_train_flat = X_train.reshape(X_train.shape[0], -1)
-    X_test_flat = X_test.reshape(X_test.shape[0], -1)
+#     # Flatten the windows dats % The faltten is because the input to the fully connceted Convolution must be only one dimension. 
+#     X_train_flat = X_train.reshape(X_train.shape[0], -1)
+#     X_test_flat = X_test.reshape(X_test.shape[0], -1)
     
-# Define the Fully Connected CNN model architecture
-    model = Sequential()
-    model.add(Dense(128, activation='relu', input_shape=(X_train_flat.shape[1],)))
-    model.add(Dropout(0.5))
-    model.add(Dense(64, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(4, activation='softmax'))  # Assuming 4 classes
+# # Define the Fully Connected CNN model architecture
+#     model = Sequential()
+#     model.add(Dense(128, activation='relu', input_shape=(X_train_flat.shape[1],)))
+#     model.add(Dropout(0.5))
+#     model.add(Dense(64, activation='relu'))
+#     model.add(Dropout(0.5))
+#     model.add(Dense(4, activation='softmax'))  # Assuming 4 classes
     
-    # Compile the model
-    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+#     # Compile the model
+#     model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
     
-    # Train the model
-    model.fit(X_train_flat, y_train, epochs=10, batch_size=32, verbose=0)
+#     # Train the model
+#     model.fit(X_train_flat, y_train, epochs=10, batch_size=32, verbose=0)
     
-    # Evaluate the model on the test data
-    _, test_accuracy = model.evaluate(X_test_flat, y_test, verbose=0)
-    accuracies_CNN.append(test_accuracy)
+#     # Evaluate the model on the test data
+#     _, test_accuracy = model.evaluate(X_test_flat, y_test, verbose=0)
+#     accuracies_CNN.append(test_accuracy)
 
-# Calculate average accuracy across all subjects
-average_accuracy = np.mean(accuracies_CNN)
-print("Average Test Accuracy:", average_accuracy)
+# # Calculate average accuracy across all subjects
+# average_accuracy = np.mean(accuracies_CNN)
+# print("Average Test Accuracy:", average_accuracy)
     
     
     
