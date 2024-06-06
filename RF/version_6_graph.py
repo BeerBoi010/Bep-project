@@ -1,24 +1,11 @@
-#########################################
-
-#uses best parameters found in gridsearch,added filter,added print for most important lda features, removed mistakes
-
-########################
-
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import accuracy_score, classification_report
-import sys
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.tree import plot_tree
-from scipy.stats import pearsonr
+import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from tqdm import tqdm
-from sklearn.metrics import confusion_matrix
-import seaborn as sns
-
 
 from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
 import labels_interpolation
@@ -35,18 +22,6 @@ sampling_window_STD = 3
 sampling_window_slope = 3
 test_person = 7
 
-
-# train_amount = 5
-# sampling_window = 3
-# min_periods = 1
-# test_amount = train_amount
-
-# sampling_window_RMS = 3
-# sampling_window_min_max = 3
-# sampling_window_mean = 3
-# sampling_window_STD = 3
-# sampling_window_slope = 3
-# test_person = 7
 print(f'drinking_HealthySubject{test_person}_Test')
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
 rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
@@ -155,7 +130,7 @@ for subject in X_test_RMS:
 combined_X_data_test = np.concatenate(X_data_patients_test)
 X_test = combined_X_data_test
 
-clf = RandomForestClassifier(n_estimators=100,min_samples_leaf=1,max_depth=10, random_state=42)
+clf = RandomForestClassifier(n_estimators=100, min_samples_leaf=1, max_depth=10, random_state=42)
 clf.fit(X_train, y_train)
 
 y_test_pred = clf.predict(X_test)
@@ -169,11 +144,11 @@ print(classification_report(y_test, y_test_pred))
 
 element_numbers = list(range(len(y_test_pred)))
 
-### Setting up plots to illustrate code
 plt.figure(figsize=(12, 6))
 
 plt.subplot(2, 4, 1)
 plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
+incorrect_indices = [i for i in range(len(y_test)) if y_test[i] != y_test_pred[i]]
 plt.xlabel('Element Numbers')
 plt.ylabel('Predicted Labels')
 plt.title(f'Predicted Labels - {subjects_test[0]}')
@@ -186,35 +161,19 @@ plt.ylabel('True Labels')
 plt.title(f'True Labels - {subjects_test[0]}')
 plt.legend()
 
+def plot_with_highlight(ax, data, incorrect_indices, label):
+    x_data = data[:, 0]  # Assuming the x-axis acceleration data is the first column
+    for i in range(len(x_data) - 1):
+        if i in incorrect_indices:
+            ax.plot([i, i+1], [x_data[i], x_data[i+1]], color='red')
+        else:
+            ax.plot([i, i+1], [x_data[i], x_data[i+1]], color='blue')
+    ax.set_xlabel('Element number')
+    ax.set_ylabel('X Acceleration value')
+    ax.set_title(f'{label} - {subjects_test[0]}')
+
 plt.subplot(2, 4, 3)
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('Acceleration value')
-plt.title(f'hand_IMU - {subjects_test[0]}')
-
-plt.subplot(2, 4, 5)
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('Acceleration value')
-plt.title(f'lowerarm_IMU - {subjects_test[0]}')
-
-plt.subplot(2, 4, 6)
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('Acceleration value')
-plt.title(f'upperarm_IMU - {subjects_test[0]}')
-
-plt.subplot(2, 4, 7)
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('Acceleration value')
-plt.title(f'shoulder_IMU - {subjects_test[0]}')
-
-plt.subplot(2, 4, 8)
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('Acceleration value')
-plt.title(f'sternum_IMU - {subjects_test[0]}')
+plot_with_highlight(plt.gca(), acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'], incorrect_indices, 'hand_IMU')
 
 plt.tight_layout()
 plt.show()
@@ -222,7 +181,7 @@ plt.show()
 plt.figure(figsize=(12, 6))
 
 plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+plot_with_highlight(plt.gca(), acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'], incorrect_indices, 'hand_IMU')
 plt.xlabel('Element Numbers')
 plt.ylabel('Predicted Labels')
 plt.title(f'Predicted Labels vs Acceleration Data - {subjects_test[0]}')
@@ -269,11 +228,11 @@ pca = PCA(n_components=None)
 X_train_pca = pca.fit_transform(X_train)
 X_test_pca = pca.transform(X_test)
 
-clf_lda = RandomForestClassifier(n_estimators=100,min_samples_leaf=1,max_depth=10, random_state=42)
+clf_lda = RandomForestClassifier(n_estimators=100, min_samples_leaf=1, max_depth=10, random_state=42)
 clf_lda.fit(X_train_lda, y_train)
 y_test_pred_lda = clf_lda.predict(X_test_lda)
 
-clf_pca = RandomForestClassifier(n_estimators=100,min_samples_leaf=1,max_depth=10, random_state=42)
+clf_pca = RandomForestClassifier(n_estimators=100, min_samples_leaf=1, max_depth=10, random_state=42)
 clf_pca.fit(X_train_pca, y_train)
 y_test_pred_pca = clf_pca.predict(X_test_pca)
 
@@ -289,7 +248,7 @@ n_features_lda = lda.n_features_in_
 
 lda_feature_importance /= np.sum(lda_feature_importance)
 
-#Get the indices of the most important features
+# Get the indices of the most important features
 important_features_indices = np.argsort(lda_feature_importance)[::-1]
 
 # Print the most important features

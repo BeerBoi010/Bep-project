@@ -144,7 +144,7 @@ sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
             yticklabels=[label_mapping[key] for key in label_mapping.keys()])
 plt.xlabel('Predicted Labels')
 plt.ylabel('True Labels')
-plt.title("Confusion Matrix")
+plt.title("Confusion Matrix Random Split")
 plt.show()
 
 num_classes = len(np.unique(y_train))
