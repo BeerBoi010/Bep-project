@@ -324,16 +324,16 @@ conf_matrix = confusion_matrix(y_test, y_test_pred)
 label_mapping = {0: 'N', 1: 'A', 2: 'B', 3: 'C'}
 
 
-# Plot confusion matrix
-print("Confusion Matrix:\n", conf_matrix)
-plt.figure(figsize=(8, 6))
-sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
-            xticklabels=[label_mapping[key] for key in label_mapping.keys()],
-            yticklabels=[label_mapping[key] for key in label_mapping.keys()])
-plt.xlabel('Predicted Labels')
-plt.ylabel('True Labels')
-plt.title(f'Confusion Matrix for {subject}')
-plt.show()
+# # Plot confusion matrix
+# print("Confusion Matrix:\n", conf_matrix)
+# plt.figure(figsize=(8, 6))
+# sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
+#             xticklabels=[label_mapping[key] for key in label_mapping.keys()],
+#             yticklabels=[label_mapping[key] for key in label_mapping.keys()])
+# plt.xlabel('Predicted Labels')
+# plt.ylabel('True Labels')
+# plt.title(f'Confusion Matrix for {subject}')
+# plt.show()
 
 
 
@@ -342,44 +342,55 @@ plt.show()
 yticks = [0,1,2,3]
 yticklabels = ['N','A', 'B', 'C']
 
-plt.figure(figsize=(12, 8))
+# plt.figure(figsize=(12, 8))
 
-plt.subplot(2, 2, 1)  # 1 row, 2 columns, plot number 1
-plt.title(f'Plot of Predicted labels for person {subject}')
-plt.plot(element_numbers, y_test_pred, label='Predictions')
-plt.yticks(yticks, yticklabels)
-plt.xlabel('Element number')
-plt.ylabel('Movement steps')
-plt.legend()
+# plt.subplot(2, 2, 1)  # 1 row, 2 columns, plot number 1
+# plt.title(f'Plot of Predicted labels for person {subject}')
+# plt.plot(element_numbers, y_test_pred, label='Predictions')
+# plt.yticks(yticks, yticklabels)
+# plt.xlabel('Element number')
+# plt.ylabel('Movement steps')
+# plt.legend()
 
-plt.subplot(2, 2, 2)  # 1 row, 2 columns, plot number 1
-plt.title(f'Plot of True labels for person {subject}')
-plt.plot(element_numbers, y_test, color = 'orange',  label='True Labels')
-plt.yticks(yticks, yticklabels)
-plt.xlabel('Element number')
-plt.ylabel('Movement steps')
-plt.legend()
+# plt.subplot(2, 2, 2)  # 1 row, 2 columns, plot number 1
+# plt.title(f'Plot of True labels for person {subject}')
+# plt.plot(element_numbers, y_test, color = 'orange',  label='True Labels')
+# plt.yticks(yticks, yticklabels)
+# plt.xlabel('Element number')
+# plt.ylabel('Movement steps')
+# plt.legend()
 
-plt.subplot(2, 2, 3)  # 1 row, 2 columns, plot number 2, acceleration of hand imu
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'hand_IMU - {subject}')
+# plt.subplot(2, 2, 3)  # 1 row, 2 columns, plot number 2, acceleration of hand imu
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'hand_IMU - {subject}')
 
-plt.subplot(2, 2, 4)  # 1 row, 2 columns, plot number 2, acceleration of hand imu
-plt.title(f"Feature Importances for person {subject}")
-plt.bar(range(X_train.shape[1]), importances[indices], align="center")
-plt.xticks(range(X_train.shape[1]), indices)
-plt.xlabel("Feature Index")
-plt.ylabel("Feature Importance")
-plt.show()
+# plt.subplot(2, 2, 4)  # 1 row, 2 columns, plot number 2, acceleration of hand imu
+# plt.title(f"Feature Importances for person {subject}")
+# plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+# plt.xticks(range(X_train.shape[1]), indices)
+# plt.xlabel("Feature Index")
+# plt.ylabel("Feature Importance")
+# plt.show()
 
 
 
 
 ######################################################################################################
 
-
+### Predicted VS. True 3o best features, edited for visibility
+width = 800
+size_letters = 14
+plt.figure()
+plt.title('Predicted vs. True Labels for part of Person 7', size =size_letters )
+plt.plot(element_numbers[:width], y_test_pred[:width], label='Predictions', color ='orange')
+plt.plot(element_numbers[:width], y_test[:width], label='True', color = 'blue', linestyle = '--')
+plt.yticks(yticks, yticklabels)
+plt.xlabel('Element number', size =size_letters-1)
+plt.ylabel('Movement steps', size = size_letters-1)
+plt.legend()
+plt.show()
 # # Visualize one of the decision trees in the Random Forest
 # plt.figure(figsize=(150, 10))
 # plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
