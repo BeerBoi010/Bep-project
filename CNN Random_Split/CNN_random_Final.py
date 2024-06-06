@@ -1,3 +1,6 @@
+
+# CNN CODE made with ChatGPT. Does not work
+
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report, confusion_matrix
@@ -46,6 +49,8 @@ for item in all_labels:
 
 label_mapping = {'N': 0, 'A': 1, 'B': 2, 'C': 3}
 y_train = [label_mapping[label] for label in labels_train]
+
+print("labels",y_train,len(y_train))
 
 # One-hot encode labels
 y_train_oh = to_categorical(y_train)

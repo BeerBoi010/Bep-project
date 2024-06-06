@@ -10,7 +10,6 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
 import labels_interpolation
 
-# Constants
 train_amount = 5
 sampling_window = 3
 min_periods = 1
@@ -150,7 +149,6 @@ plt.figure(figsize=(12, 6))
 plt.subplot(2, 4, 1)
 plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
 incorrect_indices = [i for i in range(len(y_test)) if y_test[i] != y_test_pred[i]]
-plt.scatter(incorrect_indices, [y_test_pred[i] for i in incorrect_indices], color='red', label='Incorrect Predictions')
 plt.xlabel('Element Numbers')
 plt.ylabel('Predicted Labels')
 plt.title(f'Predicted Labels - {subjects_test[0]}')
@@ -176,18 +174,6 @@ def plot_with_highlight(ax, data, incorrect_indices, label):
 
 plt.subplot(2, 4, 3)
 plot_with_highlight(plt.gca(), acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'], incorrect_indices, 'hand_IMU')
-
-plt.subplot(2, 4, 5)
-plot_with_highlight(plt.gca(), acc[f'drinking_HealthySubject{test_person}_Test']['forearm_IMU'], incorrect_indices, 'forearm_IMU')
-
-plt.subplot(2, 4, 6)
-plot_with_highlight(plt.gca(), acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'], incorrect_indices, 'upperarm_IMU')
-
-plt.subplot(2, 4, 7)
-plot_with_highlight(plt.gca(), acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'], incorrect_indices, 'shoulder_IMU')
-
-plt.subplot(2, 4, 8)
-plot_with_highlight(plt.gca(), acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'], incorrect_indices, 'sternum_IMU')
 
 plt.tight_layout()
 plt.show()
