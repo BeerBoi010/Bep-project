@@ -11,6 +11,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.tree import plot_tree
 from sklearn.metrics import confusion_matrix
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.decomposition import PCA
 import seaborn as sns
 # from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 # from sklearn.decomposition import PCA
@@ -64,7 +66,7 @@ subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'd
 # train_labels = all_labels
 # #print("train labels:",train_labels)
 #1524 381
-subject = 7
+subject = 2
 subjects_train = [f'drinking_HealthySubject{subject}_Test']
 subjects_test = [f'drinking_HealthySubject{subject}_Test']
 
@@ -221,101 +223,17 @@ y_test_pred = clf.predict(X_test)
 print("y_test_pred",len(y_test_pred))
 y_train_pred = clf.predict(X_train)
 
-# Display classification report  of training data
 print("Classification Report of train data:")
 print(classification_report(y_train, y_train_pred))
 
-# Display classification report of test data
 print("Classification Report of test data:")
 print(classification_report(y_test, y_test_pred))
 
- # Create an empty list of size equal to the length of predictions or true labels
-element_numbers = list(range(len(y_test_pred)))
 
-##########################################################################################################################
-#### Plots for visualization #############################################################################################
+importances = clf.feature_importances_
 
-'''Below plots are made to visualize what the Random classifier has done and how it has performed'''
+indices = np.argsort(importances)[::-1]
 
-# # Plot for y_pred
-# plt.figure(figsize=(12, 6))
-
-# plt.subplot(2, 4, 1)  # 1 row, 2 columns, plot number 1
-# plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
-# plt.xlabel('Element Numbers')
-# plt.ylabel('Predicted Labels')
-# plt.title(f'Predicted Labels - {subject}')
-# plt.legend()
-
-
-# plt.subplot(2, 4, 2)  # 1 row, 2 columns, plot number 2
-# plt.plot(element_numbers, y_test, label='True Labels', color='green')
-# plt.xlabel('Element Numbers')
-# plt.ylabel('True Labels')
-# plt.title(f'True Labels - {subject}')
-# plt.legend()
-
-# plt.subplot(2, 4, 3)  # 1 row, 2 columns, plot number 3
-# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
-# plt.xlabel('Element number')
-# plt.ylabel('acceleration value')
-# plt.title(f'hand_IMU - {subject}')
-
-# plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
-# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
-# plt.xlabel('Element number')
-# plt.ylabel('acceleration value')
-# plt.title(f'lowerarm_IMU - {subject}')
-
-# plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
-# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
-# plt.xlabel('Element number')
-# plt.ylabel('acceleration value')
-# plt.title(f'upperarm_IMU - {subject}')
-
-# plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
-# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
-# plt.xlabel('Element number')
-# plt.ylabel('acceleration value')
-# plt.title(f'shoulder_IMU - {subject}')
-
-# plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
-# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
-# plt.xlabel('Element number')
-# plt.ylabel('acceleration value')
-# plt.title(f'sternum_IMU - {subject}')
-
-# plt.tight_layout()  # Adjust layout to prevent overlap
-# plt.show()
-
-# plt.figure(figsize=(12, 6))
-
-# plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
-# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
-# plt.xlabel('Element Numbers')
-# plt.ylabel('Predicted Labels')
-# plt.title(f'Predicted Labels vs acceleration data - {subject}')
-# plt.legend()
-# plt.show()
-# # Get feature importances
-# importances = clf.feature_importances_
-
-
-# # Sort feature importances in descending order
-# indices = np.argsort(importances)[::-1]
-
-# # Compute confusion matrix for test data
-# conf_matrix = confusion_matrix(y_test, y_test_pred)
-
-# # Plot confusion matrix
-# plt.figure(figsize=(8, 6))
-# sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=label_mapping.keys(), yticklabels=label_mapping.keys())
-# plt.xlabel('Predicted Labels')
-# plt.ylabel('True Labels')
-# plt.title('Confusion Matrix for Test Data')
-# plt.show()
-
-# # Plot the feature importances
 # plt.figure(figsize=(10, 6))
 # plt.title("Feature Importances")
 # plt.bar(range(X_train.shape[1]), importances[indices], align="center")
@@ -324,10 +242,70 @@ element_numbers = list(range(len(y_test_pred)))
 # plt.ylabel("Feature Importance")
 # plt.show()
 
-# # Visualize one of the decision trees in the Random Forest
-# plt.figure(figsize=(150, 10))
-# plot_tree(clf.estimators_[0], feature_names=[f'feature {i}' for i in range(X_train.shape[1])], filled=True)
+num_classes = len(np.unique(y_train))
+n_components_lda = min(num_classes - 1, X_train.shape[1])
+
+lda = LinearDiscriminantAnalysis(n_components=n_components_lda)
+X_train_lda = lda.fit_transform(X_train, y_train)
+X_test_lda = lda.transform(X_test)
+
+pca = PCA(n_components=None)
+X_train_pca = pca.fit_transform(X_train)
+X_test_pca = pca.transform(X_test)
+
+clf_lda = RandomForestClassifier(n_estimators=100,min_samples_leaf=1,max_depth=10, random_state=42)
+clf_lda.fit(X_train_lda, y_train)
+y_test_pred_lda = clf_lda.predict(X_test_lda)
+
+clf_pca = RandomForestClassifier(n_estimators=100,min_samples_leaf=1,max_depth=10, random_state=42)
+clf_pca.fit(X_train_pca, y_train)
+y_test_pred_pca = clf_pca.predict(X_test_pca)
+
+print("Classification Report of test data for LDA:")
+print(classification_report(y_test, y_test_pred_lda))
+
+print("Classification Report of test data for PCA:")
+print(classification_report(y_test, y_test_pred_pca, zero_division=1))
+
+lda_feature_importance = np.abs(lda.coef_[0])
+
+n_features_lda = lda.n_features_in_
+
+lda_feature_importance /= np.sum(lda_feature_importance)
+
+#Get the indices of the most important features
+important_features_indices = np.argsort(lda_feature_importance)[::-1]
+
+# Print the most important features
+top_n = 30  # Number of top features to print
+#print(f"Top {top_n} most important features from LDA:")
+#for i in range(top_n):
+    #print(f"Feature {important_features_indices[i]}: Importance {lda_feature_importance[important_features_indices[i]]:.4f}")
+
+# print("Feature Importances from LDA:")
+# print(lda_feature_importance)
+
+pca_explained_variance_ratio = pca.explained_variance_ratio_
+
+# print("Explained Variance Ratios from PCA:")
+# print(pca_explained_variance_ratio)
+
+pca_feature_importance = np.cumsum(pca_explained_variance_ratio)
+
+pca_feature_importance /= np.sum(pca_feature_importance)
+
+# print("Feature Importances from PCA:")
+# print(pca_feature_importance)
+
+# plt.figure(figsize=(10, 6))
+# plt.bar(range(n_features_lda), lda_feature_importance, align="center", color='orange', label='LDA')
+# plt.xlabel("Feature Index")
+# plt.ylabel("Feature Importance (LDA)")
+# plt.legend()
+
+# plt.figure(figsize=(10, 6))
+# plt.bar(range(X_train_pca.shape[1]), pca_feature_importance, align="center", color='green', label='PCA')
+# plt.xlabel("PCA Component Index")
+# plt.ylabel("Feature Importance (PCA)")
+# plt.legend()
 # plt.show()
-
-
-
