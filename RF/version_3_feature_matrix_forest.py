@@ -40,7 +40,7 @@ sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
 sampling_window_entropy = 3
-test_person = 5
+test_person = 7
 #test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
 
 #######################################################################################################################
@@ -231,65 +231,66 @@ element_numbers = list(range(len(y_test_pred)))
 '''Below plots are made to visualize what the Random classifier has done and how it has performed'''
 
 # Plot for y_pred
-plt.figure(figsize=(12, 6))
+# plt.figure(figsize=(12, 6))
 
-plt.subplot(2, 4, 1)  # 1 row, 2 columns, plot number 1
-plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
-plt.xlabel('Element Numbers')
-plt.ylabel('Predicted Labels')
-plt.title(f'Predicted Labels - {subject}')
-plt.legend()
+# plt.subplot(2, 4, 1)  # 1 row, 2 columns, plot number 1
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title(f'Predicted Labels - {subject}')
+# plt.legend()
 
 
-plt.subplot(2, 4, 2)  # 1 row, 2 columns, plot number 2
-plt.plot(element_numbers, y_test, label='True Labels', color='green')
-plt.xlabel('Element Numbers')
-plt.ylabel('True Labels')
-plt.title(f'True Labels - {subject}')
-plt.legend()
+# plt.subplot(2, 4, 2)  # 1 row, 2 columns, plot number 2
+# plt.plot(element_numbers, y_test, label='True Labels', color='green')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('True Labels')
+# plt.title(f'True Labels - {subject}')
+# plt.legend()
 
-plt.subplot(2, 4, 3)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'hand_IMU - {subject}')
+# plt.subplot(2, 4, 3)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'hand_IMU - {subject}')
 
-plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'lowerarm_IMU - {subject}')
+# plt.subplot(2, 4, 5)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['lowerarm_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'lowerarm_IMU - {subject}')
 
-plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'upperarm_IMU - {subject}')
+# plt.subplot(2, 4, 6)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['upperarm_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'upperarm_IMU - {subject}')
 
-plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'shoulder_IMU - {subject}')
+# plt.subplot(2, 4, 7)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['shoulder_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'shoulder_IMU - {subject}')
 
-plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
-plt.xlabel('Element number')
-plt.ylabel('acceleration value')
-plt.title(f'sternum_IMU - {subject}')
+# plt.subplot(2, 4, 8)  # 1 row, 2 columns, plot number 3
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['sternum_IMU'])
+# plt.xlabel('Element number')
+# plt.ylabel('acceleration value')
+# plt.title(f'sternum_IMU - {subject}')
 
-plt.tight_layout()  # Adjust layout to prevent overlap
-plt.show()
+# plt.tight_layout()  # Adjust layout to prevent overlap
+# plt.show()
 
-plt.figure(figsize=(12, 6))
+# plt.figure(figsize=(12, 6))
 
-plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
-plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
-plt.xlabel('Element Numbers')
-plt.ylabel('Predicted Labels')
-plt.title(f'Predicted Labels vs acceleration data - {subject}')
-plt.legend()
-plt.show()
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
+# plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title(f'Predicted Labels vs acceleration data - {subject}')
+# plt.legend()
+# plt.show()
+
 # Get feature importances
 importances = clf.feature_importances_
 
@@ -297,25 +298,25 @@ importances = clf.feature_importances_
 # Sort feature importances in descending order
 indices = np.argsort(importances)[::-1]
 
-# Compute confusion matrix for test data
-conf_matrix = confusion_matrix(y_test, y_test_pred)
+# # Compute confusion matrix for test data
+# conf_matrix = confusion_matrix(y_test, y_test_pred)
 
-# Plot confusion matrix
-plt.figure(figsize=(8, 6))
-sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=label_mapping.keys(), yticklabels=label_mapping.keys())
-plt.xlabel('Predicted Labels')
-plt.ylabel('True Labels')
-plt.title('Confusion Matrix for Test Data')
-plt.show()
+# # Plot confusion matrix
+# plt.figure(figsize=(8, 6))
+# sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=label_mapping.keys(), yticklabels=label_mapping.keys())
+# plt.xlabel('Predicted Labels')
+# plt.ylabel('True Labels')
+# plt.title('Confusion Matrix for Test Data')
+# plt.show()
 
 # # Plot the feature importances
-# plt.figure(figsize=(10, 6))
-# plt.title("Feature Importances")
-# plt.bar(range(X_train.shape[1]), importances[indices], align="center")
-# plt.xticks(range(X_train.shape[1]), indices)
-# plt.xlabel("Feature Index")
-# plt.ylabel("Feature Importance")
-# plt.show()
+plt.figure(figsize=(10, 6))
+plt.title("Feature Importances")
+plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+plt.xticks(range(X_train.shape[1]), indices)
+plt.xlabel("Feature Index")
+plt.ylabel("Feature Importance")
+plt.show()
 
 # # Visualize one of the decision trees in the Random Forest
 # plt.figure(figsize=(150, 10))

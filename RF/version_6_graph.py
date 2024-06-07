@@ -167,7 +167,7 @@ def plot_with_highlight(ax, data, incorrect_indices, label):
         if i in incorrect_indices:
             ax.plot([i, i+1], [x_data[i], x_data[i+1]], color='red')
         else:
-            ax.plot([i, i+1], [x_data[i], x_data[i+1]], color='blue')
+            ax.plot([i, i+1], [x_data[i], x_data[i+1]], color='green')
     ax.set_xlabel('Element number')
     ax.set_ylabel('X Acceleration value')
     ax.set_title(f'{label} - {subjects_test[0]}')
