@@ -346,22 +346,19 @@ print("Classification Report of test data for PCA:")
 print(classification_report(y_test, y_test_pred_pca, zero_division=1))
 
 lda_feature_importance = np.abs(lda.coef_[0])
-pca_feature_importance = np.abs(lda.coef_[0])
 
 n_features_lda = lda.n_features_in_
 
 lda_feature_importance /= np.sum(lda_feature_importance)
-pca_feature_importance /= np.sum(lda_feature_importance)
 #Get the indices of the most important features
 lda_important_features_indices = np.argsort(lda_feature_importance)[::-1]
-pca_important_features_indices = np.argsort(pca_feature_importance)[::-1]
 
 # Print the most important features
 top_n = 30  # Number of top features to print
 print(f"Top {top_n} most important features from LDA:")
 for i in range(top_n):
-    print(f"Feature {lda_important_features_indices[i]}: Importance {lda_feature_importance[lda_important_features_indices[i]]:.4f}")
-    print(f"Feature {pca_important_features_indices[i]}: Importance {pca_feature_importance[pca_important_features_indices[i]]:.4f}")
+    print(f"LDA Feature {lda_important_features_indices[i]}: Importance {lda_feature_importance[lda_important_features_indices[i]]:.4f}")
+    print(f'MDI Feature{indices[i]}: Importance {importances} ')
 
 
 # print("Feature Importances from LDA:")
@@ -383,10 +380,6 @@ for i in range(top_n):
 importances = clf.feature_importances_
 
 
-# Sort feature importances in descending order
-indices = np.argsort(importances)[::-1]
-lda_importance = np.argsort(lda_feature_importance)[::-1]
-pca_importance = np.argsort(pca_feature_importance)[::-1]
 
 #Plot all feature importances
 
