@@ -117,7 +117,7 @@ element_numbers = list(range(len(y_train)))
 width = 800
 size_letters = 14
 plt.figure()
-plt.title('Predicted vs. True Labels OvA Grid Search person 7', size =size_letters )
+plt.title('Predicted vs. True Labels OvA Grid Search subject 7', size =size_letters )
 plt.plot(element_numbers[:width], y_test_pred[:width], label='Predictions', color ='orange')
 plt.plot(element_numbers[:width], y_train_pred[:width], label='True', color = 'blue', linestyle = '--')
 plt.yticks(yticks, yticklabels)
