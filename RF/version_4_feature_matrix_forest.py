@@ -293,14 +293,14 @@ importances = clf.feature_importances_
 # Sort feature importances in descending order
 indices = np.argsort(importances)[::-1]
 
-# # Plot the feature importances
-# plt.figure(figsize=(10, 6))
-# plt.title("Feature Importances")
-# plt.bar(range(X_train.shape[1]), importances[indices], align="center")
-# plt.xticks(range(X_train.shape[1]), indices)
-# plt.xlabel("Feature Index")
-# plt.ylabel("Feature Importance")
-# plt.show()
+# Plot the feature importances
+plt.figure(figsize=(10, 6))
+plt.title("Feature Importances For Grid search Subject 7")
+plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+plt.xticks(range(X_train.shape[1]), indices)
+plt.xlabel("Feature Index")
+plt.ylabel("Feature Importance")
+plt.show()
 
 # Calculate the number of unique classes in y_train
 num_classes = len(np.unique(y_train))

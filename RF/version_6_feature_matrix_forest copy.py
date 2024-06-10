@@ -27,22 +27,12 @@ train_amount = 5
 sampling_window = 3
 min_periods = 1
 test_amount = train_amount
-
-<<<<<<< HEAD
 sampling_window_RMS = 3
 sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
-test_person = 5
-=======
-sampling_window_RMS = 50
-sampling_window_min_max = 50
-sampling_window_mean = 50
-sampling_window_STD = 50
-sampling_window_slope = 50
 test_person = 7
->>>>>>> 1906eb62d6450188c26d78ccb323bf17ea0ec7f2
 
 
 # train_amount = 5
@@ -180,7 +170,6 @@ element_numbers = list(range(len(y_test_pred)))
 
 ### Setting up plots to illustrate code
 plt.figure(figsize=(12, 6))
-<<<<<<< HEAD
 
 plt.subplot(2, 4, 1)
 plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
@@ -239,18 +228,6 @@ plt.title(f'Predicted Labels vs Acceleration Data - {subjects_test[0]}')
 plt.legend()
 plt.show()
 
-=======
-plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
-plt.plot(element_numbers, y_test, label='True Labels', color='black')
-plt.xlabel('Element Numbers', fontsize = 15)
-plt.ylabel('Predicted Labels', fontsize = 15)
-plt.title(f'Predicted Labels vs true labels', fontsize = 16)
-plt.tick_params(axis='both', which='major', labelsize=15)
-plt.tick_params(axis='both', which='minor', labelsize=15)
-plt.legend(fontsize=14)  # Increase the legend font size to 14
-plt.show()
-
->>>>>>> 1906eb62d6450188c26d78ccb323bf17ea0ec7f2
 # Compute confusion matrix for test data
 conf_matrix = confusion_matrix(y_test, y_test_pred)
 
@@ -336,7 +313,6 @@ importances = clf.feature_importances_
 
 indices = np.argsort(importances)[::-1]
 
-<<<<<<< HEAD
 # plt.figure(figsize=(10, 6))
 # plt.title("Feature Importances")
 # plt.bar(range(X_train.shape[1]), importances[indices], align="center")
@@ -344,15 +320,6 @@ indices = np.argsort(importances)[::-1]
 # plt.xlabel("Feature Index")
 # plt.ylabel("Feature Importance")
 # plt.show()
-=======
-plt.figure()
-plt.title("Top 30 MDI features for subject 7", size = 15)
-plt.bar(range(X_train.shape[1])[:30], importances[indices][:30], align="center")
-plt.xticks(range(X_train.shape[1])[:30], indices[:30])
-plt.xlabel("Feature Index", size = 14)
-plt.ylabel("Feature Importance", size =14)
-plt.show()
->>>>>>> 1906eb62d6450188c26d78ccb323bf17ea0ec7f2
 
 num_classes = len(np.unique(y_train))
 n_components_lda = min(num_classes - 1, X_train.shape[1])
