@@ -337,11 +337,6 @@ label_mapping = {0: 'N', 1: 'A', 2: 'B', 3: 'C'}
 
 
 
-
-# little code setup to edit the ylabels for predicted true plots
-yticks = [0,1,2,3]
-yticklabels = ['N','A', 'B', 'C']
-
 # plt.figure(figsize=(12, 8))
 
 # plt.subplot(2, 2, 1)  # 1 row, 2 columns, plot number 1
@@ -379,7 +374,11 @@ yticklabels = ['N','A', 'B', 'C']
 
 ######################################################################################################
 
-### Predicted VS. True 3o best features, edited for visibility
+# little code setup to edit the ylabels for predicted true plots
+yticks = [0,1,2,3]
+yticklabels = ['N','A', 'B', 'C']
+### Predicted VS. True 30 best features, edited for visibility
+
 width = 800
 size_letters = 14
 plt.figure()
