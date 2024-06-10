@@ -358,7 +358,7 @@ top_n = 30  # Number of top features to print
 print(f"Top {top_n} most important features from LDA:")
 for i in range(top_n):
     print(f"LDA Feature {lda_important_features_indices[i]}: Importance {lda_feature_importance[lda_important_features_indices[i]]:.4f}")
-    print(f'MDI Feature{indices[i]}: Importance {importances} ')
+    print(f'MDI Feature {indices[i]}: Importance {importances[i]}')
 
 
 # print("Feature Importances from LDA:")
