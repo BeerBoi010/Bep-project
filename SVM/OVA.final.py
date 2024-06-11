@@ -107,6 +107,27 @@ print("Classification Report of test data:")
 print(classification_report(y_test, y_test_pred))
 
 element_numbers = list(range(len(y_test_pred)))
+######################################################################################################
+
+# little code setup to edit the ylabels for predicted true plots
+yticks = [0,1,2,3]
+yticklabels = ['N','A', 'B', 'C']
+### Predicted VS. True 30 best features, edited for visibility
+element_numbers = list(range(len(y_train)))
+width = 800
+size_letters = 14
+plt.figure()
+plt.title('Predicted vs. True Labels OvA Grid Search subject 7', size =size_letters )
+plt.plot(element_numbers[:width], y_test_pred[:width], label='Predictions', color ='orange')
+plt.plot(element_numbers[:width], y_train_pred[:width], label='True', color = 'blue', linestyle = '--')
+plt.yticks(yticks, yticklabels)
+plt.xlabel('Element number', size =size_letters-1)
+plt.ylabel('Movement steps', size = size_letters-1)
+plt.legend()
+plt.show()
+
+
+
 
 ### Setting up plots to illustrate code
 plt.figure(figsize=(12, 6))

@@ -110,6 +110,24 @@ best_estimator = grid_search.best_estimator_
 # Predictions
 y_test_pred = best_estimator.predict(X_test)
 y_train_pred = best_estimator.predict(X_train)
+######################################################################################################
+
+# little code setup to edit the ylabels for predicted true plots
+yticks = [0,1,2,3]
+yticklabels = ['N','A', 'B', 'C']
+### Predicted VS. True 30 best features, edited for visibility
+element_numbers = list(range(len(y_train)))
+width = 800
+size_letters = 14
+plt.figure()
+plt.title('Predicted vs. True Labels OvO Grid Search', size =size_letters )
+plt.plot(element_numbers[:width], y_test_pred[:width], label='Predictions', color ='orange')
+plt.plot(element_numbers[:width], y_train_pred[:width], label='True', color = 'blue', linestyle = '--')
+plt.yticks(yticks, yticklabels)
+plt.xlabel('Element number', size =size_letters-1)
+plt.ylabel('Movement steps', size = size_letters-1)
+plt.legend()
+plt.show()
 
 # Print best parameters
 print("\nBest Parameters:", best_params)

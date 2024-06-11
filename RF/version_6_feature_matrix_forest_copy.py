@@ -27,13 +27,12 @@ train_amount = 5
 sampling_window = 3
 min_periods = 1
 test_amount = train_amount
-
 sampling_window_RMS = 3
 sampling_window_min_max = 3
 sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
-test_person = 4
+test_person = 7
 
 
 # train_amount = 5
@@ -248,8 +247,6 @@ plt.tick_params(axis='both', which='major', labelsize=10)
 plt.tick_params(axis='both', which='minor', labelsize=10)
 plt.show()
 
-# plt.figure(figsize=(12, 6))
-
 # plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
 # plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
 # plt.xlabel('Element Numbers')
@@ -314,16 +311,17 @@ importances = clf.feature_importances_
 
 indices = np.argsort(importances)[::-1]
 
-plt.figure()
-plt.title("Top 30 MDI features for subject 7", size = 15)
-plt.bar(range(X_train.shape[1])[:30], importances[indices][:30], align="center")
-plt.xticks(range(X_train.shape[1])[:30], indices[:30])
-plt.xlabel("Feature Index", size = 14)
-plt.ylabel("Feature Importance", size =14)
-plt.show()
+# plt.figure(figsize=(10, 6))
+# plt.title("Feature Importances")
+# plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+# plt.xticks(range(X_train.shape[1]), indices)
+# plt.xlabel("Feature Index")
+# plt.ylabel("Feature Importance")
+# plt.show()
 
 num_classes = len(np.unique(y_train))
 n_components_lda = min(num_classes - 1, X_train.shape[1])
+
 
 lda = LinearDiscriminantAnalysis(n_components=n_components_lda)
 X_train_lda = lda.fit_transform(X_train, y_train)
@@ -352,40 +350,56 @@ lda_feature_importance = np.abs(lda.coef_[0])
 n_features_lda = lda.n_features_in_
 
 lda_feature_importance /= np.sum(lda_feature_importance)
-
 #Get the indices of the most important features
-important_features_indices = np.argsort(lda_feature_importance)[::-1]
-
+lda_important_features_indices = np.argsort(lda_feature_importance)[::-1]
 
 # Print the most important features
 top_n = 30  # Number of top features to print
-#print(f"Top {top_n} most important features from LDA:")
-#for i in range(top_n):
-    #print(f"Feature {important_features_indices[i]}: Importance {lda_feature_importance[important_features_indices[i]]:.4f}")
+print(f"Top {top_n} most important features from LDA:")
+for i in range(top_n):
+    print(f"LDA Feature {lda_important_features_indices[i]}: Importance {lda_feature_importance[lda_important_features_indices[i]]:.4f}")
+    print(f'MDI Feature {indices[i]}: Importance {importances[i]}')
+
 
 # print("Feature Importances from LDA:")
-# print(lda_feature_importance)
+# print(lda_feature_importance[:30])
 
-pca_explained_variance_ratio = pca.explained_variance_ratio_
+# pca_explained_variance_ratio = pca.explained_variance_ratio_
 
-# print("Explained Variance Ratios from PCA:")
-# print(pca_explained_variance_ratio)
+# # print("Explained Variance Ratios from PCA:")
+# # print(pca_explained_variance_ratio)
 
-pca_feature_importance = np.cumsum(pca_explained_variance_ratio)
+# pca_feature_importance = np.cumsum(pca_explained_variance_ratio)
 
-pca_feature_importance /= np.sum(pca_feature_importance)
+# pca_feature_importance /= np.sum(pca_feature_importance)
 
 # print("Feature Importances from PCA:")
-# print(pca_feature_importance)
+# print(pca_feature_importance[:30])
 
+#Get feature importances
+importances = clf.feature_importances_
+
+
+
+#Plot all feature importances
+
+plt.figure(figsize=(10, 6))
+plt.title("Feature Importances MDI")
+plt.bar(range(X_train.shape[1])[:top_n], importances[indices][:top_n], align="center")
+plt.xticks(range(X_train.shape[1])[:top_n], indices[:top_n])
+plt.xlabel("Feature Index")
+plt.ylabel("Feature Importance")
+plt.show()
+
+# # plt.figure(figsize=(12, 6))
 # plt.figure(figsize=(10, 6))
-# plt.bar(range(n_features_lda), lda_feature_importance, align="center", color='orange', label='LDA')
+# plt.bar(range(n_features_lda)[:top_n], important_features_indices[:top_n], align="center", color='orange', label='LDA')
 # plt.xlabel("Feature Index")
 # plt.ylabel("Feature Importance (LDA)")
 # plt.legend()
 
 # plt.figure(figsize=(10, 6))
-# plt.bar(range(X_train_pca.shape[1]), pca_feature_importance, align="center", color='green', label='PCA')
+# plt.bar(range(X_train_pca.shape[1])[:top_n], pca_importance[:top_n], align="center", color='green', label='PCA')
 # plt.xlabel("PCA Component Index")
 # plt.ylabel("Feature Importance (PCA)")
 # plt.legend()

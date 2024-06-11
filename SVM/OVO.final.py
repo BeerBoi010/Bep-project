@@ -27,7 +27,7 @@ sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
 
-test_person = 5
+test_person = 7
 
 # Load data
 acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
@@ -107,6 +107,8 @@ print("Classification Report of test data:")
 print(classification_report(y_test, y_test_pred))
 
 element_numbers = list(range(len(y_test_pred)))
+
+
 
 ### Setting up plots to illustrate code
 plt.figure(figsize=(12, 6))
