@@ -5,6 +5,12 @@ import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 from sklearn.multiclass import OneVsOneClassifier
 from sklearn.metrics import accuracy_score, classification_report
+from sklearn.model_selection import GridSearchCV
+from tqdm import tqdm  # Import tqdm library for progress bars
+from sklearn.decomposition import PCA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
 
 from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standard_Deviation
 import labels_interpolation
@@ -132,3 +138,101 @@ for i, location in enumerate(['hand_IMU', 'lowerarm_IMU', 'upperarm_IMU', 'shoul
 
 plt.tight_layout()
 #plt.show()
+
+# Compute confusion matrix for test data
+conf_matrix = confusion_matrix(y_test, y_test_pred)
+
+# Label maps for confusion matrix
+label_mapping = {0: 'N', 1: 'A', 2: 'B', 3: 'C'}
+
+# Plot confusion matrix
+print("Confusion Matrix:\n", conf_matrix)
+plt.figure(figsize=(8, 6))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
+            xticklabels=[label_mapping[key] for key in label_mapping.keys()],
+            yticklabels=[label_mapping[key] for key in label_mapping.keys()])
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.title(f'Confusion Matrix of drinking_HealthySubject{test_person}_Test')
+plt.show()
+
+num_classes = len(np.unique(y_train))
+n_components_lda = min(num_classes - 1, X_train.shape[1])
+
+lda = LinearDiscriminantAnalysis(n_components=n_components_lda)
+X_train_lda = lda.fit_transform(X_train, y_train)
+X_test_lda = lda.transform(X_test)
+
+pca = PCA(n_components=None)
+X_train_pca = pca.fit_transform(X_train)
+X_test_pca = pca.transform(X_test)
+
+# Using the determined parameters for OvA classification with SVC
+ova_clf_lda = OneVsOneClassifier(SVC(gamma= "scale", kernel="rbf", random_state=42))
+ova_clf_lda.fit(X_train_lda, y_train)
+y_test_pred_lda = ova_clf_lda.predict(X_test_lda)
+
+ova_clf_pca = OneVsOneClassifier(SVC(gamma= "scale", kernel="rbf", random_state=42))
+ova_clf_pca.fit(X_train_pca, y_train)
+y_test_pred_pca = ova_clf_pca.predict(X_test_pca)
+
+print("Classification Report of test data for LDA:")
+print(classification_report(y_test, y_test_pred_lda))
+
+print("Classification Report of test data for PCA:")
+print(classification_report(y_test, y_test_pred_pca, zero_division=1))
+
+lda_feature_importance = np.abs(lda.coef_[0])
+n_features_lda = lda.n_features_in_
+lda_feature_importance /= np.sum(lda_feature_importance)
+
+# Get the indices of the most important features
+important_features_indices = np.argsort(lda_feature_importance)[::-1]
+
+# Print the most important features
+top_n = 30  # Number of top features to print
+print(f"Top {top_n} most important features from LDA:")
+for i in range(top_n):
+    print(f"Feature {important_features_indices[i]}: Importance {lda_feature_importance[important_features_indices[i]]:.4f}")
+
+
+print("Feature Importances from LDA:")
+print(lda_feature_importance)
+
+pca_explained_variance_ratio = pca.explained_variance_ratio_
+print("Explained Variance Ratios from PCA:")
+print(pca_explained_variance_ratio)
+
+pca_feature_importance = np.cumsum(pca_explained_variance_ratio)
+pca_feature_importance /= np.sum(pca_feature_importance)
+
+print("Feature Importances from PCA:")
+print(pca_feature_importance)
+
+# plt.figure(figsize=(10, 6))
+# plt.bar(range(n_features_lda), lda_feature_importance, align="center", color='orange', label='LDA')
+# plt.xlabel("Feature Index")
+# plt.ylabel("Feature Importance (LDA)")
+# plt.legend()
+
+# plt.figure(figsize=(10, 6))
+# plt.bar(range(X_train_pca.shape[1]), pca_feature_importance, align="center", color='green', label='PCA')
+# plt.xlabel("PCA Component Index")
+# plt.ylabel("Feature Importance (PCA)")
+# plt.legend()
+# plt.show()
+
+yticks = [0,1,2,3]
+yticklabels = ['N','A', 'B', 'C']
+
+width = 800
+size_letters = 14
+plt.figure()
+plt.title('Predicted vs. True Labels for part of Person 7', size =size_letters )
+plt.plot(element_numbers[:width], y_test_pred[:width], label='Predictions', color ='orange')
+plt.plot(element_numbers[:width], y_test[:width], label='True', color = 'blue', linestyle = '--')
+plt.yticks(yticks, yticklabels)
+plt.xlabel('Element number', size =size_letters-1)
+plt.ylabel('Movement steps', size = size_letters-1)
+plt.legend()
+plt.show()
