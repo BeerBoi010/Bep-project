@@ -66,14 +66,15 @@ axes[0].bar(lda_locations, lda_importances, color='blue')
 axes[0].set_title('LDA Feature Importance by Location')
 axes[0].set_xlabel('Location')
 axes[0].set_ylabel('Total Feature Importance')
-axes[0].set_xticklabels(lda_locations, rotation=45, ha='right')
+axes[0].set_xticklabels(lda_locations, size = 15)
 
 # MDI Plot
 axes[1].bar(mdi_locations, mdi_importances, color='green')
 axes[1].set_title('MDI Feature Importance by Location')
 axes[1].set_xlabel('Location')
 axes[1].set_ylabel('Total Feature Importance')
-axes[1].set_xticklabels(mdi_locations, rotation=45, ha='right')
+axes[1].set_xticklabels(mdi_locations, size = 15)
+
 
 plt.tight_layout()
 plt.show()
