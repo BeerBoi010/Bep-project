@@ -1,6 +1,6 @@
 #########################################
 
-#uses best parameters found in gridsearch,added filter,added print for most important lda features, removed mistakes
+#Difference With 6 : Changed the PCA code
 
 ########################
 
@@ -361,24 +361,33 @@ for i in range(top_n):
     print(f'MDI Feature {indices[i]}: Importance {importances[i]}')
 
 
-# print("Feature Importances from LDA:")
-# print(lda_feature_importance[:30])
+################### NEW Code
+# Extract loadings
+loadings = pca.components_
 
-pca_explained_variance_ratio = pca.explained_variance_ratio_
+# Compute feature importance by summing the squared loadings
+feature_importance_pca = np.sum(loadings**2, axis=0)
 
-# # print("Explained Variance Ratios from PCA:")
-# # print(pca_explained_variance_ratio)
+# Normalize the importance scores
+feature_importance_pca /= np.sum(feature_importance_pca)
 
-pca_feature_importance = np.cumsum(pca_explained_variance_ratio)
+# Get the indices of the most important features
+important_features_indices = np.argsort(feature_importance_pca)[::-1]
 
-pca_feature_importance /= np.sum(pca_feature_importance)
-
+# Print the sorted feature importances
 print("Feature Importances from PCA:")
-# print(pca_feature_importance[:30])
+for idx in important_features_indices:
+    print(f"Feature {idx}: {feature_importance_pca[idx]}")
 
-#Get feature importances
-importances = clf.feature_importances_
-
+# Plot the sorted feature importances
+plt.figure(figsize=(10, 6))
+plt.bar(range(len(feature_importance_pca)), feature_importance_pca[important_features_indices], align='center')
+plt.xticks(range(len(feature_importance_pca)), important_features_indices, rotation=90)
+plt.xlabel('Feature Index')
+plt.ylabel('Normalized Importance')
+plt.title('Feature Importances from PCA')
+plt.tight_layout()
+plt.show()
 
 
 #Plot all feature importances
@@ -397,10 +406,3 @@ plt.show()
 # plt.xlabel("Feature Index")
 # plt.ylabel("Feature Importance (LDA)")
 # plt.legend()
-
-plt.figure(figsize=(10, 6))
-plt.bar(range(X_train_pca.shape[1])[:top_n], pca_feature_importance[:top_n], align="center", color='green', label='PCA')
-plt.xlabel("PCA Component Index")
-plt.ylabel("Feature Importance (PCA)")
-plt.legend()
-plt.show()
