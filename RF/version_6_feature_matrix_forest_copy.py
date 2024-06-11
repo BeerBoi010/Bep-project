@@ -354,7 +354,7 @@ lda_feature_importance /= np.sum(lda_feature_importance)
 lda_important_features_indices = np.argsort(lda_feature_importance)[::-1]
 
 # Print the most important features
-top_n = 30  # Number of top features to print
+top_n = 180  # Number of top features to print
 print(f"Top {top_n} most important features from LDA:")
 for i in range(top_n):
     print(f"LDA Feature {lda_important_features_indices[i]}: Importance {lda_feature_importance[lda_important_features_indices[i]]:.4f}")
