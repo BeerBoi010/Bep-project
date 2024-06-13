@@ -180,14 +180,14 @@ label_mapping = {0: 'N', 1: 'A', 2: 'B', 3: 'C'}
 # Plot confusion matrix
 print("Confusion Matrix:\n", conf_matrix)
 plt.figure(figsize=(8, 6))
-sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', annot_kws={"size": 16},
             xticklabels=[label_mapping[key] for key in label_mapping.keys()],
             yticklabels=[label_mapping[key] for key in label_mapping.keys()])
-plt.xlabel('Predicted Labels')
-plt.ylabel('True Labels')
-plt.title(f'Confusion Matrix of drinking_HealthySubject{test_person}_Test')
+plt.xlabel('Predicted Labels', fontsize = 12)
+plt.ylabel('True Labels', fontsize = 12)
+plt.tick_params(axis='both', which='major', labelsize=10)
+plt.tick_params(axis='both', which='minor', labelsize=10)
 plt.show()
-
 num_classes = len(np.unique(y_train))
 n_components_lda = min(num_classes - 1, X_train.shape[1])
 
