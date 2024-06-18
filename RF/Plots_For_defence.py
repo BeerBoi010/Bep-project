@@ -25,6 +25,16 @@ import seaborn as sns
 # from Feature_Extraction import entropy_V2
 import labels_interpolation
 
+''' Full datasets'''
+acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
+rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
+all_labels = labels_interpolation.expanded_matrices
+
+subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'drinking_HealthySubject4_Test',   
+         'drinking_HealthySubject5_Test', 'drinking_HealthySubject6_Test', 'drinking_HealthySubject7_Test']
+
+Labels = ['X-acceleration', 'Y-acceleration', 'Z-acceleration']
+
 
 ##### VARIABLES ######################################################################################################
 '''later toevoegen dat random wordt gekozen wie train en test is'''
@@ -38,22 +48,21 @@ sampling_window_mean = 3
 sampling_window_STD = 3
 sampling_window_slope = 3
 sampling_window_entropy = 3
+
+test_person = 7
+subjects.remove(f'drinking_HealthySubject{test_person}_Test')
+subjects_train = subjects
+subjects_test = [f'drinking_HealthySubject{test_person}_Test']
+
+test_labels = all_labels[test_person - 2]
+all_labels.pop(test_person - 2)
+train_labels = all_labels
 #test_person = int(input('Which subject woudl you like to test on (2-7) ? '))
 
 #######################################################################################################################
 ### Importing and naming of the datasets ##############################################################################
 
-''' Full datasets'''
-acc = np.load("Data_tests/ACC_signal.npy", allow_pickle=True).item()
-rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
-all_labels = labels_interpolation.expanded_matrices
 
-
-
-subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'drinking_HealthySubject4_Test',   
-         'drinking_HealthySubject5_Test', 'drinking_HealthySubject6_Test', 'drinking_HealthySubject7_Test']
-
-Labels = ['X-acceleration', 'Y-acceleration', 'Z-acceleration']
 
 
 plt.figure(figsize= (12,4))
@@ -70,3 +79,47 @@ plt.gca().set_xticks(current_ticks)  # Ensure the current ticks are used
 plt.gca().set_xticklabels([str(tick / 50) for tick in current_ticks])  # Scale down the tick labels by 50
 plt.xlim([0, 38.1*50])
 plt.show()
+
+# plt.figure(figsize=(12, 6))
+
+# plt.subplot(2, 4, 1)
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='blue')
+# incorrect_indices = [i for i in range(len(y_test)) if y_test[i] != y_test_pred[i]]
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title(f'Predicted Labels - {subjects_test[0]}')
+# plt.legend()
+
+# plt.subplot(2, 4, 2)
+# plt.plot(element_numbers, y_test, label='True Labels', color='green')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('True Labels')
+# plt.title(f'True Labels - {subjects_test[0]}')
+# plt.legend()
+
+# def plot_with_highlight(ax, data, incorrect_indices, label):
+#     x_data = data[:, 0]  # Assuming the x-axis acceleration data is the first column
+#     for i in range(len(x_data) - 1):
+#         if i in incorrect_indices:
+#             ax.plot([i, i+1], [x_data[i], x_data[i+1]], color='red')
+#         else:
+#             ax.plot([i, i+1], [x_data[i], x_data[i+1]], color='green')
+#     ax.set_xlabel('Element number')
+#     ax.set_ylabel('X Acceleration value')
+#     ax.set_title(f'{label} - {subjects_test[0]}')
+
+# plt.subplot(2, 4, 3)
+# plot_with_highlight(plt.gca(), acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'], incorrect_indices, 'hand_IMU')
+
+# plt.tight_layout()
+# plt.show()
+
+# plt.figure(figsize=(12, 6))
+
+# plt.plot(element_numbers, y_test_pred, label='Predictions', color='black')
+# plot_with_highlight(plt.gca(), acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'], incorrect_indices, 'hand_IMU')
+# plt.xlabel('Element Numbers')
+# plt.ylabel('Predicted Labels')
+# plt.title(f'Predicted Labels vs Acceleration Data - {subjects_test[0]}')
+# plt.legend()
+# plt.show()
