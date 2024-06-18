@@ -58,23 +58,32 @@ lda_importances = lda_location_importance['Feature Importance'].values
 mdi_locations = mdi_location_importance['Location'].values
 mdi_importances = mdi_location_importance['Feature Importance'].values
 
-# Plotting
-fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(12, 10))
+import matplotlib.pyplot as plt
+
+# Assuming lda_locations, lda_importances, mdi_locations, mdi_importances are already defined
+
+import matplotlib.pyplot as plt
+
+# Assuming lda_locations, lda_importances, mdi_locations, mdi_importances are already defined
 
 # LDA Plot
-axes[0].bar(lda_locations, lda_importances, color='blue')
-axes[0].set_title('LDA Feature Importance by Location')
-axes[0].set_xlabel('Location')
-axes[0].set_ylabel('Total Feature Importance')
-axes[0].set_xticklabels(lda_locations, size = 20)
+plt.figure(figsize=(12, 5))
+plt.bar(lda_locations, lda_importances, color='blue')
+plt.title('LDA Feature Importance by Location')
+plt.xlabel('Location', fontsize=20)
+plt.ylabel('Total Feature Importance', fontsize=20)
+plt.xticks(ticks=range(len(lda_locations)), labels=lda_locations, size=20)
+plt.yticks(size=20)
+plt.tight_layout()
+plt.show()
 
 # MDI Plot
-axes[1].bar(mdi_locations, mdi_importances, color='green')
-axes[1].set_title('MDI Feature Importance by Location')
-axes[1].set_xlabel('Location')
-axes[1].set_ylabel('Total Feature Importance')
-axes[1].set_xticklabels(mdi_locations, size = 20)
-
-
+plt.figure(figsize=(12, 5))
+plt.bar(mdi_locations, mdi_importances, color='green')
+plt.title('MDI Feature Importance by Location')
+plt.xlabel('Location', fontsize=20)
+plt.ylabel('Total Feature Importance', fontsize=20)
+plt.xticks(ticks=range(len(mdi_locations)), labels=mdi_locations, size=20)
+plt.yticks(size=20)
 plt.tight_layout()
 plt.show()

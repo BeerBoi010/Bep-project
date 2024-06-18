@@ -170,6 +170,23 @@ y_test_pred_pca = ova_clf_pca.predict(X_test_pca)
 print("Classification Report of test data for LDA:")
 print(classification_report(y_test, y_test_pred_lda))
 
+# Compute confusion matrix for test data
+conf_matrix = confusion_matrix(y_test, y_test_pred_lda)
+
+# Label maps for confusion matrix
+label_mapping = {0: 'N', 1: 'A', 2: 'B', 3: 'C'}
+
+# Plot confusion matrix
+print("Confusion Matrix:\n", conf_matrix)
+plt.figure(figsize=(8, 6))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
+            xticklabels=[label_mapping[key] for key in label_mapping.keys()],
+            yticklabels=[label_mapping[key] for key in label_mapping.keys()])
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.title("Confusion Matrix Random Split LDA")
+plt.show()
+
 print("Classification Report of test data for PCA:")
 print(classification_report(y_test, y_test_pred_pca, zero_division=1))
 
