@@ -180,8 +180,8 @@ plt.show()
 # Generate incorrect indices
 incorrect_indices = [i for i in range(len(y_test)) if y_test[i] != y_test_pred[i]]
 
-def plot_with_highlight(ax, data, incorrect_indices, label):
-    x_data = data[:, 0]  # Assuming the x-axis acceleration data is the first column
+def plot_with_highlight(ax, data, axis, incorrect_indices, label):
+    x_data = data[:, axis]  # Assuming the x-axis acceleration data is the first column
     correct_plotted = False
     incorrect_plotted = False
     
@@ -201,12 +201,31 @@ def plot_with_highlight(ax, data, incorrect_indices, label):
                 
     ax.set_xlabel('Element number')
     ax.set_ylabel('X Acceleration value')
-    ax.set_title('X_acceleration for participant 6')
+    ax.set_title(f'{axis}-acceleration for participant 6')
     ax.legend()
 
 # Example usage
 plt.figure()
-plot_with_highlight(plt.gca(), acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'], incorrect_indices, 'hand_IMU')
+plot_with_highlight(plt.gca(),0, acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'], incorrect_indices, 'hand_IMU')
 plt.grid()
 plt.tight_layout()
 plt.show()
+
+
+plt.subplot(1,3,1)
+plot_with_highlight(plt.gca(),0, acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'], incorrect_indices, 'hand_IMU')
+plt.grid()
+plt.tight_layout()
+plt.legend()
+
+plt.subplot(1,3,2)
+plot_with_highlight(plt.gca(),1, acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'], incorrect_indices, 'hand_IMU')
+plt.grid()
+plt.tight_layout()
+plt.legend()
+plt.subplot(1,3,3)
+plot_with_highlight(plt.gca(),2, acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'], incorrect_indices, 'hand_IMU')
+plt.grid()
+plt.tight_layout()
+plt.legend()
+
