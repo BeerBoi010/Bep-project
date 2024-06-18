@@ -209,6 +209,9 @@ importances = clf.feature_importances_
 
 indices = np.argsort(importances)[::-1]
 
+
+
+
 plt.figure(figsize=(10, 6))
 plt.title("Feature Importances")
 plt.bar(range(X_train.shape[1]), importances[indices], align="center")
