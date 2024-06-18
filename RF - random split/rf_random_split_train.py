@@ -13,7 +13,7 @@ from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standa
 import labels_interpolation
 
 #test_person = 5
-bin_size = 50
+bin_size = 80
 bin_val = int(1905/bin_size)
 
 #print(f'drinking_HealthySubject{test_person}_Test')
@@ -130,28 +130,28 @@ conf_matrix = confusion_matrix(y_test, y_test_pred)
 # Label maps for confusion matrix
 label_mapping = {0: 'N', 1: 'A', 2: 'B', 3: 'C'}
 
-# Plot confusion matrix
-print("Confusion Matrix:\n", conf_matrix)
-plt.figure(figsize=(8, 6))
-sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
-            xticklabels=[label_mapping[key] for key in label_mapping.keys()],
-            yticklabels=[label_mapping[key] for key in label_mapping.keys()])
-plt.xlabel('Predicted Labels')
-plt.ylabel('True Labels')
-plt.title("Confusion Matrix Random Split")
-plt.show()
+# # Plot confusion matrix
+# print("Confusion Matrix:\n", conf_matrix)
+# plt.figure(figsize=(8, 6))
+# sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
+#             xticklabels=[label_mapping[key] for key in label_mapping.keys()],
+#             yticklabels=[label_mapping[key] for key in label_mapping.keys()])
+# plt.xlabel('Predicted Labels')
+# plt.ylabel('True Labels')
+# plt.title("Confusion Matrix Random Split")
+# plt.show()
 
 importances = clf.feature_importances_
 
 indices = np.argsort(importances)[::-1]
 
-plt.figure(figsize=(10, 6))
-plt.title("Feature Importances")
-plt.bar(range(X_train.shape[1]), importances[indices], align="center")
-plt.xticks(range(X_train.shape[1]), indices)
-plt.xlabel("Feature Index")
-plt.ylabel("Feature Importance")
-plt.show()
+# plt.figure(figsize=(10, 6))
+# plt.title("Feature Importances")
+# plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+# plt.xticks(range(X_train.shape[1]), indices)
+# plt.xlabel("Feature Index")
+# plt.ylabel("Feature Importance")
+# plt.show()
 
 num_classes = len(np.unique(y_train))
 n_components_lda = min(num_classes - 1, X_train.shape[1])
@@ -208,15 +208,15 @@ pca_feature_importance /= np.sum(pca_feature_importance)
 print("Feature Importances from PCA:")
 print(pca_feature_importance)
 
-plt.figure(figsize=(10, 6))
-plt.bar(range(n_features_lda), lda_feature_importance, align="center", color='orange', label='LDA')
-plt.xlabel("Feature Index")
-plt.ylabel("Feature Importance (LDA)")
-plt.legend()
+# plt.figure(figsize=(10, 6))
+# plt.bar(range(n_features_lda), lda_feature_importance, align="center", color='orange', label='LDA')
+# plt.xlabel("Feature Index")
+# plt.ylabel("Feature Importance (LDA)")
+# plt.legend()
 
-plt.figure(figsize=(10, 6))
-plt.bar(range(X_train_pca.shape[1]), pca_feature_importance, align="center", color='green', label='PCA')
-plt.xlabel("PCA Component Index")
-plt.ylabel("Feature Importance (PCA)")
-plt.legend()
-plt.show()
+# plt.figure(figsize=(10, 6))
+# plt.bar(range(X_train_pca.shape[1]), pca_feature_importance, align="center", color='green', label='PCA')
+# plt.xlabel("PCA Component Index")
+# plt.ylabel("Feature Importance (PCA)")
+# plt.legend()
+# plt.show()

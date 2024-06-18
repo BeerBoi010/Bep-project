@@ -19,7 +19,7 @@ from Feature_Extraction import RMS_V2, Mean_V2, Slope_V2, Max_V2, Min_V2, Standa
 import labels_interpolation
 
 #test_person = 5
-bin_size = 50
+bin_size = 80
 bin_val = int(1905/bin_size)
 
 #print(f'drinking_HealthySubject{test_person}_Test')
