@@ -210,7 +210,10 @@ importances = clf.feature_importances_
 indices = np.argsort(importances)[::-1]
 
 
-
+plt.figure()
+plot_with_highlight(plt.gca(), acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'], incorrect_indices, 'hand_IMU')
+plt.tight_layout()
+plt.show()
 
 plt.figure(figsize=(10, 6))
 plt.title("Feature Importances")
