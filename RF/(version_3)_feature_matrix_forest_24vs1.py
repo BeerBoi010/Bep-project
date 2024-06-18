@@ -49,8 +49,18 @@ rot = np.load("Data_tests/Gyro_signal.npy", allow_pickle=True).item()
 all_labels = labels_interpolation.expanded_matrices
 
 
+
 subjects = ['drinking_HealthySubject2_Test', 'drinking_HealthySubject3_Test', 'drinking_HealthySubject4_Test',   
          'drinking_HealthySubject5_Test', 'drinking_HealthySubject6_Test', 'drinking_HealthySubject7_Test']
+
+plt.figure()
+plt.grid()
+plt.legend()
+plt.title("Acceleration data Participant 6")
+plt.plot(acc['drinking_HealthySubject6_Test']['hand_IMU'])
+plt.xlabel("Acceleration")
+plt.ylabel("Time")
+plt.show()
 
 # subjects.remove(f'drinking_HealthySubject{test_person}_Test')
 # subjects_train = subjects
