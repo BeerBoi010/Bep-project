@@ -98,7 +98,11 @@ np.save('time_ranges_subject_7.npy', time_ranges_subject_7)
 
 #%% This piece of code, segments each subject data according to their labels, including the same length windows: 
 
+<<<<<<< HEAD
+window_length_sec = 0.5 # 0.5 second
+=======
 window_length_sec = 50 # 0.5 second
+>>>>>>> 5d0aab4e7078bc437de4eb285494d27339dea965
 overlap = 0.5 #0.5
 window_length_samples = int(window_length_sec * fs)
 windows_AllSubject = []
