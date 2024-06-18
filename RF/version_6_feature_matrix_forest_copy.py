@@ -32,7 +32,7 @@ sampling_window_min_max = 50
 sampling_window_mean = 50
 sampling_window_STD = 50
 sampling_window_slope = 50
-test_person = 7
+test_person = 6
 
 
 # train_amount = 5
@@ -169,6 +169,13 @@ print(classification_report(y_test, y_test_pred))
 element_numbers = list(range(len(y_test_pred)))
 
 ### Setting up plots to illustrate code
+plt.figure(figsize=(12, 6))
+plt.plot(acc[f'drinking_HealthySubject{test_person}_Test']['hand_IMU'])
+plt.xlabel('Element number')
+plt.ylabel('Acceleration value')
+plt.title(f'hand_IMU - {subjects_test[0]}')
+plt.show
+
 plt.figure(figsize=(12, 6))
 
 plt.subplot(2, 4, 1)
