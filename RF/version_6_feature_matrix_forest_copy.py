@@ -32,7 +32,7 @@ sampling_window_min_max = 50
 sampling_window_mean = 50
 sampling_window_STD = 50
 sampling_window_slope = 50
-test_person = 6
+test_person = 5
 
 
 # train_amount = 5
